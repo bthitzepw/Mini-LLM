@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# 模型权重和检查点（文件太大不适合上传）
+checkpoints/
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# 训练日志
+logs/
+runs/
+events.out.tfevents.*
+
+# 数据目录（原始数据可选是否上传）
+# data/raw/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 环境变量
+.env
+.env.local
+
+# WorkBuddy
+.workbuddy/
