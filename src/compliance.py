@@ -309,3 +309,45 @@ security_headers = SecurityHeaders()
 rate_limiter = RateLimiter(max_requests=60, window_seconds=60)
 data_retention = DataRetentionManager(retention_days=90)
 compliance_logger = ComplianceAuditLogger()
+
+# ==================== 代码安全合规常量 ====================
+
+# 代码模型允许生成的代码类别（白名单）
+CODE_GENERATION_WHITELIST = {
+    'algorithm': True,         # 算法实现
+    'data_structure': True,    # 数据结构
+    'web_development': True,   # Web开发
+    'api': True,               # API开发
+    'database': True,          # 数据库操作
+    'testing': True,           # 测试代码
+    'utility': True,           # 工具函数
+    'automation': True,        # 自动化脚本（非恶意）
+    'data_analysis': True,     # 数据分析
+    'machine_learning': True,  # 机器学习
+    'game_development': True,  # 游戏开发
+    'system_admin': True,      # 系统管理（非攻击性）
+}
+
+# 代码安全分类标签（用于输出标注）
+CODE_SECURITY_LABELS = {
+    'malicious_code': {
+        'label': 'MALICIOUS_CODE_BLOCKED',
+        'description': '请求涉及恶意代码生成，已被拦截',
+        'regulation': 'CFAA (US) / 网络安全法 (CN) / Computer Misuse Act (UK)',
+    },
+    'exploit_code': {
+        'label': 'EXPLOIT_CODE_BLOCKED',
+        'description': '请求涉及漏洞利用代码，已被拦截',
+        'regulation': 'CFAA (US) / 网络安全法 (CN) / 各国反计算机犯罪法',
+    },
+    'attack_script': {
+        'label': 'ATTACK_SCRIPT_BLOCKED',
+        'description': '请求涉及网络攻击脚本，已被拦截',
+        'regulation': 'CFAA (US) / 网络安全法 (CN) / Budapest Convention on Cybercrime',
+    },
+    'security_education': {
+        'label': 'SECURITY_EDUCATION',
+        'description': '防御性安全代码，允许生成',
+        'regulation': '网络安全教育豁免',
+    },
+}

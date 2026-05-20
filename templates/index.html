@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini LLM - 微型语言模型</title>
+    <title>Mini LLM - 微型代码语言模型</title>
     <style>
         * {
             margin: 0;
@@ -168,6 +168,33 @@
             border: 1px solid #e0e0e0;
             border-bottom-left-radius: 4px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 代码块样式 */
+        .message.ai .message-content pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 14px 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.88em;
+            line-height: 1.5;
+            margin: 8px 0;
+        }
+        .message.ai .message-content code {
+            background: #f0f0f0;
+            color: #e74c3c;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .message.ai .message-content pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
         }
 
         .ai-disclaimer {
@@ -346,8 +373,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 Mini LLM</h1>
-            <p>从零训练的微型语言模型</p>
+            <h1>&#128187; Mini LLM</h1>
+            <p>从零训练的微型代码语言模型</p>
             <div class="model-info" id="modelInfo">
                 <div class="info-item">
                     <div class="label">参数量</div>
@@ -361,17 +388,22 @@
                     <div class="label">设备</div>
                     <div class="value" id="deviceType">-</div>
                 </div>
+                <div class="info-item">
+                    <div class="label">方向</div>
+                    <div class="value">Code</div>
+                </div>
             </div>
         </div>
 
         <div class="compliance-banner">
             <span style="margin-right:8px;">&#9888;&#65039;</span>
-            本服务为AI学习实验项目，仅供学习研究。AI生成内容不构成专业建议。
+            本服务为AI代码学习实验项目，仅供学习研究。AI生成代码不构成专业建议，禁止用于恶意目的。
             <br>
             <span style="font-size:0.85em; opacity:0.85;">
                 适用法规: <span class="jurisdiction-badge badge-cn">CN 生成式AI管理办法</span>
                 <span class="jurisdiction-badge badge-eu">EU AI Act / GDPR</span>
-                <span class="jurisdiction-badge badge-us">US COPPA / CCPA</span>
+                <span class="jurisdiction-badge badge-us">US CFAA / COPPA</span>
+                <span class="jurisdiction-badge" style="background:#e67e22;">Code Security</span>
             </span>
             <br>
             <a href="/agreement">用户协议</a> |
@@ -381,13 +413,16 @@
 
         <div class="chat-container" id="chatContainer">
             <div class="welcome-message">
-                <h2>👋 你好！</h2>
-                <p>这是一个从零训练的微型语言模型。</p>
+                <h2>&#128187; Code Mini LLM</h2>
+                <p>这是一个专注于<strong>代码编程</strong>的微型语言模型，支持 Python / JavaScript / Java / C++ / Go / Rust 等多语言代码生成。</p>
                 <p style="margin-top: 15px; font-size: 0.95em; color: #888;">
                     提示：先运行训练脚本训练模型，效果会更好！
                 </p>
                 <p style="margin-top: 10px; font-size: 0.9em; color: #888;">
-                    📝 本服务仅供学习使用，AI生成内容仅供参考。
+                    &#128737;&#65039; 内置代码安全过滤，禁止生成恶意代码、漏洞利用和攻击脚本。
+                </p>
+                <p style="margin-top: 5px; font-size: 0.9em; color: #888;">
+                    &#128221; AI生成代码仅供参考和学习，请勿用于生产环境。
                 </p>
             </div>
         </div>

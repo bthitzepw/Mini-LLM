@@ -1,172 +1,966 @@
-人工智能是计算机科学的一个分支，它企图了解智能的实质，并生产出一种新的能以人类智能相似的方式做出反应的智能机器。
-深度学习是机器学习的一个分支，它是一种以人工神经网络为架构，对数据进行表征学习的算法。
-自然语言处理是计算机科学领域与人工智能领域中的一个重要方向。
-机器学习是人工智能的一个分支，专门研究计算机怎样模拟或实现人类的学习行为。
-Transformer是一种神经网络架构，最早在2017年由Google的研究者提出。
-卷积神经网络是一类包含卷积计算且具有深度结构的前馈神经网络，是深度学习的代表算法之一。
-循环神经网络是一类以序列数据为输入，在序列的演进方向进行递归且所有节点按链式连接的递归神经网络。
-注意力机制是一种模仿人类注意力的技术，它使模型能够在处理序列数据时关注最相关的部分。
-生成对抗网络由两个神经网络组成：生成器和判别器，它们相互对抗以生成逼真的数据。
-强化学习是一种机器学习方法，智能体通过与环境交互来学习最优行为策略。
-迁移学习是将从一个任务中学到的知识应用到另一个相关任务的机器学习方法。
-数据科学是一个跨学科领域，使用科学方法、过程、算法和系统从数据中提取知识和洞见。
-大数据指的是传统数据处理应用软件无法在合理时间内处理的极大量数据集。
-云计算是一种按需分配计算资源的服务模式，用户可以通过互联网访问共享的计算资源池。
-物联网是通过互联网将各种物理设备连接起来的网络，实现设备间的数据交换和远程控制。
-区块链是一种分布式账本技术，数据以链式结构存储，具有不可篡改、透明可追溯的特点。
-量子计算利用量子力学原理进行信息处理，在某些特定问题上具有超越传统计算机的能力。
-5G是第五代移动通信技术，具有高速率、低延迟和大连接的特点。
-边缘计算将数据处理从集中式数据中心移至数据产生地附近，降低延迟并减少带宽消耗。
-虚拟现实是一种计算机模拟的三维环境，用户可以通过特殊设备与之交互。
-增强现实将计算机生成的信息叠加到真实世界中，增强用户对现实环境的感知。
-自动驾驶技术利用传感器、人工智能和控制系统使车辆能够在无人驾驶的情况下运行。
-计算机视觉是人工智能的一个领域，研究如何使计算机理解和解析视觉信息。
-语音识别技术将人类语音转换为文本，是人机交互的重要方式之一。
-推荐系统通过分析用户行为和偏好，向用户推荐可能感兴趣的内容或产品。
-知识图谱是一种用图结构表示知识的方式，将实体和关系以结构化形式存储。
-神经网络的训练过程包括前向传播、计算损失、反向传播和权重更新四个步骤。
-过拟合是指模型在训练数据上表现良好，但在新数据上性能下降的现象。
-正则化是防止过拟合的技术，通过在损失函数中添加惩罚项来约束模型复杂度。
-批归一化是一种加速深度神经网络训练的技术，通过归一化每层的输入来稳定训练过程。
-Dropout是一种正则化技术，在训练过程中随机忽略部分神经元以防止过拟合。
-梯度消失问题是深度神经网络训练中的常见问题，梯度在反向传播中逐渐变小。
-残差网络通过引入跳跃连接解决了深度网络中的梯度消失问题。
-词嵌入是将词语映射到连续向量空间的技术，使语义相似的词在向量空间中位置相近。
-BERT是一种基于Transformer的预训练语言模型，在多项自然语言处理任务中取得了优异成绩。
-GPT是一种生成式预训练语言模型，通过大量文本数据训练，能够生成连贯的文本。
-图神经网络是一种处理图结构数据的神经网络，能够捕获节点间的关系信息。
-联邦学习是一种分布式机器学习方法，允许多个参与方在不共享原始数据的情况下协作训练模型。
-元学习也称为学习如何学习，使模型能够从少量样本中快速学习新任务。
-数据增强是通过对训练数据进行变换来扩充训练集，提高模型泛化能力的技术。
-Python是一种高级编程语言，以其简洁的语法和丰富的库生态闻名，广泛用于数据科学和人工智能领域。
-JavaScript是一种广泛用于网页开发的编程语言，也可用于服务器端开发。
-Java是一种面向对象的编程语言，具有跨平台特性，广泛用于企业级应用开发。
-C++是一种通用编程语言，支持面向对象和泛型编程，常用于系统软件和游戏开发。
-Go语言是Google开发的一种静态类型、编译型语言，以其简洁性和高效的并发处理著称。
-Rust是一种专注于安全性和性能的系统编程语言，能够在编译时防止内存错误。
-数据库是按照特定方式组织、存储和管理数据的系统，分为关系型和非关系型两大类。
-SQL是结构化查询语言，用于管理关系型数据库中的数据。
-NoSQL数据库不使用传统的表格关系模型，适合处理大量非结构化或半结构化数据。
-操作系统是管理计算机硬件和软件资源的系统软件，为应用程序提供运行环境。
-Linux是一种开源的类Unix操作系统，广泛用于服务器、嵌入式系统和个人电脑。
-互联网是全球计算机网络的集合，通过标准化的通信协议相互连接。
-HTTP是超文本传输协议，是万维网数据传输的基础。
-API是应用程序编程接口，允许不同软件之间进行通信和数据交换。
-微服务架构将应用程序拆分为多个小型、独立的服务，每个服务负责特定的业务功能。
-容器化技术如Docker将应用程序及其依赖打包在一起，确保在不同环境中一致运行。
-DevOps是一种将软件开发和IT运维结合起来的理念和实践，旨在缩短开发周期。
-敏捷开发是一种以迭代、增量方式进行软件开发的方法论，强调灵活应对需求变化。
-版本控制系统如Git用于跟踪文件变更历史，支持多人协作开发。
-网络安全是保护计算机系统和网络免受攻击、未授权访问和数据泄露的实践。
-加密技术将数据转换为只有授权方才能解读的形式，保护数据传输和存储的安全。
-太阳是太阳系的中心恒星，是一颗距地球约1.5亿千米的G型主序星。
-月球是地球唯一的天然卫星，直径约为地球的四分之一。
-地球是太阳系中第三颗行星，也是目前已知唯一存在生命的星球。
-火星是太阳系中第四颗行星，因表面富含氧化铁而呈现红色。
-木星是太阳系中最大的行星，质量超过其他行星质量总和的两倍。
-宇宙大爆炸理论认为宇宙起源于约138亿年前的一次极高密度和温度的奇点爆炸。
-黑洞是时空中引力极强的区域，连光也无法逃脱其引力。
-相对论是爱因斯坦提出的物理学理论，包括狭义相对论和广义相对论。
-量子力学是描述微观粒子行为的物理学理论，揭示了微观世界的概率性本质。
-基因是遗传信息的基本单位，由DNA序列编码，决定生物体的遗传特征。
-DNA是脱氧核糖核酸的缩写，是携带遗传信息的分子，形成双螺旋结构。
-细胞是生命的基本结构和功能单位，所有已知生物都由细胞组成。
-光合作用是植物利用光能将二氧化碳和水转化为有机物和氧气的过程。
-进化论由达尔文提出，认为物种通过自然选择逐渐演化，适应环境者得以生存繁殖。
-气候变化是指地球气候系统长期的变化，当前主要由人类活动排放温室气体导致。
-可再生能源包括太阳能、风能、水能等，是取之不尽的清洁能源来源。
-数学是研究数量、结构、变化以及空间等概念的学科，是所有自然科学的基础。
-微积分是研究函数的极限、导数、积分和无穷级数的数学分支。
-线性代数研究向量空间和线性变换，是机器学习和计算机图形学的基础。
-概率论是研究随机现象数量规律的数学分支，是统计学的理论基础。
-统计学是通过收集、分析、解释数据来理解世界的学科。
-中国是世界上历史最悠久的文明古国之一，有着五千年的灿烂文化。
-长城是中国古代的伟大建筑工程，是世界上最长的防御工事。
-丝绸之路是古代连接中国与欧洲的贸易路线，促进了东西方文明的交流。
-四大发明是中国对世界文明的重要贡献，包括造纸术、印刷术、火药和指南针。
-孔子是中国古代伟大的思想家和教育家，儒家学派的创始人。
-唐诗是中国文学的重要组成部分，唐朝诗歌达到了中国古典诗歌的高峰。
-汉字是中华文明的重要载体，是世界上现存最古老的文字系统之一。
-茶文化是中国传统文化的重要组成部分，中国是茶的故乡和茶文化的发祥地。
-中医是中国传统医学，以整体观念和辨证论治为主要特点。
-诗经是中国最早的诗歌总集，收录了西周初期到春秋中叶的诗歌。
-唐朝是中国历史上最强盛的朝代之一，在政治、经济、文化方面都达到了高峰。
-秦始皇统一六国，建立了中国历史上第一个统一的多民族封建国家。
-故宫是明清两代的皇宫，是世界上保存最完整的古代宫殿建筑群之一。
-李白是唐代伟大的浪漫主义诗人，被称为"诗仙"，与杜甫并称"李杜"。
-杜甫是唐代现实主义诗人，其诗广泛反映社会现实，被称为"诗圣"。
-苏轼是北宋著名文学家、书法家，其词开创了豪放派风格。
-红楼梦是中国古典文学的巅峰之作，由曹雪芹创作，是一部反映封建社会的百科全书。
-西游记是中国古典四大名著之一，讲述了唐僧师徒西天取经的故事。
-水浒传描写了北宋末年以宋江为首的梁山泊农民起义的故事。
-三国演义是中国历史小说的巅峰，描述了魏蜀吴三国鼎立的历史时期。
-健康的生活方式包括均衡饮食、适量运动、充足睡眠和保持积极心态。
-均衡饮食要求摄入适量的蛋白质、碳水化合物、脂肪、维生素和矿物质。
-运动对身体健康有多方面好处，包括增强心肺功能、提高免疫力和改善心理健康。
-睡眠对健康至关重要，成年人每晚建议睡7到9小时。
-压力管理是现代生活的重要技能，可通过冥想、运动和社交活动来缓解压力。
-经济学是研究人类如何在有限资源条件下做出选择的社会科学。
-市场经济通过价格机制协调生产和消费，是现代经济的主要组织形式。
-通货膨胀是指物价总体水平持续上升的经济现象，会降低货币的购买力。
-国内生产总值是衡量一个国家经济规模的重要指标，反映了一定时期内生产的全部最终产品和服务的市场价值。
-国际贸易是不同国家之间商品和服务的交换，是全球化经济的重要组成部分。
-教育是传授知识、技能和价值观的过程，是社会发展和个人成长的基础。
-终身学习是在整个人生过程中持续学习和发展的理念，在快速变化的社会中尤为重要。
-批判性思维是对信息进行分析、评估和判断的能力，是现代教育的核心目标之一。
-创造力是产生新想法和解决方案的能力，可以通过训练和实践来培养。
-团队合作是多人协作实现共同目标的能力，在现代工作环境中至关重要。
-沟通技巧包括有效表达自己的想法和倾听他人的能力，是成功的关键因素。
-领导力是引导和激励他人实现目标的能力，包括决策、协调和激励等方面。
-时间管理是有效规划和利用时间的能力，可以提高工作效率和生活质量。
-情商是感知、理解和管理自己和他人情绪的能力，对个人和职业成功有重要影响。
-心理健康与身体健康同等重要，包括情绪稳定、积极的自我认知和健康的人际关系。
-哲学是对基本问题进行理性探究的学科，包括存在、知识、价值和理性等主题。
-伦理学是哲学的分支，研究道德价值观、行为规范和道德判断的学科。
-逻辑学研究有效推理和论证的原则，是哲学和数学的基础。
-美学是研究美的本质和审美体验的哲学分支。
-文化是特定群体共同的价值观、信仰、习俗和艺术表达形式。
-艺术是人类创造性表达的形式，包括绘画、雕塑、音乐、舞蹈、文学等。
-音乐是通过声音和节奏来表达情感和创造美的艺术形式。
-文学是以语言为媒介的艺术形式，包括诗歌、小说、散文、戏剧等体裁。
-电影是集视觉、听觉和叙事于一体的综合艺术形式，是20世纪最重要的文化现象之一。
-体育运动不仅促进身体健康，也培养团队精神、竞争意识和个人意志力。
-足球是世界上最受欢迎的运动，拥有数十亿球迷，每四年举办一次世界杯。
-篮球由詹姆斯·奈史密斯于1891年发明，现已成为全球最受欢迎的运动之一。
-奥运会是国际最高水平的综合性运动会，每四年举办一次，分夏季和冬季奥运会。
-语言是人类交流思想和情感的工具，全世界有数千种语言。
-英语是目前世界上使用最广泛的语言，是国际商业、科学和外交的通用语言。
-汉语是世界上母语使用者最多的语言，也是联合国六种官方语言之一。
-阅读是获取知识和信息的重要方式，定期阅读可以扩展知识面和提高思维能力。
-写作是表达思想和情感的重要方式，也是记录和传播知识的主要手段。
-旅行可以开拓视野、了解不同文化和增长见识，是许多人的重要生活方式。
-环境保护是维护生态系统平衡、保护自然资源的重要行动。
-可持续发展是在满足当代人需求的同时，不损害后代人满足其需求的能力的发展模式。
-生物多样性是指地球上生物种类的丰富程度，对生态系统的稳定和人类福祉至关重要。
-海洋覆盖地球表面约71%的面积，是地球气候调节的重要因素，也是丰富的生物多样性宝库。
-森林是陆地上最重要的生态系统之一，提供氧气、调节气候、保护水源和维持生物多样性。
-机器人技术结合了机械工程、电子工程和计算机科学，创造出能执行各种任务的自动化机器。
-纳米技术研究和利用纳米尺度上的材料和设备，在医学、电子和能源领域有广泛应用。
-生物技术利用生物系统、生物体或其衍生物来开发新产品和技术，在医学和农业中有重要应用。
-3D打印技术通过逐层堆积材料来创建三维物体，正在革新制造业、医疗和建筑行业。
-基因编辑技术如CRISPR-Cas9允许科学家精确修改生物体的DNA序列。
-智慧城市利用信息技术和数据分析来提高城市的管理效率和居民生活质量。
-智能家居通过互联网和自动化技术连接和控制家庭设备，提升生活便利性和能源效率。
-数字货币是一种以数字形式存在的货币，包括加密货币如比特币和中央银行数字货币。
-电子商务通过互联网进行商品和服务的买卖，彻底改变了传统零售和商业模式。
-社交媒体是允许用户创建、分享内容并进行互动的在线平台，改变了人们的社交方式。
-人口老龄化是指老年人口比例增加的社会趋势，对医疗、养老和社会保障系统提出挑战。
-城镇化是人口从农村向城市迁移的过程，是经济发展的重要特征。
-全球化是世界各地经济、文化和政治日益相互联系和依存的过程。
-能源是现代社会运转的基础，主要来源包括化石燃料、核能和可再生能源。
-太阳能是通过太阳能电池板将太阳辐射转化为电能的清洁可再生能源。
-风能是通过风力涡轮机将风的动能转化为电能的可再生能源。
-核能通过核裂变或核聚变释放大量能量，是一种低碳但存在安全风险的能源。
-医疗技术的进步显著提高了人类的平均寿命和生活质量，基因治疗和精准医学是未来方向。
-疫苗是预防传染病的重要手段，通过激活免疫系统来预防特定疾病。
-抗生素是治疗细菌感染的药物，但过度使用导致的耐药性是全球公共卫生面临的重要挑战。
-心理学研究人类和动物的心理过程和行为，包括认知、情绪、人格和社会交互等方面。
-认知科学是研究思维、学习、语言和感知的跨学科领域，结合了心理学、神经科学和计算机科学。
-神经科学研究神经系统的结构和功能，是理解大脑和行为的基础科学。
-大脑是人体最复杂的器官，包含约860亿个神经元，控制着人体的所有活动。
-记忆是存储、保留和回忆信息的能力，分为短期记忆和长期记忆。
-学习是获取新知识、技能和行为的过程，可以通过多种方式实现，包括经验、教学和模仿。
+# -*- coding: utf-8 -*-
+# Python基础语法示例
+
+# 1. 变量和数据类型
+x = 10  # 整数
+name = "Alice"  # 字符串
+price = 3.14  # 浮点数
+is_valid = True  # 布尔值
+items = [1, 2, 3, 4, 5]  # 列表
+person = {"name": "Bob", "age": 25}  # 字典
+unique_ids = {1, 2, 3}  # 集合
+coords = (10, 20)  # 元组
+
+# 2. 条件判断
+if x > 5:
+    print("x大于5")
+elif x == 5:
+    print("x等于5")
+else:
+    print("x小于5")
+
+# 3. 循环
+for i in range(10):
+    print(i)
+
+for item in items:
+    print(item)
+
+count = 0
+while count < 5:
+    count += 1
+
+# 4. 函数定义
+def add(a, b):
+    return a + b
+
+def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+# 5. 列表推导式
+squares = [x**2 for x in range(10)]
+evens = [x for x in range(20) if x % 2 == 0]
+
+# 6. 字典操作
+for key, value in person.items():
+    print(f"{key}: {value}")
+
+# 7. 类定义
+class Dog:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def bark(self):
+        return f"{self.name} says: Woof!"
+
+    def __str__(self):
+        return f"Dog({self.name}, {self.age})"
+
+# 8. 异常处理
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"Error: {e}")
+finally:
+    print("Done")
+
+# 9. 文件操作
+with open("example.txt", "w") as f:
+    f.write("Hello, World!")
+
+with open("example.txt", "r") as f:
+    content = f.read()
+
+# 10. Lambda和高阶函数
+numbers = [1, 2, 3, 4, 5]
+doubled = list(map(lambda x: x * 2, numbers))
+filtered = list(filter(lambda x: x > 3, numbers))
+
+# 11. 装饰器
+def timer(func):
+    import time
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} took {end-start:.2f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    import time
+    time.sleep(1)
+    return "done"
+
+# 12. 上下文管理器
+class FileManager:
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+
+    def __enter__(self):
+        self.file = open(self.filename, self.mode)
+        return self.file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file.close()
+
+# Python是一门简洁而强大的编程语言，广泛应用于数据科学、Web开发和自动化脚本等领域。
+# 上面展示了Python的核心语法特性，包括变量、控制流、函数、类、异常处理等。
+
+// ===== JavaScript基础语法 =====
+// 1. 变量声明
+let name = "Alice";
+const age = 25;
+var score = 100;
+
+// 2. 数据类型
+let num = 42;
+let str = "Hello";
+let bool = true;
+let arr = [1, 2, 3, 4, 5];
+let obj = { name: "Bob", age: 30 };
+let empty = null;
+let notDefined = undefined;
+
+// 3. 箭头函数
+const add = (a, b) => a + b;
+const greet = (name) => `Hello, ${name}!`;
+const square = x => x * x;
+
+// 4. 数组方法
+let numbers = [1, 2, 3, 4, 5];
+let doubled = numbers.map(n => n * 2);
+let evens = numbers.filter(n => n % 2 === 0);
+let sum = numbers.reduce((acc, n) => acc + n, 0);
+let hasThree = numbers.includes(3);
+
+// 5. 解构赋值
+const { name: userName, age: userAge } = obj;
+const [first, second, ...rest] = arr;
+
+// 6. 模板字符串
+let message = `My name is ${name} and I am ${age} years old.`;
+let multiLine = `
+  Line 1
+  Line 2
+  Line 3
+`;
+
+// 7. Promise异步编程
+function fetchData(url) {
+  return fetch(url)
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+}
+
+async function getData(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Fetch failed:", error);
+  }
+}
+
+// 8. 类定义
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return `${this.name} makes a sound.`;
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return `${this.name} barks.`;
+  }
+}
+
+// 9. ES6模块
+// export function helper() { return "help"; }
+// import { helper } from './utils.js';
+
+// 10. 展开运算符
+let arr1 = [1, 2, 3];
+let arr2 = [...arr1, 4, 5];
+let obj1 = { a: 1 };
+let obj2 = { ...obj1, b: 2 };
+
+// JavaScript是Web开发的核心语言，支持前端和后端开发(通过Node.js)。
+
+// ===== HTML5基础结构 =====
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <section id="home">
+            <h1>Welcome</h1>
+            <p>This is a paragraph.</p>
+        </section>
+        <section id="about">
+            <h2>About</h2>
+            <img src="photo.jpg" alt="Photo">
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>Copyright 2025</p>
+    </footer>
+    <script src="app.js"></script>
+</body>
+</html>
+
+// HTML是构建网页的标记语言，CSS负责样式，JavaScript负责交互逻辑。
+
+// ===== CSS3样式示例 =====
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 10px;
+    }
+    .flex-container {
+        flex-direction: column;
+    }
+}
+
+// CSS3引入了Flexbox和Grid布局，支持响应式设计和动画过渡效果。
+
+// ===== Java面向对象编程 =====
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+        Person person = new Person("Alice", 25);
+        person.greet();
+    }
+}
+
+class Person {
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public void greet() {
+        System.out.println("Hello, I am " + this.name);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+}
+
+// Java是强类型面向对象语言，广泛应用于企业级开发和Android应用开发。
+// Java的核心特性包括封装、继承、多态和接口。
+
+// ===== C++面向对象编程 =====
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Animal {
+protected:
+    string name;
+public:
+    Animal(string n) : name(n) {}
+    virtual void speak() = 0;
+    virtual ~Animal() {}
+};
+
+class Dog : public Animal {
+public:
+    Dog(string n) : Animal(n) {}
+    void speak() override {
+        cout << name << " says: Woof!" << endl;
+    }
+};
+
+int main() {
+    vector<int> nums = {1, 2, 3, 4, 5};
+    for (int n : nums) {
+        cout << n << " ";
+    }
+    cout << endl;
+
+    Dog dog("Buddy");
+    dog.speak();
+    return 0;
+}
+
+// C++是高性能编程语言，广泛用于系统编程、游戏开发和嵌入式系统。
+
+// ===== Go语言并发编程 =====
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func worker(id int, wg *sync.WaitGroup) {
+    defer wg.Done()
+    fmt.Printf("Worker %d starting\n", id)
+}
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 1; i <= 5; i++ {
+        wg.Add(1)
+        go worker(i, &wg)
+    }
+    wg.Wait()
+    fmt.Println("All workers done")
+}
+
+// Go语言以简洁和高效的并发模型著称，内置goroutine和channel机制。
+
+// ===== Rust安全系统编程 =====
+fn main() {
+    let numbers: Vec<i32> = vec![1, 2, 3, 4, 5];
+    let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
+
+    for num in &doubled {
+        println!("{}", num);
+    }
+
+    let result = calculate(10, 20);
+    println!("Result: {}", result);
+}
+
+fn calculate(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// Rust注重内存安全和性能，通过所有权系统在编译期防止内存错误。
+
+// ===== Python Flask Web框架 =====
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "Hello, World!"
+
+@app.route("/api/items", methods=["GET"])
+def get_items():
+    items = [{"id": 1, "name": "Item 1"}, {"id": 2, "name": "Item 2"}]
+    return jsonify(items)
+
+@app.route("/api/items", methods=["POST"])
+def create_item():
+    data = request.get_json()
+    return jsonify({"id": 3, "name": data["name"]}), 201
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+// Flask是一个轻量级Python Web框架，适合快速构建API和小型Web应用。
+
+// ===== SQL数据库查询 =====
+-- 创建表
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    age INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 插入数据
+INSERT INTO users (name, email, age) VALUES ('Alice', 'alice@test.com', 25);
+INSERT INTO users (name, email, age) VALUES ('Bob', 'bob@test.com', 30);
+
+-- 查询数据
+SELECT * FROM users WHERE age > 25 ORDER BY created_at DESC;
+
+-- 联表查询
+SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.name
+HAVING order_count > 0;
+
+-- 更新数据
+UPDATE users SET age = 26 WHERE name = 'Alice';
+
+-- 删除数据
+DELETE FROM users WHERE id = 1;
+
+// SQL是结构化查询语言，用于管理和操作关系型数据库。
+
+// ===== Python数据结构算法 =====
+from collections import deque
+
+# 二分查找
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+# 快速排序
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+# 链表
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverse_list(head):
+    prev = None
+    current = head
+    while current:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+    return prev
+
+# 树的遍历
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def inorderTraversal(root):
+    if not root:
+        return []
+    return inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right)
+
+# 广度优先搜索(BFS)
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    result = []
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            visited.add(node)
+            result.append(node)
+            queue.extend(graph[node])
+    return result
+
+# 动态规划：斐波那契
+def fibonacci(n):
+    if n <= 1:
+        return n
+    dp = [0, 1]
+    for i in range(2, n + 1):
+        dp.append(dp[i-1] + dp[i-2])
+    return dp[n]
+
+# 数据结构和算法是计算机科学的基础，掌握它们对编程能力的提升至关重要。
+
+// ===== React组件开发 =====
+import React, { useState, useEffect } from 'react';
+
+function App() {
+    const [count, setCount] = useState(0);
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/items')
+            .then(res => res.json())
+            .then(data => setData(data));
+    }, []);
+
+    return (
+        <div className="app">
+            <h1>Counter: {count}</h1>
+            <button onClick={() => setCount(count + 1)}>Increment</button>
+            <button onClick={() => setCount(count - 1)}>Decrement</button>
+            <ul>
+                {data.map(item => (
+                    <li key={item.id}>{item.name}</li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export default App;
+
+// React是Facebook开发的前端框架，使用虚拟DOM和组件化思想构建用户界面。
+
+// ===== Python PyTorch深度学习 =====
+import torch
+import torch.nn as nn
+
+class SimpleNet(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(SimpleNet, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
+model = SimpleNet(784, 256, 10)
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+for epoch in range(10):
+    for batch_x, batch_y in dataloader:
+        optimizer.zero_grad()
+        outputs = model(batch_x)
+        loss = criterion(outputs, batch_y)
+        loss.backward()
+        optimizer.step()
+
+# PyTorch是Facebook开发的深度学习框架，以动态计算图著称，易于调试和使用。
+
+// ===== Shell脚本自动化 =====
+#!/bin/bash
+# 自动化部署脚本
+PROJECT_DIR="/var/www/myapp"
+BACKUP_DIR="/var/backups/myapp"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+echo "Starting deployment..."
+
+# 创建备份
+cp -r $PROJECT_DIR $BACKUP_DIR/$DATE
+
+# 拉取最新代码
+cd $PROJECT_DIR
+git pull origin main
+
+# 安装依赖
+npm install --production
+
+# 重启服务
+pm2 restart myapp
+
+echo "Deployment complete at $DATE"
+
+// Shell脚本是Linux系统管理和自动化运维的重要工具。
+
+// ===== TypeScript类型安全 =====
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    age?: number;
+}
+
+function createUser(user: User): User {
+    return { ...user, id: Date.now() };
+}
+
+async function fetchUsers(): Promise<User[]> {
+    const response = await fetch('/api/users');
+    const data: User[] = await response.json();
+    return data;
+}
+
+// TypeScript是JavaScript的超集，添加了静态类型检查，提高了代码的可维护性。
+
+// ===== Python Pandas数据分析 =====
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+print(df.head())
+print(df.describe())
+
+# 数据清洗
+df = df.dropna()
+df = df.drop_duplicates()
+
+# 数据筛选
+filtered = df[df['age'] > 25]
+grouped = df.groupby('city')['salary'].mean()
+
+# 数据转换
+df['bonus'] = df['salary'] * 0.1
+pivot = df.pivot_table(values='salary', index='dept', columns='city')
+
+# 输出结果
+result = df.to_dict('records')
+
+// Pandas是Python数据分析的核心库，提供高效的数据结构和数据分析工具。
+
+// ===== Vue.js前端框架 =====
+<template>
+  <div class="app">
+    <input v-model="message" placeholder="Type something">
+    <p>{{ message }}</p>
+    <button @click="count++">Clicked {{ count }} times</button>
+    <ul>
+      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      message: 'Hello Vue!',
+      count: 0,
+      items: [
+        { id: 1, name: 'Item 1' },
+        { id: 2, name: 'Item 2' }
+      ]
+    }
+  }
+}
+</script>
+
+// Vue.js是一个渐进式JavaScript框架，以简洁的API和优秀的文档著称。
+
+// ===== Docker容器化部署 =====
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+
+# docker build -t myapp:latest .
+# docker run -d -p 5000:5000 myapp:latest
+
+// Docker通过容器技术实现应用的快速打包、分发和部署。
+
+// ===== Python REST API设计 =====
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool = None
+
+items = []
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to API"}
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int):
+    if item_id < len(items):
+        return items[item_id]
+    raise HTTPException(status_code=404, detail="Item not found")
+
+@app.post("/items")
+def create_item(item: Item):
+    items.append(item)
+    return {"status": "created", "item": item}
+
+// FastAPI是现代Python Web框架，支持自动API文档生成和类型验证。
+
+// ===== Python爬虫示例 =====
+import requests
+from bs4 import BeautifulSoup
+
+def crawl(url):
+    response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    title = soup.find('title').text
+    links = [a['href'] for a in soup.find_all('a', href=True)]
+    paragraphs = [p.text for p in soup.find_all('p')]
+
+    return {
+        'title': title,
+        'links': links,
+        'paragraphs': paragraphs
+    }
+
+# 网络爬虫用于自动化采集网页数据，但需遵守robots.txt协议和相关法律法规。
+
+// ===== Python多线程与多进程 =====
+import threading
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
+def task(name):
+    print(f"{name} is running")
+
+# 多线程（适合IO密集型任务）
+with ThreadPoolExecutor(max_workers=5) as executor:
+    futures = [executor.submit(task, f"Thread-{i}") for i in range(5)]
+
+# 多进程（适合CPU密集型任务）
+with ProcessPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(task, f"Process-{i}") for i in range(4)]
+
+// Python的GIL限制了多线程的并行性，CPU密集型任务应使用多进程。
+
+// ===== 正则表达式代码示例 =====
+import re
+
+# 匹配邮箱
+email_pattern = r'[\w.+-]+@[\w-]+\.[\w.]+'
+emails = re.findall(email_pattern, text)
+
+# 匹配手机号
+phone_pattern = r'1[3-9]\d{9}'
+phones = re.findall(phone_pattern, text)
+
+# 替换敏感信息
+cleaned = re.sub(r'\d{6}', '******', text)
+
+# 分割字符串
+parts = re.split(r'[,;|]', text)
+
+// 正则表达式是文本模式匹配的强大工具，广泛应用于数据清洗和输入验证。
+
+// ===== Git版本控制常用命令 =====
+git init                        # 初始化仓库
+git add .                       # 暂存所有修改
+git commit -m "message"         # 提交修改
+git push origin main            # 推送到远程
+git pull origin main            # 拉取远程更新
+git branch feature              # 创建分支
+git checkout feature            # 切换分支
+git merge feature               # 合并分支
+git log --oneline               # 查看提交历史
+git stash                       # 暂存工作区
+git reset --soft HEAD~1         # 撤销最近一次提交
+
+// Git是最流行的分布式版本控制系统，是现代软件开发协作的基础工具。
+
+// ===== Linux常用命令 =====
+ls -la                          # 列出文件详情
+cd /path/to/dir                 # 切换目录
+cp file1 file2                  # 复制文件
+mv file1 file2                  # 移动/重命名
+rm -rf directory                # 删除目录
+chmod 755 file.sh               # 修改权限
+grep -r "pattern" /path         # 搜索文本
+find /path -name "*.py"         # 查找文件
+ps aux | grep python            # 查看进程
+kill -9 PID                     # 杀死进程
+df -h                           # 查看磁盘空间
+top                             # 系统监控
+
+// Linux命令行是服务器运维和开发者的必备技能。
+
+// ===== Python设计模式 =====
+# 单例模式
+class Singleton:
+    _instance = None
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+# 工厂模式
+class Dog:
+    def speak(self): return "Woof!"
+
+class Cat:
+    def speak(self): return "Meow!"
+
+def create_pet(pet_type):
+    pets = {"dog": Dog, "cat": Cat}
+    return pets.get(pet_type, Dog)()
+
+# 观察者模式
+class EventSystem:
+    def __init__(self):
+        self.listeners = {}
+    def on(self, event, callback):
+        self.listeners.setdefault(event, []).append(callback)
+    def emit(self, event, data):
+        for cb in self.listeners.get(event, []):
+            cb(data)
+
+// 设计模式是解决常见软件设计问题的经验总结，常用的有23种GoF设计模式。
+
+// ===== Python单元测试 =====
+import unittest
+
+class TestMathOperations(unittest.TestCase):
+    def test_add(self):
+        self.assertEqual(1 + 1, 2)
+
+    def test_string(self):
+        self.assertIn("hello", "hello world")
+
+    def test_list(self):
+        self.assertEqual(len([1, 2, 3]), 3)
+        self.assertIn(2, [1, 2, 3])
+
+    def test_exception(self):
+        with self.assertRaises(ValueError):
+            int("invalid")
+
+if __name__ == "__main__":
+    unittest.main()
+
+// 单元测试是保证代码质量的重要手段，Python的unittest和pytest是常用的测试框架。
+
+// ===== Python虚拟环境和包管理 =====
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate    # Linux/Mac
+venv\Scripts\activate       # Windows
+
+# 包管理
+pip install requests
+pip install -r requirements.txt
+pip freeze > requirements.txt
+
+# pip是Python的包管理工具，虚拟环境可以隔离项目依赖。
+
+// ===== Markdown文档格式 =====
+# 标题
+## 二级标题
+### 三级标题
+
+**加粗文本** 和 *斜体文本*
+
+- 列表项1
+- 列表项2
+- 列表项3
+
+1. 有序列表1
+2. 有序列表2
+
+`行内代码`
+```
+代码块
+```
+
+[链接文字](https://example.com)
+
+| 表头1 | 表头2 |
+|-------|-------|
+| 数据1 | 数据2 |
+
+// Markdown是轻量级标记语言，广泛用于技术文档和README编写。
+
+// ===== JSON数据格式 =====
+{
+    "name": "Mini LLM",
+    "version": "1.0.0",
+    "description": "A mini language model for code generation",
+    "model": {
+        "architecture": "Transformer Decoder",
+        "parameters": "50M",
+        "layers": 8,
+        "hidden_size": 512,
+        "attention_heads": 8,
+        "max_seq_length": 512
+    },
+    "training": {
+        "batch_size": 16,
+        "learning_rate": 0.0003,
+        "epochs": 10,
+        "optimizer": "AdamW"
+    },
+    "features": [
+        "code generation",
+        "code completion",
+        "code explanation",
+        "multi-language support"
+    ]
+}
+
+// JSON是一种轻量级的数据交换格式，易于人阅读和机器解析。
+
+// ===== 编程学习路线建议 =====
+// 前端：HTML -> CSS -> JavaScript -> React/Vue -> TypeScript
+// 后端：Python/Java/Go -> Web框架 -> 数据库 -> API设计 -> 微服务
+// 数据：Python -> NumPy -> Pandas -> Matplotlib -> 机器学习 -> 深度学习
+// 运维：Linux -> Shell -> Docker -> Kubernetes -> CI/CD
+// 移动端：Java/Kotlin -> Android Studio / Swift -> iOS开发
+// 全栈：前端 + 后端 + 数据库 + 部署
+// 编程最重要的是动手实践，多写代码、多读源码、多做项目。

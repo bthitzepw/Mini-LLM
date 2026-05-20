@@ -104,6 +104,74 @@ class ContentModerator:
             '制作炸弹', '自制武器', '生物武器',
         ]
 
+        # ==================== 代码安全规则 ====================
+        # 覆盖: CFAA (US 18 U.S.C. § 1030), Computer Misuse Act (UK),
+        #        网络安全法 (CN), 各国反计算机犯罪法
+
+        # 恶意代码制作
+        self.code_malware_keywords = [
+            '木马生成器', '病毒制作', '勒索软件编写',
+            '恶意软件', 'malware', 'trojan builder',
+            'ransomware', 'keylogger', 'rootkit',
+            '蠕虫病毒', 'worm virus',
+        ]
+
+        # 漏洞利用代码
+        self.code_exploit_keywords = [
+            'sql注入攻击', 'xss攻击脚本', '远程代码执行',
+            '缓冲区溢出攻击', '提权漏洞利用',
+            'sql injection exploit', 'xss payload',
+            'remote code execution', 'buffer overflow exploit',
+            'privilege escalation exploit', 'zero-day exploit',
+        ]
+
+        # 攻击工具脚本
+        self.code_attack_keywords = [
+            'ddos攻击脚本', '暴力破解工具', '密码爆破',
+            '端口扫描攻击', 'arp欺骗',
+            'ddos script', 'brute force tool',
+            'password cracker', 'credential stuffing',
+            'network sniffing', 'packet injection',
+            '中间人攻击', 'man-in-the-middle',
+        ]
+
+        # 数据窃取
+        self.code_theft_keywords = [
+            '数据爬取', '敏感信息窃取', '数据库拖库',
+            '信用卡盗刷脚本',
+            'credit card theft', 'identity theft script',
+            'data exfiltration', 'credential harvesting',
+        ]
+
+        # 代码安全正则模式
+        self._code_security_patterns = [
+            # 恶意代码生成请求
+            (r'(?:写|生成|编写|创建)\s*(?:一个|一段|一个)?\s*(?:恶意|病毒|木马|勒索|后门|rootkit)', RiskLevel.BLOCK, 'malicious_code_gen', 'CN/US'),
+            (r'(?:write|generate|create)\s*(?:a\s+)?(?:malware|virus|trojan|ransomware|backdoor|rootkit)', RiskLevel.BLOCK, 'malicious_code_gen', 'CN/US'),
+
+            # 漏洞利用请求
+            (r'(?:写|写一段|帮我写)\s*(?:sql注入|XSS|远程代码执行|缓冲区溢出|提权)\s*(?:攻击|利用|payload|exploit)', RiskLevel.BLOCK, 'exploit_code', 'CN/US'),
+            (r'(?:write|create|generate)\s*(?:sql\s*injection|xss|rce|buffer\s*overflow)\s*(?:attack|exploit|payload)', RiskLevel.BLOCK, 'exploit_code', 'CN/US'),
+
+            # 攻击脚本请求
+            (r'(?:写|生成|创建)\s*(?:DDoS|暴力破解|密码爆破|端口扫描|网络攻击)\s*(?:脚本|程序|工具|tool)', RiskLevel.BLOCK, 'attack_script', 'CN/US'),
+            (r'(?:write|create)\s*(?:ddos|brute\s*force|port\s*scan|network\s*attack)\s*(?:script|tool|program)', RiskLevel.BLOCK, 'attack_script', 'CN/US'),
+
+            # 数据窃取请求
+            (r'(?:写|生成|编写)\s*(?:数据窃取|信息爬取|拖库|敏感信息|盗刷)\s*(?:脚本|程序)', RiskLevel.BLOCK, 'data_theft', 'CN/US'),
+
+            # 安全教育豁免：允许防御性/教育性代码
+            # 注意：下面的WARN级别允许生成但附加强烈警告
+            (r'(?:sql注入|XSS|CSRF)\s*(?:防御|防护|防止|预防|防护代码|防范|mitigation|prevention|defense)', RiskLevel.PASS, 'security_education', 'UNIVERSAL'),
+            (r'(?:安全|educational|demo|test|example)\s*(?:示例|演示|测试|demo|test|example)', RiskLevel.PASS, 'security_demo', 'UNIVERSAL'),
+        ]
+
+        # 预编译代码安全正则
+        self._compiled_code_security_patterns = [
+            (re.compile(p, re.IGNORECASE), level, tag, jurisdiction)
+            for p, level, tag, jurisdiction in self._code_security_patterns
+        ]
+
         # ==================== 正则模式库 ====================
 
         # PII检测：GDPR Art.5, PIPL Art.28（个人信息保护）
@@ -217,7 +285,16 @@ class ContentModerator:
         issues.extend(matched)
         all_jurisdictions.update(jurs)
 
-        # 4. 文本长度检测（防止超长输入DoS）
+        # 4. 代码安全检测
+        risk, matched, jurs = self._check_code_security(text)
+        if risk.value == RiskLevel.BLOCK.value:
+            final_risk = RiskLevel.BLOCK
+        elif risk.value == RiskLevel.WARN.value and final_risk != RiskLevel.BLOCK:
+            final_risk = RiskLevel.WARN
+        issues.extend(matched)
+        all_jurisdictions.update(jurs)
+
+        # 5. 文本长度检测（防止超长输入DoS）
         if len(text) > 10000:
             issues.append("输入文本过长，请缩减后重试")
             final_risk = RiskLevel.BLOCK
@@ -289,6 +366,45 @@ class ContentModerator:
 
         return final_risk, issues, jurisdictions
 
+    def _check_code_security(self, text: str) -> Tuple[RiskLevel, List[str], List[str]]:
+        """代码安全检测"""
+        issues = []
+        jurisdictions = []
+        final_risk = RiskLevel.PASS
+
+        # 合并所有代码安全关键词库
+        code_keyword_sets = [
+            (self.code_malware_keywords, RiskLevel.BLOCK, 'CN/US'),
+            (self.code_exploit_keywords, RiskLevel.BLOCK, 'CN/US'),
+            (self.code_attack_keywords, RiskLevel.BLOCK, 'CN/US'),
+            (self.code_theft_keywords, RiskLevel.BLOCK, 'CN/US'),
+        ]
+
+        for keywords, risk, jurisdiction in code_keyword_sets:
+            for keyword in keywords:
+                if keyword.lower() in text.lower():
+                    issues.append(f"[{jurisdiction}] 代码安全规则: {keyword}")
+                    jurisdictions.append(jurisdiction)
+                    if risk == RiskLevel.BLOCK:
+                        final_risk = RiskLevel.BLOCK
+                    elif risk == RiskLevel.WARN and final_risk == RiskLevel.PASS:
+                        final_risk = RiskLevel.WARN
+
+        # 代码安全正则模式检测
+        for pattern, risk, tag, jurisdiction in self._compiled_code_security_patterns:
+            if pattern.search(text):
+                # PASS级别（安全教育/防御性代码）不添加为issue
+                if risk == RiskLevel.PASS:
+                    continue
+                issues.append(f"[{jurisdiction}] 代码安全模式: {tag}")
+                jurisdictions.append(jurisdiction)
+                if risk == RiskLevel.BLOCK:
+                    final_risk = RiskLevel.BLOCK
+                elif risk == RiskLevel.WARN and final_risk == RiskLevel.PASS:
+                    final_risk = RiskLevel.WARN
+
+        return final_risk, issues, jurisdictions
+
     def _detect_pii(self, text: str) -> List[Dict]:
         """PII（个人可识别信息）检测"""
         detected = []
@@ -346,7 +462,11 @@ class ContentModerator:
         all_sensitive = (
             self.cn_block_keywords +
             self.cn_warn_keywords +
-            self.universal_block_keywords
+            self.universal_block_keywords +
+            self.code_malware_keywords +
+            self.code_exploit_keywords +
+            self.code_attack_keywords +
+            self.code_theft_keywords
         )
         filtered_text = text
         for keyword in all_sensitive:
