@@ -5,116 +5,306 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>隐私政策 - Mini LLM</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-            line-height: 1.8;
-            color: #333;
-            padding: 20px;
+            background: #f5f7fa; line-height: 1.8; color: #333; padding: 20px;
         }
-
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 900px; margin: 0 auto; background: white;
+            padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-
-        h1 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 2em;
+        h1 { color: #667eea; margin-bottom: 20px; font-size: 2em; }
+        h2 { color: #333; margin: 30px 0 15px; font-size: 1.4em; }
+        h3 { color: #555; margin: 20px 0 10px; font-size: 1.15em; }
+        p, li { margin-bottom: 12px; color: #555; }
+        ul, ol { padding-left: 25px; margin-bottom: 20px; }
+        .jurisdiction-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 0.75em; font-weight: 600; margin-right: 5px; color: white;
         }
-
-        h2 {
-            color: #333;
-            margin: 30px 0 15px;
-            font-size: 1.4em;
-        }
-
-        p, li {
-            margin-bottom: 12px;
-            color: #555;
-        }
-
-        ul {
-            padding-left: 25px;
-            margin-bottom: 20px;
-        }
-
+        .badge-cn { background: #e74c3c; }
+        .badge-eu { background: #3498db; }
+        .badge-us { background: #2ecc71; }
+        .badge-intl { background: #9b59b6; }
         .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 24px;
+            display: inline-block; margin-top: 30px; padding: 12px 24px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
+            color: white; text-decoration: none; border-radius: 8px; font-weight: 600;
             transition: transform 0.2s;
         }
-
-        .back-link:hover {
-            transform: translateY(-2px);
-        }
-
+        .back-link:hover { transform: translateY(-2px); }
         .date {
-            color: #888;
-            font-size: 0.95em;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            color: #888; font-size: 0.95em; margin-bottom: 25px;
+            padding-bottom: 15px; border-bottom: 1px solid #eee;
         }
+        .section-box {
+            background: #f8f9fa; border-left: 4px solid #667eea;
+            padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse; margin: 15px 0;
+        }
+        th, td {
+            padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        th { background: #f0f2f5; color: #333; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔒 隐私政策</h1>
-        <div class="date">生效日期：2026年5月19日</div>
+        <h1>隐私政策</h1>
+        <div class="date">生效日期：2026年5月20日 | 最近更新：2026年5月20日</div>
 
-        <h2>1. 信息收集</h2>
+        <p>Mini LLM 非常重视用户隐私保护。本隐私政策说明我们如何收集、使用、存储和保护您的信息，以及您依据适用的法律法规享有的权利。</p>
+
+        <h2>1. 适用法规</h2>
+        <p>本隐私政策依据以下法律法规制定，并根据您的所在地区适用相应条款：</p>
         <ul>
-            <li>我们会收集用户输入的文本内容，用于提供生成服务</li>
-            <li>我们会记录使用日志，用于服务改进和安全监控</li>
-            <li>我们不会收集个人身份信息，除非用户主动提供</li>
+            <li><span class="jurisdiction-badge badge-cn">CN</span>《中华人民共和国个人信息保护法》（PIPL, 2021年11月1日施行）</li>
+            <li><span class="jurisdiction-badge badge-cn">CN</span>《中华人民共和国数据安全法》（2021年9月1日施行）</li>
+            <li><span class="jurisdiction-badge badge-cn">CN</span>《中华人民共和国网络安全法》（2017年6月1日施行）</li>
+            <li><span class="jurisdiction-badge badge-cn">CN</span>《信息安全技术 个人信息安全规范》（GB/T 35273-2020）</li>
+            <li><span class="jurisdiction-badge badge-eu">EU</span>EU General Data Protection Regulation (GDPR, Regulation 2016/679)</li>
+            <li><span class="jurisdiction-badge badge-eu">EU</span>ePrivacy Directive (Directive 2002/58/EC)</li>
+            <li><span class="jurisdiction-badge badge-us">US</span>California Consumer Privacy Act (CCPA, as amended by CPRA)</li>
+            <li><span class="jurisdiction-badge badge-us">US</span>Children's Online Privacy Protection Act (COPPA)</li>
         </ul>
 
-        <h2>2. 信息使用</h2>
+        <h2>2. 数据控制者/处理者信息</h2>
+        <div class="section-box">
+            <ul>
+                <li><strong>项目名称：</strong>Mini LLM</li>
+                <li><strong>性质：</strong>开源学习项目（非商业服务）</li>
+                <li><strong>开源许可证：</strong>MIT License</li>
+                <li><strong>代码仓库：</strong><a href="https://github.com/bthitzepw/Mini-LLM" style="color:#667eea;">https://github.com/bthitzepw/Mini-LLM</a></li>
+                <li><strong>数据存储：</strong>本地部署（用户设备）</li>
+            </ul>
+        </div>
+        <p>
+            <span class="jurisdiction-badge badge-eu">EU</span>
+            对于 GDPR 而言：在本地部署模式下，用户本人即为数据控制者，本软件仅作为数据处理工具。
+        </p>
+        <p>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+            对于 PIPL 而言：用户自行部署和使用本软件时，用户为个人信息处理者。
+        </p>
+
+        <h2>3. 信息收集</h2>
+        <p>本服务为本地部署项目，在默认运行模式下：</p>
+
+        <h3>3.1 我们收集的信息</h3>
+        <table>
+            <thead>
+                <tr><th>数据类型</th><th>用途</th><th>法律依据</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>用户输入的文本（prompt）</td>
+                    <td>提供AI文本生成服务</td>
+                    <td>GDPR Art.6(1)(b) 合同履行 / PIPL Art.13 合同履行</td>
+                </tr>
+                <tr>
+                    <td>生成参数（温度、长度等）</td>
+                    <td>控制模型输出</td>
+                    <td>GDPR Art.6(1)(b) / PIPL Art.13</td>
+                </tr>
+                <tr>
+                    <td>安全审核日志</td>
+                    <td>内容安全监控、合规审计</td>
+                    <td>GDPR Art.6(1)(f) 合法利益 / PIPL Art.13 合法利益</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.2 我们不收集的信息</h3>
         <ul>
-            <li>用户输入仅用于生成回应和服务质量改进</li>
-            <li>日志信息用于监控服务安全和性能</li>
-            <li>我们不会将用户数据用于商业广告目的</li>
+            <li>个人身份信息（姓名、身份证号、护照号等）</li>
+            <li>生物识别数据（指纹、面部识别等）</li>
+            <li>财务信息（银行卡号、支付信息等）</li>
+            <li>地理位置数据</li>
+            <li>设备唯一标识符</li>
+            <li>Cookies 或类似追踪技术数据</li>
         </ul>
 
-        <h2>3. 信息保护</h2>
+        <h3>3.3 自动检测但不上传的 PII</h3>
+        <p>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+            <span class="jurisdiction-badge badge-eu">EU</span>
+            本服务的内容审核模块会自动检测输入/输出中可能包含的个人可识别信息（PII），包括：身份证号、手机号、银行卡号、社会安全号、邮箱地址等。检测到 PII 时会在日志中记录脱敏后的版本，不会记录原始数据。
+        </p>
+
+        <h2>4. 信息使用</h2>
+        <table>
+            <thead>
+                <tr><th>用途</th><th>说明</th><th>法律依据</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>提供核心服务</td>
+                    <td>处理用户输入以生成AI响应</td>
+                    <td>GDPR Art.6(1)(b) / PIPL Art.13 / CCPA §1798.100(b)</td>
+                </tr>
+                <tr>
+                    <td>内容安全审核</td>
+                    <td>检测和过滤违法违规内容</td>
+                    <td>《生成式AI管理办法》第9条 / EU DSA Art.14</td>
+                </tr>
+                <tr>
+                    <td>合规审计</td>
+                    <td>记录审核日志以满足法规要求</td>
+                    <td>《网络安全法》第21条 / GDPR Art.30</td>
+                </tr>
+                <tr>
+                    <td>服务改进</td>
+                    <td>分析使用数据以优化服务体验</td>
+                    <td>GDPR Art.6(1)(f) 合法利益</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><strong>我们不会：</strong></p>
         <ul>
-            <li>我们采取技术措施保护用户数据安全</li>
-            <li>用户对话数据仅在本地处理（如在本地运行）</li>
-            <li>我们不会向第三方出售或分享用户数据</li>
+            <li>将用户数据用于商业广告投放</li>
+            <li>向任何第三方出售、出租或交易用户数据</li>
+            <li>利用用户数据进行用户画像或行为分析</li>
+            <li>将用户数据用于训练或改进AI模型（除非用户明确同意）</li>
         </ul>
 
-        <h2>4. 数据存储</h2>
-        <p>本服务为本地运行项目，用户数据存储在用户本地设备上。</p>
-
-        <h2>5. 用户权利</h2>
+        <h2>5. 数据存储与安全</h2>
+        <h3>5.1 存储位置与方式</h3>
         <ul>
-            <li>用户有权访问和删除自己的数据</li>
-            <li>用户有权撤回同意并停止使用服务</li>
-            <li>用户有权对本政策提出疑问和建议</li>
+            <li>本服务默认在用户本地设备上运行，所有数据存储在用户本地</li>
+            <li>审核日志存储于 <code>logs/</code> 目录</li>
+            <li>模型检查点存储于 <code>checkpoints/</code> 目录</li>
+            <li>不通过网络传输用户对话内容（除非用户自行部署网络服务）</li>
         </ul>
 
-        <h2>6. 政策更新</h2>
-        <p>我们保留随时更新本隐私政策的权利，更新后的政策将在页面上公布。</p>
+        <h3>5.2 数据保留期限</h3>
+        <p>
+            <span class="jurisdiction-badge badge-eu">EU</span>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+        </p>
+        <table>
+            <thead>
+                <tr><th>数据类型</th><th>保留期限</th><th>法律依据</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>会话对话数据</td>
+                    <td>会话期间（内存中）</td>
+                    <td>GDPR Art.5(1)(e) 存储限制</td>
+                </tr>
+                <tr>
+                    <td>审核日志</td>
+                    <td>90天</td>
+                    <td>PIPL Art.22 / GDPR Art.5(1)(e)</td>
+                </tr>
+                <tr>
+                    <td>训练日志</td>
+                    <td>用户自行决定</td>
+                    <td>N/A</td>
+                </tr>
+            </tbody>
+        </table>
 
-        <a href="/" class="back-link">← 返回聊天界面</a>
+        <h3>5.3 安全措施</h3>
+        <p>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+            <span class="jurisdiction-badge badge-eu">EU</span>
+            依据《网络安全等级保护2.0》及 GDPR Art.32 安全措施要求：
+        </p>
+        <ul>
+            <li>输入/输出内容经多维度安全审核</li>
+            <li>PII信息自动检测与脱敏</li>
+            <li>速率限制防止服务滥用</li>
+            <li>安全响应头防护（CSP、HSTS、X-Frame-Options等）</li>
+            <li>审计日志完整性保障</li>
+        </ul>
+
+        <h2>6. 用户权利</h2>
+        <p>您依据适用的法律享有以下权利。如需行使任何权利，请通过 GitHub Issues 联系我们。</p>
+
+        <h3><span class="jurisdiction-badge badge-eu">EU</span> GDPR 数据主体权利</h3>
+        <table>
+            <thead><tr><th>权利</th><th>条文</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td>访问权</td><td>Art.15</td><td>获取我们处理的您的个人数据副本</td></tr>
+                <tr><td>更正权</td><td>Art.16</td><td>更正不准确的个人数据</td></tr>
+                <tr><td>删除权</td><td>Art.17</td><td>请求删除您的个人数据（被遗忘权）</td></tr>
+                <tr><td>限制处理权</td><td>Art.18</td><td>限制对您个人数据的处理</td></tr>
+                <tr><td>数据可携权</td><td>Art.20</td><td>以结构化、常用格式获取数据</td></tr>
+                <tr><td>反对权</td><td>Art.21</td><td>反对基于合法利益的数据处理</td></tr>
+                <tr><td>自动化决策权</td><td>Art.22</td><td>不接受仅基于自动化处理的决定</td></tr>
+            </tbody>
+        </table>
+
+        <h3><span class="jurisdiction-badge badge-cn">CN</span> PIPL 个人信息主体权利</h3>
+        <table>
+            <thead><tr><th>权利</th><th>条文</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td>知情权</td><td>Art.44</td><td>查阅您的个人信息处理情况</td></tr>
+                <tr><td>复制权</td><td>Art.45</td><td>复制您的个人信息</td></tr>
+                <tr><td>更正权</td><td>Art.46</td><td>请求更正您的个人信息</td></tr>
+                <tr><td>删除权</td><td>Art.47</td><td>请求删除您的个人信息</td></tr>
+                <tr><td>解释说明权</td><td>Art.48</td><td>要求对个人信息处理规则进行解释说明</td></tr>
+            </tbody>
+        </table>
+
+        <h3><span class="jurisdiction-badge badge-us">US</span> CCPA 消费者权利</h3>
+        <table>
+            <thead><tr><th>权利</th><th>条文</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td>知情权</td><td>§1798.100</td><td>了解收集的个人信息类别和用途</td></tr>
+                <tr><td>删除权</td><td>§1798.105</td><td>请求删除个人信息</td></tr>
+                <tr><td>更正权</td><td>§1798.106</td><td>更正不准确的个人信息</td></tr>
+                <tr><td>退出权</td><td>§1798.120</td><td>选择退出个人信息出售/共享</td></tr>
+                <tr><td>不歧视权</td><td>§1798.125</td><td>行使权利不受到歧视待遇</td></tr>
+            </tbody>
+        </table>
+
+        <h2>7. 未成年人保护</h2>
+        <p>
+            <span class="jurisdiction-badge badge-us">US</span>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+        </p>
+        <ul>
+            <li>依据 COPPA（16 C.F.R. Part 312），本服务不会故意收集13岁以下儿童的个人信息</li>
+            <li>依据《未成年人网络保护条例》，本服务不对未成年人进行定向推送或个性化推荐</li>
+            <li>如发现未满法定年龄的用户未经监护人同意使用了本服务，请通过 GitHub Issues 联系我们，我们将及时删除相关数据</li>
+        </ul>
+
+        <h2>8. 跨境数据传输</h2>
+        <p>
+            <span class="jurisdiction-badge badge-eu">EU</span>
+            <span class="jurisdiction-badge badge-cn">CN</span>
+        </p>
+        <p>本服务为本地部署项目，默认不涉及数据跨境传输。如用户自行将本服务部署于云端或远程服务器，用户应自行确保数据传输活动符合：</p>
+        <ul>
+            <li>GDPR Chapter V（跨境数据传输规则）</li>
+            <li>PIPL 第三章（个人信息跨境提供规则）</li>
+            <li>中国《数据出境安全评估办法》</li>
+        </ul>
+
+        <h2>9. 第三方服务</h2>
+        <p>本开源项目不集成任何第三方数据收集或分析服务（如 Google Analytics、第三方 Cookie 等）。</p>
+        <p>如用户自行部署时集成了第三方服务，该第三方服务的数据处理行为由其各自的隐私政策管辖。</p>
+
+        <h2>10. 政策更新</h2>
+        <p>当相关法律法规发生变化或本服务功能更新时，我们可能更新本隐私政策。更新后的政策将在本页面发布。重大变更将通过 GitHub 仓库发布通知。</p>
+        <p>建议您定期查看本政策以了解最新的隐私保护实践。</p>
+
+        <h2>11. 数据保护官/联系方式</h2>
+        <div class="section-box">
+            <p>如对本隐私政策有任何疑问、投诉或行使您的数据权利，请通过以下方式联系：</p>
+            <p>GitHub Issues: <a href="https://github.com/bthitzepw/Mini-LLM/issues" style="color:#667eea;">https://github.com/bthitzepw/Mini-LLM/issues</a></p>
+            <p>
+                <span class="jurisdiction-badge badge-eu">EU</span>
+                GDPR 监管机构：您有权向所在欧盟成员国的数据保护监管机构（Supervisory Authority）提出投诉。
+            </p>
+        </div>
+
+        <a href="/" class="back-link">返回聊天界面</a>
     </div>
 </body>
 </html>
