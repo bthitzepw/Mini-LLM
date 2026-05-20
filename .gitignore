@@ -28,6 +28,10 @@ events.out.tfevents.*
 # 数据目录（原始数据可选是否上传）
 # data/raw/
 
+# 自动学习数据库（本地运行时生成）
+data/auto_learning.db
+data/*.db
+
 # IDE
 .vscode/
 .idea/

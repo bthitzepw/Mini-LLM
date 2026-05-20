@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini LLM - 微型代码语言模型</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -37,45 +33,34 @@
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -1px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
+        .header h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 8px; letter-spacing: -1px; }
+        .header p { font-size: 1.1em; opacity: 0.95; }
 
         .model-info {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 20px;
             margin-top: 20px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             backdrop-filter: blur(10px);
+            flex-wrap: wrap;
         }
 
-        .info-item {
-            text-align: center;
-        }
+        .info-item { text-align: center; }
+        .info-item .label { font-size: 0.8em; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .info-item .value { font-size: 1.2em; font-weight: 700; margin-top: 4px; }
 
-        .info-item .label {
-            font-size: 0.85em;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .info-badge {
+            display: inline-block;
+            font-size: 0.7em;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 2px;
         }
-
-        .info-item .value {
-            font-size: 1.4em;
-            font-weight: 700;
-            margin-top: 4px;
-        }
+        .badge-dl { background: rgba(46, 204, 113, 0.3); color: #d4ffed; }
+        .badge-al { background: rgba(241, 196, 15, 0.3); color: #fff8dc; }
 
         .compliance-banner {
             background: #fff3cd;
@@ -88,14 +73,110 @@
 
         .jurisdiction-badge {
             display: inline-block; padding: 1px 6px; border-radius: 3px;
-            font-size: 0.75em; font-weight: 600; color: white;
-            vertical-align: middle;
+            font-size: 0.75em; font-weight: 600; color: white; vertical-align: middle;
         }
         .badge-cn { background: #e74c3c; }
         .badge-eu { background: #3498db; }
         .badge-us { background: #2ecc71; }
+        .badge-code { background: #e67e22; }
+        .badge-dl { background: #9b59b6; }
+        .badge-al { background: #f39c12; }
         .compliance-banner a { color: #667eea; text-decoration: underline; font-weight: 600; }
-        .footer-links a:hover { text-decoration: underline; }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 10px;
+        }
+        .toolbar-btn {
+            padding: 6px 14px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #495057;
+            transition: all 0.2s;
+        }
+        .toolbar-btn:hover { background: #e9ecef; }
+        .toolbar-btn.active { background: #667eea; color: white; border-color: #667eea; }
+
+        /* 学习状态面板 */
+        .learning-panel {
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .learning-panel.visible { display: block; }
+        .learning-panel h3 { font-size: 1em; margin-bottom: 12px; color: #333; }
+
+        .learning-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .learning-stat {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .learning-stat .stat-value { font-size: 1.4em; font-weight: 700; color: #667eea; }
+        .learning-stat .stat-label { font-size: 0.8em; color: #888; margin-top: 4px; }
+
+        .learning-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .learning-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .learning-btn-primary { background: #667eea; color: white; }
+        .learning-btn-primary:hover { background: #5a6fd6; }
+        .learning-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .learning-btn-success { background: #2ecc71; color: white; }
+        .learning-btn-success:hover { background: #27ae60; }
+        .learning-btn-secondary { background: #95a5a6; color: white; }
+        .learning-btn-secondary:hover { background: #7f8c8d; }
+
+        .learning-history {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .learning-history-item {
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 1px solid #eee;
+            font-size: 0.85em;
+        }
+        .learning-history-item .status {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-running { background: #fff3cd; color: #856404; }
+        .status-failed { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #e2e3e5; color: #383d41; }
 
         .chat-container {
             padding: 30px;
@@ -111,270 +192,157 @@
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.user {
-            flex-direction: row-reverse;
-        }
+        .message.user { flex-direction: row-reverse; }
 
         .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            flex-shrink: 0;
-            margin: 0 12px;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2em; flex-shrink: 0; margin: 0 12px;
         }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
+        .message.user .message-avatar { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .message.ai .message-avatar { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
 
         .message-content {
-            max-width: 70%;
-            padding: 14px 18px;
-            border-radius: 16px;
-            line-height: 1.6;
-            word-wrap: break-word;
+            max-width: 70%; padding: 14px 18px; border-radius: 16px;
+            line-height: 1.6; word-wrap: break-word;
         }
-
         .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
             border-bottom-right-radius: 4px;
         }
-
         .message.ai .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background: white; color: #333; border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        /* 代码块样式 */
         .message.ai .message-content pre {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 14px 16px;
-            border-radius: 8px;
-            overflow-x: auto;
+            background: #1e1e1e; color: #d4d4d4; padding: 14px 16px;
+            border-radius: 8px; overflow-x: auto;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.88em;
-            line-height: 1.5;
-            margin: 8px 0;
+            font-size: 0.88em; line-height: 1.5; margin: 8px 0;
         }
         .message.ai .message-content code {
-            background: #f0f0f0;
-            color: #e74c3c;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #f0f0f0; color: #e74c3c; padding: 2px 6px;
+            border-radius: 4px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 0.9em;
         }
-        .message.ai .message-content pre code {
-            background: none;
-            color: inherit;
-            padding: 0;
-            border-radius: 0;
-        }
+        .message.ai .message-content pre code { background: none; color: inherit; padding: 0; border-radius: 0; }
 
-        .ai-disclaimer {
-            font-size: 0.85em;
-            color: #888;
-            margin-top: 8px;
+        /* 反馈按钮 */
+        .feedback-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
             padding-top: 8px;
-            border-top: 1px solid #eee;
-            font-style: italic;
+            border-top: 1px solid #f0f0f0;
         }
-
-        .input-container {
-            padding: 25px 30px;
+        .feedback-btn {
+            padding: 4px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 16px;
             background: white;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 12px;
-        }
-
-        .input-box {
-            flex: 1;
-            position: relative;
-        }
-
-        #userInput {
-            width: 100%;
-            padding: 14px 20px;
-            font-size: 1em;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            outline: none;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        #userInput:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .settings {
-            display: flex;
-            gap: 15px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .setting-item {
+            cursor: pointer;
+            font-size: 0.8em;
+            color: #6c757d;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-            color: #666;
+            gap: 4px;
+        }
+        .feedback-btn:hover { border-color: #667eea; color: #667eea; }
+        .feedback-btn.liked { background: #d4edda; border-color: #28a745; color: #155724; }
+        .feedback-btn.disliked { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .feedback-btn .feedback-icon { font-size: 1.1em; }
+
+        .ai-disclaimer {
+            font-size: 0.85em; color: #888; margin-top: 8px;
+            padding-top: 8px; border-top: 1px solid #eee; font-style: italic;
         }
 
-        .setting-item label {
-            font-weight: 500;
-        }
+        .input-container { padding: 25px 30px; background: white; border-top: 1px solid #e0e0e0; }
+        .input-wrapper { display: flex; gap: 12px; }
+        .input-box { flex: 1; position: relative; }
 
-        .setting-item input[type="number"],
-        .setting-item input[type="range"] {
-            padding: 6px 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.9em;
+        #userInput {
+            width: 100%; padding: 14px 20px; font-size: 1em;
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            outline: none; transition: all 0.3s ease; font-family: inherit;
         }
+        #userInput:focus { border-color: #667eea; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
 
-        .setting-item input[type="number"] {
-            width: 70px;
+        .settings { display: flex; gap: 15px; margin-top: 12px; flex-wrap: wrap; }
+        .setting-item { display: flex; align-items: center; gap: 8px; font-size: 0.9em; color: #666; }
+        .setting-item label { font-weight: 500; }
+        .setting-item input[type="number"], .setting-item input[type="range"] {
+            padding: 6px 10px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.9em;
         }
+        .setting-item input[type="number"] { width: 70px; }
 
         .send-btn {
-            padding: 14px 32px;
-            font-size: 1em;
-            font-weight: 600;
-            color: white;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            padding: 14px 32px; font-size: 1em; font-weight: 600; color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none; border-radius: 12px; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
-
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .send-btn:active {
-            transform: translateY(0);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5); }
+        .send-btn:active { transform: translateY(0); }
+        .send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .welcome-message { text-align: center; padding: 40px 20px; color: #666; }
+        .welcome-message h2 { color: #333; margin-bottom: 12px; }
+        .welcome-message p { font-size: 1.05em; line-height: 1.7; }
+
+        .feature-tags { margin-top: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .feature-tag {
+            padding: 4px 12px; border-radius: 12px; font-size: 0.8em;
+            background: #f0f0f0; color: #666;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .footer { background: #f8f9fa; padding: 15px 30px; border-top: 1px solid #e0e0e0; text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 20px; }
+        .footer-links a { color: #667eea; text-decoration: none; font-size: 0.9em; font-weight: 500; }
 
-        .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-track { background: #f1f1f1; }
+        .chat-container::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        .chat-container::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
 
-        .welcome-message h2 {
-            color: #333;
-            margin-bottom: 12px;
+        .training-indicator {
+            position: fixed; top: 20px; right: 20px;
+            background: #f39c12; color: white; padding: 10px 18px;
+            border-radius: 10px; font-size: 0.85em; font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+            display: none; z-index: 1000;
         }
-
-        .welcome-message p {
-            font-size: 1.05em;
-            line-height: 1.7;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 15px 30px;
-            border-top: 1px solid #e0e0e0;
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .footer-links a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb:hover {
-            background: #a1a1a1;
+        .training-indicator.visible { display: flex; align-items: center; gap: 8px; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
     </style>
 </head>
 <body>
+    <div class="training-indicator" id="trainingIndicator">
+        <span class="loading" style="border-color:rgba(255,255,255,0.4);border-top-color:white;"></span>
+        模型正在学习中...
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>&#128187; Mini LLM</h1>
-            <p>从零训练的微型代码语言模型 · 中英双语支持</p>
+            <p>从零训练的微型代码语言模型 · 中英双语 · 深度学习增强</p>
             <div class="model-info" id="modelInfo">
                 <div class="info-item">
                     <div class="label">参数量</div>
@@ -392,6 +360,14 @@
                     <div class="label">方向</div>
                     <div class="value">Code+中文</div>
                 </div>
+                <div class="info-item">
+                    <div class="label">特性</div>
+                    <div class="value">
+                        RoPE
+                        <span class="info-badge badge-dl">DL</span>
+                        <span class="info-badge badge-al">Auto</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -400,10 +376,13 @@
             本服务为AI代码学习实验项目，仅供学习研究。AI生成代码不构成专业建议，禁止用于恶意目的。
             <br>
             <span style="font-size:0.85em; opacity:0.85;">
-                适用法规: <span class="jurisdiction-badge badge-cn">CN 生成式AI管理办法</span>
+                适用法规:
+                <span class="jurisdiction-badge badge-cn">CN 生成式AI管理办法</span>
                 <span class="jurisdiction-badge badge-eu">EU AI Act / GDPR</span>
                 <span class="jurisdiction-badge badge-us">US CFAA / COPPA</span>
-                <span class="jurisdiction-badge" style="background:#e67e22;">Code Security</span>
+                <span class="jurisdiction-badge badge-code">Code Security</span>
+                <span class="jurisdiction-badge badge-dl">Deep Learning</span>
+                <span class="jurisdiction-badge badge-al">Auto-Learning</span>
             </span>
             <br>
             <a href="/agreement">用户协议</a> |
@@ -411,26 +390,84 @@
             <a href="/api/user-rights" target="_blank">用户权利</a>
         </div>
 
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <button class="toolbar-btn" id="toggleLearning" onclick="toggleLearningPanel()">
+                &#128218; 学习状态
+            </button>
+        </div>
+
+        <!-- 学习状态面板 -->
+        <div class="learning-panel" id="learningPanel">
+            <h3>&#128218; 自动学习系统</h3>
+            <div class="learning-stats" id="learningStats">
+                <div class="learning-stat">
+                    <div class="stat-value" id="statInteractions">-</div>
+                    <div class="stat-label">总对话数</div>
+                </div>
+                <div class="learning-stat">
+                    <div class="stat-value" id="statPositive">-</div>
+                    <div class="stat-label">&#128077; 赞</div>
+                </div>
+                <div class="learning-stat">
+                    <div class="stat-value" id="statNegative">-</div>
+                    <div class="stat-label">&#128078; 踩</div>
+                </div>
+                <div class="learning-stat">
+                    <div class="stat-value" id="statRounds">-</div>
+                    <div class="stat-label">学习轮次</div>
+                </div>
+                <div class="learning-stat">
+                    <div class="stat-value" id="statAugmented">-</div>
+                    <div class="stat-label">增强数据</div>
+                </div>
+                <div class="learning-stat">
+                    <div class="stat-value" id="statAutoEnabled">-</div>
+                    <div class="stat-label">自动学习</div>
+                </div>
+            </div>
+            <div class="learning-actions">
+                <button class="learning-btn learning-btn-primary" onclick="startManualLearning()">
+                    &#9654; 手动开始学习
+                </button>
+                <button class="learning-btn learning-btn-success" onclick="augmentData()">
+                    &#128200; 数据增强
+                </button>
+                <button class="learning-btn learning-btn-secondary" onclick="refreshLearningStatus()">
+                    &#128260; 刷新
+                </button>
+            </div>
+            <div class="learning-history" id="learningHistory"></div>
+        </div>
+
         <div class="chat-container" id="chatContainer">
             <div class="welcome-message">
                 <h2>&#128187; Code Mini LLM</h2>
-                <p>这是一个专注于<strong>代码编程</strong>的微型语言模型，支持<strong>中英文双语</strong>，覆盖 Python / JavaScript / Java / C++ / Go / Rust 等多语言代码生成，理解中文注释、文档字符串和技术描述。</p>
+                <p>专注于<strong>代码编程</strong>的微型语言模型，支持<strong>中英文双语</strong>，覆盖 Python / JavaScript / Java / C++ / Go / Rust 等多语言代码生成。</p>
                 <p style="margin-top: 15px; font-size: 0.95em; color: #888;">
                     提示：先运行训练脚本训练模型，效果会更好！
                 </p>
                 <p style="margin-top: 10px; font-size: 0.9em; color: #888;">
-                    &#128737;&#65039; 内置代码安全过滤，禁止生成恶意代码、漏洞利用和攻击脚本。
+                    &#128737;&#65039; 内置代码安全过滤 | &#128218; 自动学习系统 | &#129504; 深度学习增强
                 </p>
-                <p style="margin-top: 5px; font-size: 0.9em; color: #888;">
-                    &#128221; AI生成代码仅供参考和学习，请勿用于生产环境。
-                </p>
+                <div class="feature-tags">
+                    <span class="feature-tag">RoPE</span>
+                    <span class="feature-tag">SwiGLU</span>
+                    <span class="feature-tag">KV-Cache</span>
+                    <span class="feature-tag">AMP</span>
+                    <span class="feature-tag">Label Smoothing</span>
+                    <span class="feature-tag">EMA</span>
+                    <span class="feature-tag">Gradient Checkpointing</span>
+                    <span class="feature-tag">Auto-Learning</span>
+                    <span class="feature-tag">中英双语</span>
+                </div>
             </div>
         </div>
 
         <div class="input-container">
             <div class="input-wrapper">
                 <div class="input-box">
-                    <input type="text" id="userInput" placeholder="输入你的问题..." autocomplete="off">
+                    <input type="text" id="userInput" placeholder="输入你的问题或代码需求..." autocomplete="off">
                 </div>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                     发送
@@ -454,14 +491,15 @@
 
         <div class="footer">
             <div class="footer-links">
-                <a href="/agreement">📜 用户协议</a>
-                <a href="/privacy">🔒 隐私政策</a>
+                <a href="/agreement">&#128220; 用户协议</a>
+                <a href="/privacy">&#128274; 隐私政策</a>
             </div>
         </div>
     </div>
 
     <script>
         let isLoading = false;
+        let currentSessionId = crypto.randomUUID ? crypto.randomUUID() : 'session-' + Date.now();
 
         async function loadModelInfo() {
             try {
@@ -477,33 +515,66 @@
             }
         }
 
-        function addMessage(content, isUser) {
+        function addMessage(content, isUser, interactionId = null) {
             const chatContainer = document.getElementById('chatContainer');
             const welcomeMessage = chatContainer.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
+            if (welcomeMessage) welcomeMessage.remove();
 
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
-            
+
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
             avatar.textContent = isUser ? '你' : 'AI';
-            
+
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            
-            if (!isUser) {
-                contentDiv.textContent = content;
-            } else {
-                contentDiv.textContent = content;
-            }
-            
+            contentDiv.textContent = content;
+
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
+
+            // AI 消息添加反馈按钮
+            if (!isUser && interactionId) {
+                const feedbackBar = document.createElement('div');
+                feedbackBar.className = 'feedback-bar';
+                feedbackBar.innerHTML = `
+                    <button class="feedback-btn" id="like-btn-${interactionId}" onclick="submitFeedback(${interactionId}, 1, this)">
+                        <span class="feedback-icon">&#128077;</span> 有用
+                    </button>
+                    <button class="feedback-btn" id="dislike-btn-${interactionId}" onclick="submitFeedback(${interactionId}, -1, this)">
+                        <span class="feedback-icon">&#128078;</span> 改进
+                    </button>
+                `;
+                contentDiv.appendChild(feedbackBar);
+            }
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
+            return messageDiv;
+        }
+
+        async function submitFeedback(interactionId, feedback, btnElement) {
+            try {
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interaction_id: interactionId, feedback: feedback })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // 更新按钮样式
+                    const bar = btnElement.parentElement;
+                    bar.querySelectorAll('.feedback-btn').forEach(b => {
+                        b.classList.remove('liked', 'disliked');
+                        b.disabled = true;
+                    });
+                    btnElement.classList.add(feedback === 1 ? 'liked' : 'disliked');
+                }
+            } catch (error) {
+                console.error('Feedback error:', error);
+            }
         }
 
         async function sendMessage() {
@@ -515,7 +586,7 @@
 
             addMessage(prompt, true);
             input.value = '';
-            
+
             isLoading = true;
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
@@ -528,20 +599,20 @@
             try {
                 const response = await fetch('/api/generate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         prompt: prompt,
                         max_new_tokens: maxNewTokens,
                         temperature: temperature,
-                        top_k: topK
+                        top_k: topK,
+                        session_id: currentSessionId
                     })
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                    addMessage(data.text, false);
+                    addMessage(data.text, false, data.interaction_id);
+                    if (data.session_id) currentSessionId = data.session_id;
                 } else {
                     addMessage('错误: ' + data.error, false);
                 }
@@ -555,13 +626,105 @@
             sendBtn.innerHTML = '发送';
         }
 
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        // 学习状态面板
+        function toggleLearningPanel() {
+            const panel = document.getElementById('learningPanel');
+            const btn = document.getElementById('toggleLearning');
+            panel.classList.toggle('visible');
+            btn.classList.toggle('active');
+            if (panel.classList.contains('visible')) {
+                refreshLearningStatus();
             }
+        }
+
+        async function refreshLearningStatus() {
+            try {
+                const response = await fetch('/api/learning-status');
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('statInteractions').textContent = stats.total_interactions;
+                    document.getElementById('statPositive').textContent = stats.positive_feedback;
+                    document.getElementById('statNegative').textContent = stats.negative_feedback;
+                    document.getElementById('statRounds').textContent = stats.learning_rounds;
+                    document.getElementById('statAugmented').textContent = stats.augmented_total;
+                    document.getElementById('statAutoEnabled').textContent = stats.auto_learning_enabled ? '已开启' : '未开启';
+
+                    // 训练指示器
+                    const indicator = document.getElementById('trainingIndicator');
+                    if (data.is_training) {
+                        indicator.classList.add('visible');
+                    } else {
+                        indicator.classList.remove('visible');
+                    }
+
+                    // 学习历史
+                    const historyDiv = document.getElementById('learningHistory');
+                    if (data.recent_history && data.recent_history.length > 0) {
+                        historyDiv.innerHTML = '<strong style="font-size:0.9em;">最近学习记录:</strong>';
+                        data.recent_history.forEach(record => {
+                            const statusClass = `status-${record.status}`;
+                            const statusLabel = {completed:'已完成', running:'进行中', failed:'失败', pending:'等待中'}[record.status] || record.status;
+                            const item = document.createElement('div');
+                            item.className = 'learning-history-item';
+                            item.innerHTML = `
+                                <span class="status ${statusClass}">${statusLabel}</span>
+                                &nbsp; ${record.trigger_type} | 样本: ${record.num_samples || '-'} |
+                                Loss: ${record.train_loss_after ? record.train_loss_after.toFixed(4) : '-'}
+                                ${record.completed_at ? ' | ' + record.completed_at.substring(0, 19) : ''}
+                            `;
+                            historyDiv.appendChild(item);
+                        });
+                    } else {
+                        historyDiv.innerHTML = '<p style="font-size:0.85em;color:#aaa;text-align:center;padding:15px;">暂无学习记录</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load learning status:', error);
+            }
+        }
+
+        async function startManualLearning() {
+            if (!confirm('确定要开始增量学习吗？这将使用收集到的用户反馈数据对模型进行微调。')) return;
+
+            try {
+                const response = await fetch('/api/learning/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+                alert(data.message);
+                if (data.success) refreshLearningStatus();
+            } catch (error) {
+                alert('启动学习失败: ' + error.message);
+            }
+        }
+
+        async function augmentData() {
+            try {
+                // 通过刷新来触发（数据增强在后台自动进行）
+                const response = await fetch('/api/learning-status');
+                const data = await response.json();
+                alert(`当前状态: ${data.stats.augmented_pending} 条待用增强数据, ${data.stats.augmented_total} 条总增强数据`);
+            } catch (error) {
+                alert('获取状态失败');
+            }
+        }
+
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
         });
 
         loadModelInfo();
+
+        // 定期刷新学习状态
+        setInterval(() => {
+            if (document.getElementById('learningPanel').classList.contains('visible')) {
+                refreshLearningStatus();
+            }
+        }, 30000);
     </script>
 </body>
 </html>
