@@ -108,7 +108,6 @@ class FileManager:
         self.file.close()
 
 # Python是一门简洁而强大的编程语言，广泛应用于数据科学、Web开发和自动化脚本等领域。
-# 上面展示了Python的核心语法特性，包括变量、控制流、函数、类、异常处理等。
 
 // ===== JavaScript基础语法 =====
 // 1. 变量声明
@@ -122,41 +121,18 @@ let str = "Hello";
 let bool = true;
 let arr = [1, 2, 3, 4, 5];
 let obj = { name: "Bob", age: 30 };
-let empty = null;
-let notDefined = undefined;
 
 // 3. 箭头函数
 const add = (a, b) => a + b;
 const greet = (name) => `Hello, ${name}!`;
-const square = x => x * x;
 
 // 4. 数组方法
 let numbers = [1, 2, 3, 4, 5];
 let doubled = numbers.map(n => n * 2);
 let evens = numbers.filter(n => n % 2 === 0);
 let sum = numbers.reduce((acc, n) => acc + n, 0);
-let hasThree = numbers.includes(3);
 
-// 5. 解构赋值
-const { name: userName, age: userAge } = obj;
-const [first, second, ...rest] = arr;
-
-// 6. 模板字符串
-let message = `My name is ${name} and I am ${age} years old.`;
-let multiLine = `
-  Line 1
-  Line 2
-  Line 3
-`;
-
-// 7. Promise异步编程
-function fetchData(url) {
-  return fetch(url)
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
-}
-
+// 5. Promise异步编程
 async function getData(url) {
   try {
     const response = await fetch(url);
@@ -167,7 +143,7 @@ async function getData(url) {
   }
 }
 
-// 8. 类定义
+// 6. 类定义
 class Animal {
   constructor(name) {
     this.name = name;
@@ -183,16 +159,6 @@ class Dog extends Animal {
   }
 }
 
-// 9. ES6模块
-// export function helper() { return "help"; }
-// import { helper } from './utils.js';
-
-// 10. 展开运算符
-let arr1 = [1, 2, 3];
-let arr2 = [...arr1, 4, 5];
-let obj1 = { a: 1 };
-let obj2 = { ...obj1, b: 2 };
-
 // JavaScript是Web开发的核心语言，支持前端和后端开发(通过Node.js)。
 
 // ===== HTML5基础结构 =====
@@ -200,40 +166,23 @@ let obj2 = { ...obj1, b: 2 };
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Page</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+            <a href="#home">首页</a>
+            <a href="#about">关于</a>
         </nav>
     </header>
     <main>
         <section id="home">
-            <h1>Welcome</h1>
-            <p>This is a paragraph.</p>
-        </section>
-        <section id="about">
-            <h2>About</h2>
-            <img src="photo.jpg" alt="Photo">
-            <ul>
-                <li>Item 1</li>
-                <li>Item 2</li>
-            </ul>
+            <h1>欢迎</h1>
+            <p>这是一个段落。</p>
         </section>
     </main>
-    <footer>
-        <p>Copyright 2025</p>
-    </footer>
-    <script src="app.js"></script>
 </body>
 </html>
-
-// HTML是构建网页的标记语言，CSS负责样式，JavaScript负责交互逻辑。
 
 // ===== CSS3样式示例 =====
 * {
@@ -242,29 +191,9 @@ let obj2 = { ...obj1, b: 2 };
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    line-height: 1.6;
-    background-color: #f5f5f5;
-    color: #333;
-}
-
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
 }
 
 .flex-container {
@@ -275,28 +204,13 @@ body {
     gap: 20px;
 }
 
-.grid-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 0 10px;
-    }
-    .flex-container {
-        flex-direction: column;
-    }
-}
-
-// CSS3引入了Flexbox和Grid布局，支持响应式设计和动画过渡效果。
+// CSS3引入了Flexbox和Grid布局，支持响应式设计。
 
 // ===== Java面向对象编程 =====
 public class HelloWorld {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
-        Person person = new Person("Alice", 25);
+        System.out.println("你好，世界！");
+        Person person = new Person("张三", 25);
         person.greet();
     }
 }
@@ -311,21 +225,15 @@ class Person {
     }
 
     public void greet() {
-        System.out.println("Hello, I am " + this.name);
-    }
-
-    public String getName() {
-        return this.name;
+        System.out.println("你好，我是" + this.name);
     }
 }
 
-// Java是强类型面向对象语言，广泛应用于企业级开发和Android应用开发。
-// Java的核心特性包括封装、继承、多态和接口。
+// Java是强类型面向对象语言，广泛应用于企业级开发。
 
 // ===== C++面向对象编程 =====
 #include <iostream>
 #include <vector>
-#include <string>
 using namespace std;
 
 class Animal {
@@ -334,7 +242,6 @@ protected:
 public:
     Animal(string n) : name(n) {}
     virtual void speak() = 0;
-    virtual ~Animal() {}
 };
 
 class Dog : public Animal {
@@ -345,19 +252,7 @@ public:
     }
 };
 
-int main() {
-    vector<int> nums = {1, 2, 3, 4, 5};
-    for (int n : nums) {
-        cout << n << " ";
-    }
-    cout << endl;
-
-    Dog dog("Buddy");
-    dog.speak();
-    return 0;
-}
-
-// C++是高性能编程语言，广泛用于系统编程、游戏开发和嵌入式系统。
+// C++是高性能编程语言，广泛用于系统编程和游戏开发。
 
 // ===== Go语言并发编程 =====
 package main
@@ -369,7 +264,7 @@ import (
 
 func worker(id int, wg *sync.WaitGroup) {
     defer wg.Done()
-    fmt.Printf("Worker %d starting\n", id)
+    fmt.Printf("工作协程 %d 启动\n", id)
 }
 
 func main() {
@@ -379,22 +274,16 @@ func main() {
         go worker(i, &wg)
     }
     wg.Wait()
-    fmt.Println("All workers done")
+    fmt.Println("所有工作协程完成")
 }
 
-// Go语言以简洁和高效的并发模型著称，内置goroutine和channel机制。
+// Go语言以简洁和高效的并发模型著称。
 
 // ===== Rust安全系统编程 =====
 fn main() {
     let numbers: Vec<i32> = vec![1, 2, 3, 4, 5];
     let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
-
-    for num in &doubled {
-        println!("{}", num);
-    }
-
-    let result = calculate(10, 20);
-    println!("Result: {}", result);
+    println!("结果: {}", calculate(10, 20));
 }
 
 fn calculate(a: i32, b: i32) -> i32 {
@@ -410,59 +299,29 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    return "你好，世界！"
 
 @app.route("/api/items", methods=["GET"])
 def get_items():
-    items = [{"id": 1, "name": "Item 1"}, {"id": 2, "name": "Item 2"}]
+    items = [{"id": 1, "名称": "商品1"}, {"id": 2, "名称": "商品2"}]
     return jsonify(items)
 
-@app.route("/api/items", methods=["POST"])
-def create_item():
-    data = request.get_json()
-    return jsonify({"id": 3, "name": data["name"]}), 201
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-// Flask是一个轻量级Python Web框架，适合快速构建API和小型Web应用。
+// Flask是一个轻量级Python Web框架，适合快速构建API。
 
 // ===== SQL数据库查询 =====
--- 创建表
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    age INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 插入数据
-INSERT INTO users (name, email, age) VALUES ('Alice', 'alice@test.com', 25);
-INSERT INTO users (name, email, age) VALUES ('Bob', 'bob@test.com', 30);
-
--- 查询数据
 SELECT * FROM users WHERE age > 25 ORDER BY created_at DESC;
-
--- 联表查询
-SELECT u.name, COUNT(o.id) as order_count
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-GROUP BY u.name
-HAVING order_count > 0;
-
--- 更新数据
-UPDATE users SET age = 26 WHERE name = 'Alice';
-
--- 删除数据
-DELETE FROM users WHERE id = 1;
 
 // SQL是结构化查询语言，用于管理和操作关系型数据库。
 
 // ===== Python数据结构算法 =====
-from collections import deque
-
-# 二分查找
+# 二分查找算法
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
     while left <= right:
@@ -475,7 +334,7 @@ def binary_search(arr, target):
             right = mid - 1
     return -1
 
-# 快速排序
+# 快速排序算法
 def quick_sort(arr):
     if len(arr) <= 1:
         return arr
@@ -485,48 +344,7 @@ def quick_sort(arr):
     right = [x for x in arr if x > pivot]
     return quick_sort(left) + middle + quick_sort(right)
 
-# 链表
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-def reverse_list(head):
-    prev = None
-    current = head
-    while current:
-        next_node = current.next
-        current.next = prev
-        prev = current
-        current = next_node
-    return prev
-
-# 树的遍历
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-def inorderTraversal(root):
-    if not root:
-        return []
-    return inorderTraversal(root.left) + [root.val] + inorderTraversal(root.right)
-
-# 广度优先搜索(BFS)
-def bfs(graph, start):
-    visited = set()
-    queue = deque([start])
-    result = []
-    while queue:
-        node = queue.popleft()
-        if node not in visited:
-            visited.add(node)
-            result.append(node)
-            queue.extend(graph[node])
-    return result
-
-# 动态规划：斐波那契
+# 动态规划：斐波那契数列
 def fibonacci(n):
     if n <= 1:
         return n
@@ -535,38 +353,25 @@ def fibonacci(n):
         dp.append(dp[i-1] + dp[i-2])
     return dp[n]
 
-# 数据结构和算法是计算机科学的基础，掌握它们对编程能力的提升至关重要。
+# 数据结构和算法是计算机科学的基础。
 
 // ===== React组件开发 =====
 import React, { useState, useEffect } from 'react';
 
 function App() {
     const [count, setCount] = useState(0);
-    const [data, setData] = useState([]);
-
-    useEffect(() => {
-        fetch('/api/items')
-            .then(res => res.json())
-            .then(data => setData(data));
-    }, []);
-
     return (
         <div className="app">
-            <h1>Counter: {count}</h1>
-            <button onClick={() => setCount(count + 1)}>Increment</button>
-            <button onClick={() => setCount(count - 1)}>Decrement</button>
-            <ul>
-                {data.map(item => (
-                    <li key={item.id}>{item.name}</li>
-                ))}
-            </ul>
+            <h1>计数器: {count}</h1>
+            <button onClick={() => setCount(count + 1)}>增加</button>
+            <button onClick={() => setCount(count - 1)}>减少</button>
         </div>
     );
 }
 
 export default App;
 
-// React是Facebook开发的前端框架，使用虚拟DOM和组件化思想构建用户界面。
+// React是Facebook开发的前端框架，使用虚拟DOM构建用户界面。
 
 // ===== Python PyTorch深度学习 =====
 import torch
@@ -586,30 +391,20 @@ class SimpleNet(nn.Module):
         return x
 
 model = SimpleNet(784, 256, 10)
-criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-for epoch in range(10):
-    for batch_x, batch_y in dataloader:
-        optimizer.zero_grad()
-        outputs = model(batch_x)
-        loss = criterion(outputs, batch_y)
-        loss.backward()
-        optimizer.step()
-
-# PyTorch是Facebook开发的深度学习框架，以动态计算图著称，易于调试和使用。
+# PyTorch是Facebook开发的深度学习框架，以动态计算图著称。
 
 // ===== Shell脚本自动化 =====
 #!/bin/bash
 # 自动化部署脚本
 PROJECT_DIR="/var/www/myapp"
-BACKUP_DIR="/var/backups/myapp"
 DATE=$(date +%Y%m%d_%H%M%S)
 
-echo "Starting deployment..."
+echo "开始部署..."
 
 # 创建备份
-cp -r $PROJECT_DIR $BACKUP_DIR/$DATE
+cp -r $PROJECT_DIR /var/backups/myapp/$DATE
 
 # 拉取最新代码
 cd $PROJECT_DIR
@@ -621,7 +416,7 @@ npm install --production
 # 重启服务
 pm2 restart myapp
 
-echo "Deployment complete at $DATE"
+echo "部署完成于 $DATE"
 
 // Shell脚本是Linux系统管理和自动化运维的重要工具。
 
@@ -637,13 +432,7 @@ function createUser(user: User): User {
     return { ...user, id: Date.now() };
 }
 
-async function fetchUsers(): Promise<User[]> {
-    const response = await fetch('/api/users');
-    const data: User[] = await response.json();
-    return data;
-}
-
-// TypeScript是JavaScript的超集，添加了静态类型检查，提高了代码的可维护性。
+// TypeScript是JavaScript的超集，添加了静态类型检查。
 
 // ===== Python Pandas数据分析 =====
 import pandas as pd
@@ -656,181 +445,22 @@ print(df.describe())
 df = df.dropna()
 df = df.drop_duplicates()
 
-# 数据筛选
-filtered = df[df['age'] > 25]
-grouped = df.groupby('city')['salary'].mean()
+# 数据筛选和分组
+filtered = df[df['年龄'] > 25]
+grouped = df.groupby('城市')['薪资'].mean()
 
-# 数据转换
-df['bonus'] = df['salary'] * 0.1
-pivot = df.pivot_table(values='salary', index='dept', columns='city')
-
-# 输出结果
-result = df.to_dict('records')
-
-// Pandas是Python数据分析的核心库，提供高效的数据结构和数据分析工具。
+// Pandas是Python数据分析的核心库。
 
 // ===== Vue.js前端框架 =====
 <template>
   <div class="app">
-    <input v-model="message" placeholder="Type something">
+    <input v-model="message" placeholder="请输入内容">
     <p>{{ message }}</p>
-    <button @click="count++">Clicked {{ count }} times</button>
-    <ul>
-      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
-    </ul>
+    <button @click="count++">点击了 {{ count }} 次</button>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      message: 'Hello Vue!',
-      count: 0,
-      items: [
-        { id: 1, name: 'Item 1' },
-        { id: 2, name: 'Item 2' }
-      ]
-    }
-  }
-}
-</script>
-
-// Vue.js是一个渐进式JavaScript框架，以简洁的API和优秀的文档著称。
-
-// ===== Docker容器化部署 =====
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-
-EXPOSE 5000
-CMD ["python", "app.py"]
-
-# docker build -t myapp:latest .
-# docker run -d -p 5000:5000 myapp:latest
-
-// Docker通过容器技术实现应用的快速打包、分发和部署。
-
-// ===== Python REST API设计 =====
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-
-app = FastAPI()
-
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: bool = None
-
-items = []
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to API"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int):
-    if item_id < len(items):
-        return items[item_id]
-    raise HTTPException(status_code=404, detail="Item not found")
-
-@app.post("/items")
-def create_item(item: Item):
-    items.append(item)
-    return {"status": "created", "item": item}
-
-// FastAPI是现代Python Web框架，支持自动API文档生成和类型验证。
-
-// ===== Python爬虫示例 =====
-import requests
-from bs4 import BeautifulSoup
-
-def crawl(url):
-    response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    title = soup.find('title').text
-    links = [a['href'] for a in soup.find_all('a', href=True)]
-    paragraphs = [p.text for p in soup.find_all('p')]
-
-    return {
-        'title': title,
-        'links': links,
-        'paragraphs': paragraphs
-    }
-
-# 网络爬虫用于自动化采集网页数据，但需遵守robots.txt协议和相关法律法规。
-
-// ===== Python多线程与多进程 =====
-import threading
-import multiprocessing
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-
-def task(name):
-    print(f"{name} is running")
-
-# 多线程（适合IO密集型任务）
-with ThreadPoolExecutor(max_workers=5) as executor:
-    futures = [executor.submit(task, f"Thread-{i}") for i in range(5)]
-
-# 多进程（适合CPU密集型任务）
-with ProcessPoolExecutor(max_workers=4) as executor:
-    futures = [executor.submit(task, f"Process-{i}") for i in range(4)]
-
-// Python的GIL限制了多线程的并行性，CPU密集型任务应使用多进程。
-
-// ===== 正则表达式代码示例 =====
-import re
-
-# 匹配邮箱
-email_pattern = r'[\w.+-]+@[\w-]+\.[\w.]+'
-emails = re.findall(email_pattern, text)
-
-# 匹配手机号
-phone_pattern = r'1[3-9]\d{9}'
-phones = re.findall(phone_pattern, text)
-
-# 替换敏感信息
-cleaned = re.sub(r'\d{6}', '******', text)
-
-# 分割字符串
-parts = re.split(r'[,;|]', text)
-
-// 正则表达式是文本模式匹配的强大工具，广泛应用于数据清洗和输入验证。
-
-// ===== Git版本控制常用命令 =====
-git init                        # 初始化仓库
-git add .                       # 暂存所有修改
-git commit -m "message"         # 提交修改
-git push origin main            # 推送到远程
-git pull origin main            # 拉取远程更新
-git branch feature              # 创建分支
-git checkout feature            # 切换分支
-git merge feature               # 合并分支
-git log --oneline               # 查看提交历史
-git stash                       # 暂存工作区
-git reset --soft HEAD~1         # 撤销最近一次提交
-
-// Git是最流行的分布式版本控制系统，是现代软件开发协作的基础工具。
-
-// ===== Linux常用命令 =====
-ls -la                          # 列出文件详情
-cd /path/to/dir                 # 切换目录
-cp file1 file2                  # 复制文件
-mv file1 file2                  # 移动/重命名
-rm -rf directory                # 删除目录
-chmod 755 file.sh               # 修改权限
-grep -r "pattern" /path         # 搜索文本
-find /path -name "*.py"         # 查找文件
-ps aux | grep python            # 查看进程
-kill -9 PID                     # 杀死进程
-df -h                           # 查看磁盘空间
-top                             # 系统监控
-
-// Linux命令行是服务器运维和开发者的必备技能。
+// Vue.js是一个渐进式JavaScript框架，以简洁的API著称。
 
 // ===== Python设计模式 =====
 # 单例模式
@@ -843,124 +473,828 @@ class Singleton:
 
 # 工厂模式
 class Dog:
-    def speak(self): return "Woof!"
+    def speak(self): return "汪汪！"
 
 class Cat:
-    def speak(self): return "Meow!"
+    def speak(self): return "喵喵！"
 
 def create_pet(pet_type):
     pets = {"dog": Dog, "cat": Cat}
     return pets.get(pet_type, Dog)()
 
-# 观察者模式
-class EventSystem:
-    def __init__(self):
-        self.listeners = {}
-    def on(self, event, callback):
-        self.listeners.setdefault(event, []).append(callback)
-    def emit(self, event, data):
-        for cb in self.listeners.get(event, []):
-            cb(data)
+// 设计模式是解决常见软件设计问题的经验总结。
 
-// 设计模式是解决常见软件设计问题的经验总结，常用的有23种GoF设计模式。
+// ===== Docker容器化部署 =====
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["python", "app.py"]
 
-// ===== Python单元测试 =====
-import unittest
+// Docker通过容器技术实现应用的快速打包和部署。
 
-class TestMathOperations(unittest.TestCase):
-    def test_add(self):
-        self.assertEqual(1 + 1, 2)
+# ===== 中文注释风格的Python代码示例 =====
 
-    def test_string(self):
-        self.assertIn("hello", "hello world")
+# 导入所需的库
+import os
+import sys
+import json
+from typing import List, Dict, Optional
 
-    def test_list(self):
-        self.assertEqual(len([1, 2, 3]), 3)
-        self.assertIn(2, [1, 2, 3])
+# 定义一个学生类，用于管理学生信息
+class Student:
+    """学生信息管理类"""
 
-    def test_exception(self):
-        with self.assertRaises(ValueError):
-            int("invalid")
+    def __init__(self, 学号: str, 姓名: str, 年龄: int, 成绩: float):
+        self.学号 = 学号
+        self.姓名 = 姓名
+        self.年龄 = 年龄
+        self.成绩 = 成绩
 
+    def 获取等级(self) -> str:
+        """根据成绩返回等级评定"""
+        if self.成绩 >= 90:
+            return "优秀"
+        elif self.成绩 >= 80:
+            return "良好"
+        elif self.成绩 >= 70:
+            return "中等"
+        elif self.成绩 >= 60:
+            return "及格"
+        else:
+            return "不及格"
+
+    def __str__(self):
+        return f"学生[{self.学号}] {self.姓名}，年龄{self.年龄}岁，成绩{self.成绩}分，等级：{self.获取等级()}"
+
+# 班级管理类
+class ClassManager:
+    """班级学生管理系统"""
+
+    def __init__(self, 班级名称: str):
+        self.班级名称 = 班级名称
+        self.学生列表: List[Student] = []
+
+    def 添加学生(self, 学生: Student):
+        """添加一个学生到班级"""
+        self.学生列表.append(学生)
+        print(f"已添加学生：{学生.姓名}")
+
+    def 按成绩排序(self) -> List[Student]:
+        """按成绩从高到低排序"""
+        return sorted(self.学生列表, key=lambda s: s.成绩, reverse=True)
+
+    def 获取平均分(self) -> float:
+        """计算班级平均分"""
+        if not self.学生列表:
+            return 0.0
+        总分 = sum(s.成绩 for s in self.学生列表)
+        return 总分 / len(self.学生列表)
+
+    def 获取最高分学生(self) -> Optional[Student]:
+        """获取成绩最高的学生"""
+        if not self.学生列表:
+            return None
+        return max(self.学生列表, key=lambda s: s.成绩)
+
+# 使用示例
 if __name__ == "__main__":
-    unittest.main()
+    班级 = ClassManager("计算机科学一班")
+    班级.添加学生(Student("2024001", "张三", 20, 95.5))
+    班级.添加学生(Student("2024002", "李四", 21, 87.0))
+    班级.添加学生(Student("2024003", "王五", 19, 92.5))
+    班级.添加学生(Student("2024004", "赵六", 20, 78.0))
+    班级.添加学生(Student("2024005", "钱七", 22, 88.5))
 
-// 单元测试是保证代码质量的重要手段，Python的unittest和pytest是常用的测试框架。
+    print(f"\n{班级.班级名称} 共有 {len(班级.学生列表)} 名学生")
+    print(f"班级平均分：{班级.获取平均分():.1f}")
 
-// ===== Python虚拟环境和包管理 =====
-# 创建虚拟环境
-python -m venv venv
-source venv/bin/activate    # Linux/Mac
-venv\Scripts\activate       # Windows
+    最优学生 = 班级.获取最高分学生()
+    if 最优学生:
+        print(f"最高分学生：{最优学生}")
 
-# 包管理
-pip install requests
-pip install -r requirements.txt
-pip freeze > requirements.txt
+    print("\n成绩排名：")
+    for 排名, 学生 in enumerate(班级.按成绩排序(), 1):
+        print(f"第{排名}名：{学生}")
 
-# pip是Python的包管理工具，虚拟环境可以隔离项目依赖。
+# 中文命名变量和函数名在Python3中完全合法，但在实际项目中建议使用英文命名。
+# 上面的示例展示了中文作为标识符的可行性。
 
-// ===== Markdown文档格式 =====
-# 标题
-## 二级标题
-### 三级标题
+# ===== 文件读写工具类（中文注释） =====
 
-**加粗文本** 和 *斜体文本*
+class 文件工具:
+    """文件操作工具类，封装常用的文件读写方法"""
 
-- 列表项1
-- 列表项2
-- 列表项3
+    @staticmethod
+    def 读取文本文件(文件路径: str, 编码: str = "utf-8") -> str:
+        """读取文本文件的全部内容"""
+        try:
+            with open(文件路径, "r", encoding=编码) as 文件:
+                return 文件.read()
+        except FileNotFoundError:
+            print(f"错误：文件不存在 - {文件路径}")
+            return ""
+        except UnicodeDecodeError:
+            print(f"错误：编码不匹配，尝试使用 {编码} 解码失败")
+            return ""
 
-1. 有序列表1
-2. 有序列表2
+    @staticmethod
+    def 写入文本文件(文件路径: str, 内容: str, 编码: str = "utf-8"):
+        """将内容写入文本文件"""
+        目录 = os.path.dirname(文件路径)
+        if 目录 and not os.path.exists(目录):
+            os.makedirs(目录, exist_ok=True)
+        with open(文件路径, "w", encoding=编码) as 文件:
+            文件.write(内容)
+        print(f"文件已保存：{文件路径}")
 
-`行内代码`
-```
-代码块
-```
+    @staticmethod
+    def 读取JSON文件(文件路径: str) -> dict:
+        """读取JSON格式文件"""
+        内容 = 文件工具.读取文本文件(文件路径)
+        if 内容:
+            return json.loads(内容)
+        return {}
 
-[链接文字](https://example.com)
+    @staticmethod
+    def 写入JSON文件(文件路径: str, 数据: dict):
+        """将字典数据写入JSON文件"""
+        内容 = json.dumps(数据, ensure_ascii=False, indent=2)
+        文件工具.写入文本文件(文件路径, 内容)
 
-| 表头1 | 表头2 |
-|-------|-------|
-| 数据1 | 数据2 |
+# Python的文件操作是程序与外部数据交互的基础。
 
-// Markdown是轻量级标记语言，广泛用于技术文档和README编写。
+# ===== 网络请求工具类（中文注释） =====
 
-// ===== JSON数据格式 =====
-{
-    "name": "Mini LLM",
-    "version": "1.0.0",
-    "description": "A mini language model for code generation",
-    "model": {
-        "architecture": "Transformer Decoder",
-        "parameters": "50M",
-        "layers": 8,
-        "hidden_size": 512,
-        "attention_heads": 8,
-        "max_seq_length": 512
+import requests
+from typing import Optional, Dict, Any
+
+class 网络请求工具:
+    """封装HTTP请求方法"""
+
+    @staticmethod
+    def 发送GET请求(网址: str, 参数: Optional[Dict] = None, 请求头: Optional[Dict] = None) -> Optional[Dict]:
+        """发送GET请求并返回JSON数据"""
+        try:
+            响应 = requests.get(网址, params=参数, headers=请求头, timeout=10)
+            响应.raise_for_status()
+            return 响应.json()
+        except requests.Timeout:
+            print("请求超时")
+            return None
+        except requests.RequestException as 错误:
+            print(f"请求失败：{错误}")
+            return None
+
+    @staticmethod
+    def 发送POST请求(网址: str, 数据: Dict, 请求头: Optional[Dict] = None) -> Optional[Dict]:
+        """发送POST请求并返回JSON数据"""
+        try:
+            响应 = requests.post(网址, json=数据, headers=请求头, timeout=10)
+            响应.raise_for_status()
+            return 响应.json()
+        except requests.RequestException as 错误:
+            print(f"POST请求失败：{错误}")
+            return None
+
+# ===== 数据处理管道（中文注释） =====
+
+import pandas as pd
+import numpy as np
+from typing import Tuple
+
+class 数据处理管道:
+    """数据处理管道，支持链式操作"""
+
+    def __init__(self, 数据: pd.DataFrame):
+        self.数据 = 数据
+
+    def 去除空值(self, 列名: str = None):
+        """去除指定列或所有列的空值"""
+        if 列名:
+            self.数据 = self.数据.dropna(subset=[列名])
+        else:
+            self.数据 = self.数据.dropna()
+        return self
+
+    def 去除重复(self, 列名: str = None):
+        """去除重复行"""
+        if 列名:
+            self.数据 = self.数据.drop_duplicates(subset=[列名])
+        else:
+            self.数据 = self.数据.drop_duplicates()
+        return self
+
+    def 筛选(self, 条件):
+        """根据条件筛选数据"""
+        self.数据 = self.数据[条件]
+        return self
+
+    def 排序(self, 列名: str, 升序: bool = True):
+        """按指定列排序"""
+        self.数据 = self.数据.sort_values(by=列名, ascending=升序)
+        return self
+
+    def 获取结果(self) -> pd.DataFrame:
+        """获取处理后的数据"""
+        return self.数据
+
+# ===== 中文技术文档描述 =====
+# 以下为中文描述的编程概念和代码片段，帮助模型理解中英文混合语境
+
+# 微服务架构是一种将应用程序构建为一组小型服务的方法。每个服务运行在自己的进程中，通过轻量级机制通信。
+# 在Python中可以使用Flask或FastAPI实现微服务：
+
+# ===== FastAPI中文示例 =====
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+
+app = FastAPI(title="商品管理系统", description="这是一个基于FastAPI的商品管理接口")
+
+class 商品(BaseModel):
+    编号: int
+    名称: str
+    价格: float
+    库存: int
+    描述: Optional[str] = None
+
+商品列表: List[商品] = []
+
+@app.get("/api/商品", summary="获取商品列表", response_model=List[商品])
+def 获取商品列表():
+    return 商品列表
+
+@app.get("/api/商品/{编号}", summary="根据编号获取商品")
+def 获取商品(编号: int):
+    for 商品 in 商品列表:
+        if 商品.编号 == 编号:
+            return 商品
+    raise HTTPException(status_code=404, detail="商品不存在")
+
+@app.post("/api/商品", summary="添加新商品", status_code=201)
+def 添加商品(商品: 商品):
+    商品列表.append(商品)
+    return {"消息": "商品添加成功", "商品": 商品}
+
+@app.put("/api/商品/{编号}", summary="更新商品信息")
+def 更新商品(编号: int, 更新数据: 商品):
+    for 索引, 商品 in enumerate(商品列表):
+        if 商品.编号 == 编号:
+            商品列表[索引] = 更新数据
+            return {"消息": "商品更新成功"}
+    raise HTTPException(status_code=404, detail="商品不存在")
+
+@app.delete("/api/商品/{编号}", summary="删除商品")
+def 删除商品(编号: int):
+    for 索引, 商品 in enumerate(商品列表):
+        if 商品.编号 == 编号:
+            商品列表.pop(索引)
+            return {"消息": "商品删除成功"}
+    raise HTTPException(status_code=404, detail="商品不存在")
+
+# FastAPI是现代Python Web框架，支持自动API文档生成。
+
+# ===== 机器学习流程中文示例 =====
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. 数据准备
+print("第一步：加载数据...")
+# 假设X是特征矩阵，y是标签
+X = np.random.randn(1000, 10)  # 1000个样本，10个特征
+y = (X[:, 0] + X[:, 1] > 0).astype(int)  # 简单二分类标签
+
+# 2. 数据划分
+print("第二步：划分训练集和测试集...")
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(f"训练集大小：{len(X_train)}，测试集大小：{len(X_test)}")
+
+# 3. 数据标准化
+print("第三步：特征标准化...")
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 4. 模型训练
+print("第四步：训练模型...")
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train_scaled, y_train)
+
+# 5. 模型预测
+print("第五步：模型预测...")
+y_pred = model.predict(X_test_scaled)
+
+# 6. 模型评估
+print("第六步：评估模型...")
+accuracy = accuracy_score(y_test, y_pred)
+print(f"模型准确率：{accuracy:.4f}")
+print("\n分类报告：")
+print(classification_report(y_test, y_pred, target_names=["类别0", "类别1"]))
+
+# 机器学习的完整流程包括数据准备、特征工程、模型训练、预测和评估。
+
+# ===== Web前端中文交互示例 =====
+
+// Vue.js 中文用户管理界面
+// <template>
+//   <div class="用户管理">
+//     <h1>用户管理系统</h1>
+//     <div class="搜索栏">
+//       <input v-model="搜索关键词" placeholder="请输入用户名搜索..." />
+//       <button @click="搜索用户">搜索</button>
+//     </div>
+//     <table>
+//       <thead>
+//         <tr>
+//           <th>编号</th>
+//           <th>用户名</th>
+//           <th>邮箱</th>
+//           <th>注册时间</th>
+//           <th>操作</th>
+//         </tr>
+//       </thead>
+//       <tbody>
+//         <tr v-for="用户 in 用户列表" :key="用户.id">
+//           <td>{{ 用户.id }}</td>
+//           <td>{{ 用户.用户名 }}</td>
+//           <td>{{ 用户.邮箱 }}</td>
+//           <td>{{ 用户.注册时间 }}</td>
+//           <td>
+//             <button @click="编辑用户(用户)">编辑</button>
+//             <button @click="删除用户(用户.id)">删除</button>
+//           </td>
+//         </tr>
+//       </tbody>
+//     </table>
+//   </div>
+// </template>
+
+// ===== SQL中文示例 =====
+-- 学生选课管理系统
+
+-- 创建学生表
+CREATE TABLE 学生 (
+    学号 INT PRIMARY KEY AUTO_INCREMENT,
+    姓名 VARCHAR(50) NOT NULL,
+    性别 ENUM('男', '女') NOT NULL,
+    年龄 INT CHECK (年龄 BETWEEN 15 AND 50),
+    专业 VARCHAR(100),
+    入学日期 DATE DEFAULT (CURRENT_DATE),
+    INDEX idx_name (姓名)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 创建课程表
+CREATE TABLE 课程 (
+    课程编号 INT PRIMARY KEY AUTO_INCREMENT,
+    课程名称 VARCHAR(100) NOT NULL,
+    学分 INT CHECK (学分 BETWEEN 1 AND 6),
+    学时 INT,
+    授课教师 VARCHAR(50),
+    开课学院 VARCHAR(100)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 创建选课记录表
+CREATE TABLE 选课记录 (
+    记录编号 INT PRIMARY KEY AUTO_INCREMENT,
+    学号 INT NOT NULL,
+    课程编号 INT NOT NULL,
+    选课时间 TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    成绩 DECIMAL(5,2) CHECK (成绩 BETWEEN 0 AND 100),
+    FOREIGN KEY (学号) REFERENCES 学生(学号),
+    FOREIGN KEY (课程编号) REFERENCES 课程(课程编号),
+    UNIQUE KEY uk_student_course (学号, 课程编号)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 插入示例数据
+INSERT INTO 学生 (姓名, 性别, 年龄, 专业) VALUES
+('张三', '男', 20, '计算机科学与技术'),
+('李四', '女', 19, '软件工程'),
+('王五', '男', 21, '人工智能'),
+('赵六', '女', 20, '数据科学与大数据');
+
+INSERT INTO 课程 (课程名称, 学分, 学时, 授课教师, 开课学院) VALUES
+('Python程序设计', 3, 48, '刘教授', '计算机学院'),
+('数据结构与算法', 4, 64, '陈教授', '计算机学院'),
+('数据库原理', 3, 48, '王教授', '计算机学院'),
+('机器学习导论', 3, 48, '李教授', '人工智能学院');
+
+-- 查询每个学生的选课数量和平均成绩
+SELECT s.姓名, s.专业,
+    COUNT(sc.课程编号) AS 选课数量,
+    ROUND(AVG(sc.成绩), 1) AS 平均成绩
+FROM 学生 s
+LEFT JOIN 选课记录 sc ON s.学号 = sc.学号
+GROUP BY s.学号, s.姓名, s.专业
+ORDER BY 平均成绩 DESC;
+
+-- 查询成绩排名前10的学生
+SELECT s.姓名, s.专业, sc.成绩, c.课程名称
+FROM 选课记录 sc
+JOIN 学生 s ON sc.学号 = s.学号
+JOIN 课程 c ON sc.课程编号 = c.课程编号
+ORDER BY sc.成绩 DESC
+LIMIT 10;
+
+# ===== 正则表达式中文示例 =====
+import re
+
+# 匹配中国大陆手机号
+手机号模式 = r'1[3-9]\d{9}'
+手机号列表 = re.findall(手机号模式, "联系电话：13800138000，备用：15912345678")
+print(f"找到手机号：{手机号列表}")
+
+# 匹配中国大陆身份证号
+身份证模式 = r'[1-9]\d{5}(?:19|20)\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{3}[\dXx]'
+
+# 匹配中文姓名（2-4个汉字）
+姓名模式 = r'[\u4e00-\u9fa5]{2,4}'
+
+# 匹配电子邮箱
+邮箱模式 = r'[\w.+-]+@[\w-]+\.[\w.]+'
+
+# 匹配URL网址
+网址模式 = r'https?://[\w\-]+(\.[\w\-]+)+[/#?]?.*'
+
+# 正则表达式是文本模式匹配的强大工具，在数据清洗中经常使用。
+
+# ===== Python装饰器中文示例 =====
+import time
+import functools
+
+def 计时器(函数):
+    """函数执行计时装饰器，自动测量函数运行时间"""
+    @functools.wraps(函数)
+    def 包装器(*参数, **关键字参数):
+        开始时间 = time.time()
+        结果 = 函数(*参数, **关键字参数)
+        结束时间 = time.time()
+        耗时 = 结束时间 - 开始时间
+        print(f"[{函数.__name__}] 执行耗时：{耗时:.4f}秒")
+        return 结果
+    return 包装器
+
+def 重试(最大次数=3, 延迟=1):
+    """失败自动重试装饰器"""
+    def 装饰器(函数):
+        @functools.wraps(函数)
+        def 包装器(*参数, **关键字参数):
+            for 次数 in range(1, 最大次数 + 1):
+                try:
+                    return 函数(*参数, **关键字参数)
+                except Exception as 错误:
+                    print(f"第{次数}次执行失败：{错误}")
+                    if 次数 < 最大次数:
+                        time.sleep(延迟)
+                    else:
+                        print(f"已达到最大重试次数{最大次数}，放弃执行")
+                        raise
+        return 包装器
+    return 装饰器
+
+def 缓存结果(函数):
+    """函数结果缓存装饰器，避免重复计算"""
+    缓存字典 = {}
+    @functools.wraps(函数)
+    def 包装器(*参数):
+        if 参数 not in 缓存字典:
+            缓存字典[参数] = 函数(*参数)
+        return 缓存字典[参数]
+    return 包装器
+
+@计时器
+@重试(最大次数=3, 延迟=2)
+def 获取网页内容(网址: str) -> str:
+    """获取网页内容（带重试和计时）"""
+    import requests
+    响应 = requests.get(网址, timeout=5)
+    响应.raise_for_status()
+    return 响应.text
+
+@缓存结果
+def 斐波那契(n: int) -> int:
+    """带缓存的斐波那契计算"""
+    if n <= 1:
+        return n
+    return 斐波那契(n-1) + 斐波那契(n-2)
+
+# ===== 中文编程知识问答 =====
+# 问题：Python中列表和元组有什么区别？
+# 回答：列表是可变的，可以修改、添加和删除元素；元组是不可变的，一旦创建就不能修改。列表用方括号[]表示，元组用圆括号()表示。在需要保护数据不被修改时，应使用元组。
+
+# 问题：什么是面向对象编程的三大特性？
+# 回答：封装、继承、多态。封装是将数据和操作数据的方法绑定在一起，隐藏内部实现细节。继承是子类可以复用父类的属性和方法。多态是同一方法在不同对象中有不同的实现。
+
+# 问题：HTTP和HTTPS有什么区别？
+# 回答：HTTPS是在HTTP的基础上加入了SSL/TLS加密层，数据传输是加密的，更安全。HTTP是明文传输，数据容易被截获。HTTPS默认端口443，HTTP默认端口80。现代网站都应使用HTTPS。
+
+# 问题：什么是RESTful API？
+# 回答：RESTful API是一种基于HTTP协议的API设计风格，使用HTTP方法（GET、POST、PUT、DELETE）对应CRUD操作，使用URL路径标识资源，使用HTTP状态码表示结果，数据格式通常为JSON。
+
+# 问题：Git中的分支有什么作用？
+# 回答：分支允许在不影响主线的情况下开发新功能或修复bug。每个分支是独立的代码版本线，可以在分支上自由修改代码。完成后通过合并（merge）将分支的改动合并到主分支。常用的分支策略有Git Flow和GitHub Flow。
+
+# ===== 中英文混合编程场景 =====
+
+# 场景1：国际化（i18n）配置
+国际化配置 = {
+    "zh_CN": {
+        "app_name": "迷你语言模型",
+        "welcome": "欢迎使用Mini LLM",
+        "send": "发送",
+        "placeholder": "请输入你的问题...",
+        "error": "抱歉，服务出现了错误",
     },
-    "training": {
-        "batch_size": 16,
-        "learning_rate": 0.0003,
-        "epochs": 10,
-        "optimizer": "AdamW"
-    },
-    "features": [
-        "code generation",
-        "code completion",
-        "code explanation",
-        "multi-language support"
-    ]
+    "en_US": {
+        "app_name": "Mini Language Model",
+        "welcome": "Welcome to Mini LLM",
+        "send": "Send",
+        "placeholder": "Enter your question...",
+        "error": "Sorry, an error occurred",
+    }
 }
 
-// JSON是一种轻量级的数据交换格式，易于人阅读和机器解析。
+def 获取文本(键: str, 语言: str = "zh_CN") -> str:
+    """根据语言获取对应的文本"""
+    return 国际化配置.get(语言, {}).get(键, 键)
+
+# 场景2：中文日志记录器
+import logging
+
+def 创建日志器(名称: str, 日志文件: str = None) -> logging.Logger:
+    """创建并配置日志记录器"""
+    日志器 = logging.getLogger(名称)
+    日志器.setLevel(logging.INFO)
+
+    格式器 = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    控制台处理器 = logging.StreamHandler()
+    控制台处理器.setFormatter(格式器)
+    日志器.addHandler(控制台处理器)
+
+    if 日志文件:
+        文件处理器 = logging.FileHandler(日志文件, encoding='utf-8')
+        文件处理器.setFormatter(格式器)
+        日志器.addHandler(文件处理器)
+
+    return 日志器
+
+logger = 创建日志器("应用主日志", "logs/应用.log")
+logger.info("应用启动成功")
+logger.warning("这是一个警告信息")
+logger.error("发生了一个错误")
+
+# 场景3：配置管理类
+class 配置管理器:
+    """应用程序配置管理器"""
+
+    def __init__(self, 配置文件路径: str):
+        self.配置文件路径 = 配置文件路径
+        self.配置数据 = {}
+        self.加载配置()
+
+    def 加载配置(self):
+        """从JSON文件加载配置"""
+        with open(self.配置文件路径, 'r', encoding='utf-8') as 文件:
+            self.配置数据 = json.load(文件)
+
+    def 获取配置(self, 键: str, 默认值=None):
+        """获取配置项的值"""
+        键列表 = 键.split('.')
+        当前 = self.配置数据
+        for 子键 in 键列表:
+            if isinstance(当前, dict):
+                当前 = 当前.get(子键)
+            else:
+                return 默认值
+        return 当前 if 当前 is not None else 默认值
+
+    def 设置配置(self, 键: str, 值):
+        """设置配置项的值"""
+        self.配置数据[键] = 值
+
+    def 保存配置(self):
+        """保存配置到文件"""
+        with open(self.配置文件路径, 'w', encoding='utf-8') as 文件:
+            json.dump(self.配置数据, 文件, ensure_ascii=False, indent=2)
+
+# 场景4：异常处理框架
+class 应用异常(Exception):
+    """应用程序基础异常类"""
+
+    def __init__(self, 消息: str, 错误码: int = 500):
+        self.消息 = 消息
+        self.错误码 = 错误码
+        super().__init__(self.消息)
+
+class 参数错误(应用异常):
+    """参数校验异常"""
+    def __init__(self, 参数名: str, 错误信息: str):
+        super().__init__(f"参数错误 [{参数名}]：{错误信息}", 400)
+
+class 资源未找到(应用异常):
+    """资源不存在异常"""
+    def __init__(self, 资源类型: str, 资源编号: int):
+        super().__init__(f"{资源类型}不存在，编号：{资源编号}", 404)
+
+class 权限不足(应用异常):
+    """权限不足异常"""
+    def __init__(self, 操作: str):
+        super().__init__(f"权限不足，无法执行操作：{操作}", 403)
+
+# ===== Git版本控制常用命令 =====
+git init                        # 初始化仓库
+git add .                       # 暂存所有修改
+git commit -m "提交信息"         # 提交修改
+git push origin main            # 推送到远程
+git pull origin main            # 拉取远程更新
+git branch feature              # 创建分支
+git checkout feature            # 切换分支
+git merge feature               # 合并分支
+git log --oneline               # 查看提交历史
+
+// Git是最流行的分布式版本控制系统，是现代软件开发协作的基础工具。
 
 // ===== 编程学习路线建议 =====
 // 前端：HTML -> CSS -> JavaScript -> React/Vue -> TypeScript
 // 后端：Python/Java/Go -> Web框架 -> 数据库 -> API设计 -> 微服务
 // 数据：Python -> NumPy -> Pandas -> Matplotlib -> 机器学习 -> 深度学习
 // 运维：Linux -> Shell -> Docker -> Kubernetes -> CI/CD
-// 移动端：Java/Kotlin -> Android Studio / Swift -> iOS开发
-// 全栈：前端 + 后端 + 数据库 + 部署
 // 编程最重要的是动手实践，多写代码、多读源码、多做项目。
+
+# ===== Python单元测试中文示例 =====
+import unittest
+
+class TestStringOperations(unittest.TestCase):
+    """字符串操作测试类"""
+
+    def test_string_concat(self):
+        """测试字符串拼接"""
+        result = "你好" + "世界"
+        self.assertEqual(result, "你好世界")
+
+    def test_string_format(self):
+        """测试字符串格式化"""
+        name = "小明"
+        age = 20
+        result = f"我叫{name}，今年{age}岁"
+        self.assertIn("小明", result)
+        self.assertIn("20", result)
+
+    def test_string_methods(self):
+        """测试字符串方法"""
+        text = "  Hello World  "
+        self.assertEqual(text.strip(), "Hello World")
+        self.assertEqual(text.upper(), "  HELLO WORLD  ")
+        self.assertTrue(text.startswith("  "))
+
+class TestListOperations(unittest.TestCase):
+    """列表操作测试类"""
+
+    def test_list_comprehension(self):
+        """测试列表推导式"""
+        result = [x * 2 for x in range(5)]
+        self.assertEqual(result, [0, 2, 4, 6, 8])
+
+    def test_list_filter(self):
+        """测试列表过滤"""
+        numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        evens = [x for x in numbers if x % 2 == 0]
+        self.assertEqual(evens, [2, 4, 6, 8, 10])
+
+# 单元测试是保证代码质量的重要手段。
+
+# ===== Python爬虫中文示例 =====
+import requests
+from bs4 import BeautifulSoup
+
+def 爬取新闻标题(网址: str) -> list:
+    """爬取指定网页的新闻标题列表"""
+    try:
+        请求头 = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            'Accept-Language': 'zh-CN,zh;q=0.9'
+        }
+        响应 = requests.get(网址, headers=请求头, timeout=10)
+        响应.encoding = 响应.apparent_encoding
+        汤姆 = BeautifulSoup(响应.text, 'html.parser')
+
+        标题列表 = []
+        for 标签 in 汤姆.find_all(['h1', 'h2', 'h3']):
+            文本 = 标签.get_text(strip=True)
+            if 文本 and len(文本) > 5:
+                标题列表.append(文本)
+
+        return 标题列表
+    except requests.RequestException as 错误:
+        print(f"爬取失败：{错误}")
+        return []
+
+# 网络爬虫用于自动化采集网页数据，但需遵守robots.txt协议和相关法律法规。
+
+# ===== Markdown文档格式 =====
+# 项目标题
+## 功能介绍
+### 安装步骤
+
+**加粗文本** 和 *斜体文本*
+
+- 功能项1
+- 功能项2
+- 功能项3
+
+1. 第一步
+2. 第二步
+
+[链接文字](https://example.com)
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| name | str | 名称 |
+| age | int | 年龄 |
+
+// Markdown是轻量级标记语言，广泛用于技术文档和README编写。
+
+# ===== 代码解释：冒泡排序 =====
+# 冒泡排序是一种简单的排序算法。它重复遍历要排序的列表，一次比较两个相邻元素，如果顺序错误就交换它们。
+# 时间复杂度：最好O(n)，最坏O(n^2)，平均O(n^2)。空间复杂度O(1)。是一种稳定的排序算法。
+
+def 冒泡排序(数组):
+    """冒泡排序算法实现"""
+    长度 = len(数组)
+    for i in range(长度):
+        # 每次遍历后，最大的元素会"冒泡"到最后
+        交换标记 = False
+        for j in range(0, 长度 - i - 1):
+            if 数组[j] > 数组[j + 1]:
+                数组[j], 数组[j + 1] = 数组[j + 1], 数组[j]
+                交换标记 = True
+        # 如果本次遍历没有发生交换，说明已经排好序
+        if not 交换标记:
+            break
+    return 数组
+
+# ===== 代码解释：二叉树遍历 =====
+# 二叉树是每个节点最多有两个子节点的树结构。前序遍历顺序为：根-左-右，中序遍历为：左-根-右，后序遍历为：左-右-根。
+
+class 二叉树节点:
+    def __init__(self, 值, 左=None, 右=None):
+        self.值 = 值
+        self.左 = 左
+        self.右 = 右
+
+def 前序遍历(节点):
+    """前序遍历：根 -> 左 -> 右"""
+    if 节点 is None:
+        return []
+    return [节点.值] + 前序遍历(节点.左) + 前序遍历(节点.右)
+
+def 中序遍历(节点):
+    """中序遍历：左 -> 根 -> 右"""
+    if 节点 is None:
+        return []
+    return 中序遍历(节点.左) + [节点.值] + 中序遍历(节点.右)
+
+def 后序遍历(节点):
+    """后序遍历：左 -> 右 -> 根"""
+    if 节点 is None:
+        return []
+    return 后序遍历(节点.左) + 后序遍历(节点.右) + [节点.值]
+
+def 层序遍历(根节点):
+    """层序遍历（广度优先）"""
+    from collections import deque
+    if not 根节点:
+        return []
+    结果 = []
+    队列 = deque([根节点])
+    while 队列:
+        节点 = 队列.popleft()
+        结果.append(节点.值)
+        if 节点.左:
+            队列.append(节点.左)
+        if 节点.右:
+            队列.append(节点.右)
+    return 结果
+
+# ===== 知识图谱：Python生态系统 =====
+# Python拥有丰富的第三方库生态系统：
+# Web框架：Flask（轻量级）、Django（全功能）、FastAPI（高性能异步）
+# 数据科学：NumPy（数值计算）、Pandas（数据分析）、Matplotlib（可视化）
+# 机器学习：Scikit-learn（传统ML）、TensorFlow（Google）、PyTorch（Meta）
+# 自动化：Selenium（浏览器自动化）、Scrapy（爬虫框架）、Celery（任务队列）
+# 数据库：SQLAlchemy（ORM）、Redis（缓存）、psycopg2（PostgreSQL）
+# 开发工具：pytest（测试）、black（格式化）、mypy（类型检查）
+
+print("Python生态系统涵盖了Web开发、数据科学、机器学习、自动化等多个领域。")
+print("初学者建议先掌握Python基础语法，再选择一个方向深入学习。")

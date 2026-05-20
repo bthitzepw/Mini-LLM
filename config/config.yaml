@@ -1,5 +1,5 @@
 model:
-  vocab_size: 261
+  vocab_size: 4268
   hidden_size: 512
   num_layers: 8
   num_heads: 8
@@ -37,6 +37,6 @@ system:
   checkpoint_dir: "checkpoints"
   log_dir: "logs"
 
-# 项目定位: 代码编程语言模型
-# 支持语言: Python / JavaScript / Java / C++ / Go / Rust / TypeScript / SQL / Shell / HTML / CSS
-# 核心能力: 代码生成 / 代码补全 / 代码解释
+# 项目定位: 代码编程语言模型（中英文双语支持）
+# 支持语言: Python / JavaScript / Java / C++ / Go / Rust / TypeScript / SQL / Shell / HTML / CSS + 中文
+# 核心能力: 代码生成 / 代码补全 / 代码解释 / 中文注释理解

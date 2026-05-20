@@ -1,14 +1,14 @@
-# Mini LLM - 从零训练微型代码语言模型
+# Mini LLM - 从零训练微型代码语言模型（中英双语）
 
-一个专注于**代码编程**的微型语言模型，基于 Transformer Decoder 架构，支持多语言代码生成、代码补全和代码解释。
+一个专注于**代码编程**的微型语言模型，支持**中英文双语**，基于 Transformer Decoder 架构，支持多语言代码生成、代码补全和代码解释，理解中文注释、文档字符串和技术描述。
 
 ## 项目概述
 
-本项目实现了一个面向代码生成领域的微型语言模型，训练数据涵盖 Python、JavaScript、Java、C++、Go、Rust、TypeScript、SQL、Shell 等主流编程语言。项目包含完整的：
+本项目实现了一个面向代码生成领域的微型语言模型，训练数据涵盖 Python、JavaScript、Java、C++、Go、Rust、TypeScript、SQL、Shell 等主流编程语言，同时支持中文注释风格的代码、中文文档字符串、中文变量命名场景和中文技术文档描述。项目包含完整的：
 
 - Transformer Decoder 模型实现（类 GPT）
-- 字符级分词器（优化代码符号识别）
-- 多语言代码训练语料
+- 字符级分词器（优化代码符号 + CJK 中文字符支持）
+- 多语言代码 + 中文训练语料
 - 完整的训练 / 评估 / 生成流程
 - Flask 网页交互界面（代码高亮展示）
 - 内容审核与代码安全过滤机制
@@ -26,13 +26,15 @@
 | **注意力头数** | 8 |
 | **FFN 中间维度** | 2048 |
 | **上下文长度** | 512 tokens |
-| **训练语料** | Python / JS / Java / C++ / Go / Rust / TS / SQL / Shell / HTML / CSS |
+| **词表大小** | 4268（ASCII + 代码符号 + CJK 汉字 + 中文标点） |
+| **训练语料** | Python / JS / Java / C++ / Go / Rust / TS / SQL / Shell / HTML / CSS + 中文 |
 
 ## 核心能力
 
-- **代码生成**：根据自然语言描述生成代码片段
+- **代码生成**：根据自然语言描述生成代码片段（中英文）
 - **代码补全**：续写未完成的代码
-- **代码解释**：用自然语言解释代码逻辑
+- **代码解释**：用中文或英文解释代码逻辑
+- **中文理解**：理解中文注释、文档字符串和技术文档
 - **多语言支持**：覆盖 10+ 种主流编程语言
 
 ## 项目结构
@@ -44,13 +46,13 @@ mini-llm/
 ├── src/
 │   ├── __init__.py
 │   ├── model.py              # Transformer 模型实现
-│   ├── tokenizer.py          # 字符级分词器（代码优化）
+│   ├── tokenizer.py          # 字符级分词器（代码 + 中文支持）
 │   ├── trainer.py            # 训练器（梯度累积 / 学习率调度）
 │   ├── moderator.py          # 内容审核 + 代码安全过滤
 │   └── compliance.py         # 合规基础设施（审计日志 / 速率限制 / GDPR）
 ├── data/
 │   └── raw/                   # 训练数据
-│       ├── train.txt          # 训练集（多语言代码语料）
+│       ├── train.txt          # 训练集（多语言代码 + 中文语料）
 │       ├── val.txt            # 验证集
 │       └── test.txt           # 测试集
 ├── templates/                # 网页模板
@@ -83,16 +85,14 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 
 ### 2. 准备训练数据
 
-在 `data/raw/` 目录下放置代码训练语料，项目已内置多语言代码数据：
+在 `data/raw/` 目录下放置训练语料，项目已内置多语言代码 + 中文数据：
 
 ```
 data/raw/
-├── train.txt   # 多语言代码片段 + 注释 + 解释（Python / JS / Java / C++ / Go / Rust / TS / SQL / Shell / HTML / CSS）
+├── train.txt   # 多语言代码片段 + 中文注释 + 技术文档
 ├── val.txt     # 验证集
 └── test.txt    # 测试集
 ```
-
-自定义训练数据格式：每行一个代码片段或代码相关的文本描述。
 
 ### 3. 开始训练
 
@@ -118,15 +118,34 @@ python web_app.py
 ```
 
 浏览器打开 **http://localhost:5000**，可以：
-- 输入自然语言描述，生成代码
+- 输入中文或英文描述，生成代码
+- 使用中文提问，获取代码解释
 - 调整生成参数（温度 / Top-K / 生成长度）
 - 代码高亮展示输出结果
-- 实时查看模型信息
+
+## 分词器设计
+
+分词器采用字符级编码方案，支持以下字符集：
+
+| 范围 | 内容 | 数量 |
+|------|------|------|
+| 0-255 | ASCII 基础字符 | 256 |
+| 256-285 | 特殊 Token + 代码符号 | 30 |
+| 286-4256 | CJK 常用汉字（GB2312 一级 + 二级 + 扩展） | ~3971 |
+| 4257-4267 | 中文标点符号 | ~11 |
+
+**总词表大小：4268**
+
+CJK 字符覆盖：
+- GB2312 一级汉字（3755 个，按拼音排序）
+- GB2312 二级汉字（3008 个）
+- 编程常用扩展汉字（257 个）
+- 中文标点符号（逗号、句号、感叹号、引号等）
 
 ## 模型架构
 
 ```
-MiniLLM (Code-Focused)
+MiniLLM (Code + Chinese)
 ├── TokenEmbedding (vocab_size -> hidden_size)
 ├── PositionEmbedding (max_seq_length -> hidden_size)
 ├── Dropout
@@ -173,7 +192,7 @@ MiniLLM (Code-Focused)
 在 `config/config.yaml` 中调整模型和训练参数：
 
 ### 模型配置
-- `vocab_size`: 词表大小（字符级分词器为 261）
+- `vocab_size`: 词表大小（4268 = ASCII + 代码符号 + CJK汉字 + 中文标点）
 - `hidden_size`: 隐藏层维度（512）
 - `num_layers`: Transformer层数（8）
 - `num_heads`: 注意力头数（8）
@@ -190,15 +209,20 @@ MiniLLM (Code-Focused)
 
 ### 1. 增强代码能力
 - 使用代码专用数据集（如 CodeParrot、The Stack）
-- 实现 BPE/WordPiece 分词器以支持代码 token
+- 实现 BPE/WordPiece 分词器以支持更多 token
 - 添加代码语法检查器作为后处理
 
-### 2. 扩展模型规模
+### 2. 增强中文能力
+- 增加更多中文技术文档和教程数据
+- 支持完整 Unicode CJK 扩展字符集
+- 添加中文编程问答对数据
+
+### 3. 扩展模型规模
 - 增加 `num_layers` 到 12-24 层
 - 增加 `hidden_size` 到 768-1024
 - 使用混合精度训练（FP16/BF16）
 
-### 3. 高级功能
+### 4. 高级功能
 - 实现 Beam Search 解码
 - 添加 Retrieval-Augmented Generation (RAG)
 - 支持代码语法高亮自动标注
@@ -224,3 +248,4 @@ MiniLLM (Code-Focused)
 - "Codex: A Generative Pre-trained Model for Code" - Chen et al.
 - "Code Llama: Open Foundation Models for Code" - Roziere et al.
 - "The Stack: 3 TB of Permissively Licensed Source Code" - Li et al.
+- "CPM-Generate: A Large-scale Chinese Pre-trained Language Model" - BAAI
