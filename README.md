@@ -37,7 +37,7 @@
 | 操作系统 | Windows / Linux / macOS | - |
 | CUDA | - | 11.8+（GPU 加速） |
 
-> **注意**：没有 GPU 也可以运行，程序会自动回退到 CPU 模式，但速度会慢很多。
+> **设备策略**：训练优先 GPU，自动回退 CPU（可通过 `--no-cpu-fallback` 禁用回退）；推理默认 CPU，可按需切换 GPU。详见[设备策略加固](#设备策略)。
 
 ### 安装 PyTorch
 
@@ -209,6 +209,8 @@ python train.py --label-smoothing 0.1
 | `--lr` | 0.0003 | 学习率（覆盖配置文件） |
 | `--epochs` | 10 | 训练轮数 |
 | `--batch-size` | 16 | 批量大小 |
+| `--device` | `auto` | 设备选择：`auto` / `cuda` / `cpu` |
+| `--no-cpu-fallback` | - | GPU 不可用时直接报错，不静默回退 CPU |
 | `--no-amp` | False | 禁用混合精度训练 |
 | `--no-rope` | False | 禁用 RoPE 位置编码 |
 | `--no-swiglu` | False | 禁用 SwiGLU 前馈网络 |
@@ -396,7 +398,7 @@ training:
   save_total_limit: 3        # 最多保留 N 个检查点
 
 system:
-  device: "cuda"             # "cuda" 或 "cpu"
+  device: "auto"             # 设备策略: auto(自动最优) / cuda / cpu
   seed: 42                   # 随机种子
   checkpoint_dir: "checkpoints"
   log_dir: "logs"
@@ -528,10 +530,12 @@ python tools/convert_checkpoint.py --old checkpoints/best_model.pt --new checkpo
 
 ### Q: 没有 GPU 能训练吗？
 
-可以，程序会自动回退到 CPU。但速度较慢，建议：
+可以。程序默认允许 CPU 回退（`CODESPRITE_ALLOW_CPU_FALLBACK=true`），但会打印警告。CPU 训练速度约为 GPU 的 1/10~1/50，建议：
 - 减小 `batch_size`
 - 减小 `num_epochs`
 - 使用 Google Colab（免费 GPU）等平台
+
+如果不希望静默回退，使用 `--no-cpu-fallback` 参数让程序在 GPU 不可用时直接报错。
 
 ### Q: 如何使用自己的训练数据？
 
@@ -593,10 +597,6 @@ codesprite/
 │   ├── layers.py            # 抽象层定义（Linear/Attention/FFN等）
 │   ├── transformer.py       # 完整 Transformer 模型结构
 │   └── graph.py             # 计算图（预留）
-├── ops/                     # 算子抽象（数学接口）
-│   ├── attention.py         # 注意力算子
-│   ├── activation.py        # 激活函数（SiLU/GELU/Softmax）
-│   └── norm.py              # 归一化（LayerNorm/RMSNorm）
 ├── backends/                # 计算后端实现
 │   ├── base.py              # Backend 抽象接口
 │   ├── pytorch.py           # PyTorch 后端（训练用）
@@ -615,10 +615,14 @@ codesprite/
 │   └── config.yaml          # 模型和训练配置
 ├── data/
 │   └── raw/                 # 训练数据
-├── src/                     # 保留组件
+├── src/                     # 核心组件
 │   ├── tokenizer.py         # 分词器 + 数据集（框架无关）
+│   ├── device.py            # 统一设备管理（检测/回退/资源隔离）
+│   ├── model.py             # CodeSprite 模型类
 │   ├── moderator.py         # 内容审核
-│   └── compliance.py        # 安全合规
+│   ├── compliance.py        # 安全合规
+│   ├── auto_learner.py      # 自动增量学习
+│   └── trainer.py           # 训练器
 ├── templates/               # Web 前端
 ├── train.py                 # 训练入口
 ├── generate.py              # 交互式生成
