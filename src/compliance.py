@@ -54,8 +54,9 @@ class SecurityHeaders:
             'Referrer-Policy': 'strict-origin-when-cross-origin',
             # Permissions Policy - 限制浏览器功能
             'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-            # CORS - 限制跨域访问
-            'Access-Control-Allow-Origin': '*',
+            # CORS - 跨域访问控制
+            # 本地开发默认允许 localhost；生产环境请改为你的域名
+            'Access-Control-Allow-Origin': 'http://localhost:5000',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type',
         }

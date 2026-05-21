@@ -37,6 +37,11 @@ from src.compliance import SecurityHeaders, RateLimiter, AuditLogger
 
 app = Flask(__name__)
 
+# 安全配置: Flask secret_key（用于 session 签名等）
+# 生产环境部署前请替换为随机生成的强密钥:
+#   python -c "import secrets; print(secrets.token_hex(32))"
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'minillm-dev-key-change-in-production')
+
 # 合规组件
 security_headers = SecurityHeaders()
 rate_limiter = RateLimiter(max_requests=20, window_seconds=60)

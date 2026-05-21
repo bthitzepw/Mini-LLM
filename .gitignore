@@ -25,12 +25,12 @@ logs/
 runs/
 events.out.tfevents.*
 
-# 数据目录（原始数据可选是否上传）
-# data/raw/
-
-# 自动学习数据库（本地运行时生成）
+# 数据目录
+# data/raw/*.txt 示例训练数据可随仓库分发（不含敏感信息）
+# 用户自备的训练数据请勿放入此目录提交
 data/auto_learning.db
 data/*.db
+data/user_sessions/
 
 # IDE
 .vscode/
