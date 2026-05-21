@@ -56,29 +56,29 @@ def set_seed(seed):
         torch.backends.cudnn.benchmark = False
 
 
-def prepare_data(config):
+def prepare_data(config_dict):
     print("Initializing tokenizer...")
-    tokenizer = SimpleTokenizer(vocab_size=config.model['vocab_size'])
+    tokenizer = SimpleTokenizer(vocab_size=config_dict['model']['vocab_size'])
 
     print(f"Loading datasets...")
-    train_dataset = TextDataset(config.data['train_file'], tokenizer, config.model['max_seq_length'])
-    val_dataset = TextDataset(config.data['val_file'], tokenizer, config.model['max_seq_length'])
+    train_dataset = TextDataset(config_dict['data']['train_file'], tokenizer, config_dict['model']['max_seq_length'])
+    val_dataset = TextDataset(config_dict['data']['val_file'], tokenizer, config_dict['model']['max_seq_length'])
 
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Validation dataset size: {len(val_dataset)}")
 
     train_loader = create_dataloader(
         train_dataset,
-        batch_size=config.training['batch_size'],
+        batch_size=config_dict['training']['batch_size'],
         shuffle=True,
-        num_workers=config.data['num_workers']
+        num_workers=config_dict['data']['num_workers']
     )
 
     val_loader = create_dataloader(
         val_dataset,
-        batch_size=config.training['batch_size'],
+        batch_size=config_dict['training']['batch_size'],
         shuffle=False,
-        num_workers=config.data['num_workers']
+        num_workers=config_dict['data']['num_workers']
     )
 
     return tokenizer, train_loader, val_loader
@@ -154,9 +154,9 @@ def main():
         config_dict['training']['batch_size'] = args.batch_size
 
     config = ConfigWrapper(config_dict)
-    set_seed(config.system['seed'])
+    set_seed(config_dict['system']['seed'])
 
-    device = torch.device(config.system['device'] if torch.cuda.is_available() else 'cpu')
+    device = torch.device(config_dict['system']['device'] if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
     if torch.cuda.is_available():
@@ -165,19 +165,19 @@ def main():
 
     # 构建模型
     model_config = ModelConfig(
-        vocab_size=config.model['vocab_size'],
-        hidden_size=config.model['hidden_size'],
-        num_layers=config.model['num_layers'],
-        num_heads=config.model['num_heads'],
-        intermediate_size=config.model['intermediate_size'],
-        dropout=config.model['dropout'],
-        max_seq_length=config.model['max_seq_length'],
-        tie_weights=config.model['tie_weights']
+        vocab_size=config_dict['model']['vocab_size'],
+        hidden_size=config_dict['model']['hidden_size'],
+        num_layers=config_dict['model']['num_layers'],
+        num_heads=config_dict['model']['num_heads'],
+        intermediate_size=config_dict['model']['intermediate_size'],
+        dropout=config_dict['model']['dropout'],
+        max_seq_length=config_dict['model']['max_seq_length'],
+        tie_weights=config_dict['model']['tie_weights']
     )
 
-    use_rope = config.model.get('use_rope', True)
-    use_swiglu = config.model.get('use_swiglu', True)
-    use_gradient_ckpt = getattr(config.training, 'use_gradient_checkpointing', False)
+    use_rope = config_dict['model'].get('use_rope', True)
+    use_swiglu = config_dict['model'].get('use_swiglu', True)
+    use_gradient_ckpt = config_dict['training'].get('use_gradient_checkpointing', False)
 
     print(f"\nBuilding model (RoPE={use_rope}, SwiGLU={use_swiglu})...")
     model = MiniLLM(model_config, use_rope=use_rope, use_swiglu=use_swiglu,
@@ -198,8 +198,8 @@ def main():
     # 准备数据
     tokenizer, train_loader, val_loader = prepare_data(config_dict)
 
-    os.makedirs(config.system['checkpoint_dir'], exist_ok=True)
-    os.makedirs(config.system['log_dir'], exist_ok=True)
+    os.makedirs(config_dict['system']['checkpoint_dir'], exist_ok=True)
+    os.makedirs(config_dict['system']['log_dir'], exist_ok=True)
 
     # 自动学习模式：合并用户反馈数据
     if args.mode == 'auto':
@@ -267,7 +267,7 @@ def main():
     )
 
     # 加载已有检查点
-    checkpoint_path = os.path.join(config.system['checkpoint_dir'], 'best_model.pt')
+    checkpoint_path = os.path.join(config_dict['system']['checkpoint_dir'], 'best_model.pt')
     if os.path.exists(checkpoint_path):
         print("\nLoading existing checkpoint...")
         trainer.load_checkpoint('best_model.pt')

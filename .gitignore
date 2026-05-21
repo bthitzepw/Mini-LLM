@@ -47,5 +47,8 @@ desktop.ini
 .env
 .env.local
 
+# PyTorch 本地安装包（不提交）
+*.whl
+
 # WorkBuddy
 .workbuddy/
