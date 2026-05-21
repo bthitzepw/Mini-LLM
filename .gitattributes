@@ -1,0 +1,20 @@
+# Git 属性文件自身保持 LF
+.gitattributes text eol=lf
+
+# 强制 Shell 脚本使用 LF 换行（确保 Linux 兼容）
+*.sh text eol=lf
+
+# Python 文件统一 LF
+*.py text eol=lf
+
+# Windows 批处理使用 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制文件
+*.pt binary
+*.pth binary
+*.bin binary
+*.safetensors binary
+*.whl binary
+*.db binary

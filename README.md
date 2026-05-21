@@ -44,10 +44,16 @@
 先安装与你系统匹配的 PyTorch 版本，参考官网：https://pytorch.org/get-started/locally/
 
 ```bash
-# 示例：Windows + CUDA 12.8
+# Linux + CUDA 12.x（推荐）
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 
-# 示例：CPU only
+# Windows + CUDA 12.x
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+
+# macOS（MPS 加速）
+pip install torch torchvision
+
+# CPU only（无 GPU）
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 ```
 
@@ -340,9 +346,21 @@ python web_app.py
 - 用户协议与隐私政策页面
 - 学习状态控制面板
 
-### 一键启动（Windows）
+### 一键启动
 
-双击 `start_web.bat` 即可启动 Web 服务。
+| 系统 | 命令 |
+|------|------|
+| **Linux / macOS** | `./start_web.sh` |
+| **Windows** | 双击 `start_web.bat` |
+
+启动后访问 http://localhost:5000 即可使用。
+
+```bash
+# Linux/macOS 高级选项
+./start_web.sh --port 8080    # 指定端口
+./start_web.sh --debug        # 调试模式
+./start_web.sh --help         # 查看帮助
+```
 
 ---
 
@@ -547,6 +565,23 @@ model:
 
 本项目不依赖 npm/Node.js，纯 Python 项目，不受影响。
 
+### Q: Linux 上 `./start_web.sh` 提示 Permission denied？
+
+```bash
+chmod +x start_web.sh
+./start_web.sh
+```
+
+### Q: Linux 上如何确认 CUDA 可用？
+
+```bash
+python3 -c "import torch; print(torch.cuda.is_available())"
+# 应输出: True
+
+# 查看 GPU 型号
+python3 -c "import torch; print(torch.cuda.get_device_name(0))"
+```
+
 ---
 
 ## 项目结构
@@ -589,7 +624,10 @@ codesprite/
 ├── generate.py              # 交互式生成
 ├── evaluate.py              # 模型评估
 ├── web_app.py               # Flask Web 服务
+├── start_web.sh              # 启动脚本 (Linux/macOS)
+├── start_web.bat             # 启动脚本 (Windows)
 ├── requirements.txt         # Python 依赖
+├── .gitattributes           # Git 换行符统一规则
 ├── LICENSE                  # MIT
 └── README.md
 ```
