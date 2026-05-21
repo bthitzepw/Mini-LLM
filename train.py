@@ -1,21 +1,13 @@
 """
-Mini LLM 训练入口 - 深度学习增强版
-
-支持:
-  - 标准训练
-  - 增量训练（从已有检查点继续）
-  - 自动学习模式（从用户反馈数据中学习）
-  - 学习率查找器
-  - 混合精度训练
-  - 标签平滑
-  - EMA
-  - 早停
+MiniLLM v2 训练入口 — 框架无关架构
 
 用法:
-  python train.py                  # 标准训练
+  python train.py                  # 标准训练（PyTorch 后端）
   python train.py --mode auto      # 自动学习模式
-  python train.py --find-lr        # 学习率查找
+  python train.py --find-lr        # 学习率查找器
   python train.py --no-amp         # 禁用混合精度
+  python train.py --device cpu     # 使用 CPU 训练
+  python train.py --convert-old checkpoints/best_model.pt  # 转换旧权重
 """
 
 import torch
@@ -25,22 +17,26 @@ import numpy as np
 import os
 import sys
 import argparse
-import math
 
-from src.model import MiniLLM, Config as ModelConfig
+# 添加项目根目录
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from ir.config import ModelConfig
+from ir.transformer import TransformerModel
+from ir.layers import Layer
+from backends.pytorch import PyTorchBackend, init_model_weights, collect_parameters
+from training.trainer import Trainer
 from src.tokenizer import SimpleTokenizer, TextDataset, create_dataloader
-from src.trainer import Trainer
 
 
 def load_config(config_path='config/config.yaml'):
     with open(config_path, 'r', encoding='utf-8') as f:
-        config_dict = yaml.safe_load(f)
-    return config_dict
+        return yaml.safe_load(f)
 
 
 class ConfigWrapper:
     def __init__(self, config_dict):
-        self.model = config_dict['model']
+        self.model = type('ModelConfig', (), config_dict['model'])()
         self.training = type('TrainingConfig', (), config_dict['training'])()
         self.data = type('DataConfig', (), config_dict['data'])()
         self.system = type('SystemConfig', (), config_dict['system'])()
@@ -61,8 +57,14 @@ def prepare_data(config_dict):
     tokenizer = SimpleTokenizer(vocab_size=config_dict['model']['vocab_size'])
 
     print(f"Loading datasets...")
-    train_dataset = TextDataset(config_dict['data']['train_file'], tokenizer, config_dict['model']['max_seq_length'])
-    val_dataset = TextDataset(config_dict['data']['val_file'], tokenizer, config_dict['model']['max_seq_length'])
+    train_dataset = TextDataset(
+        config_dict['data']['train_file'], tokenizer,
+        config_dict['model']['max_seq_length']
+    )
+    val_dataset = TextDataset(
+        config_dict['data']['val_file'], tokenizer,
+        config_dict['model']['max_seq_length']
+    )
 
     print(f"Train dataset size: {len(train_dataset)}")
     print(f"Validation dataset size: {len(val_dataset)}")
@@ -73,7 +75,6 @@ def prepare_data(config_dict):
         shuffle=True,
         num_workers=config_dict['data']['num_workers']
     )
-
     val_loader = create_dataloader(
         val_dataset,
         batch_size=config_dict['training']['batch_size'],
@@ -84,66 +85,58 @@ def prepare_data(config_dict):
     return tokenizer, train_loader, val_loader
 
 
-def print_model_summary(model, device):
-    """打印模型摘要"""
-    info = model.get_model_info()
+def print_model_info(model, backend):
+    """打印模型信息"""
     print(f"\n{'='*50}")
-    print(f"Model Summary")
+    print(f"MiniLLM v2 — Framework-Agnostic Architecture")
     print(f"{'='*50}")
-    print(f"  Total parameters:     {info['total_params']:,}")
-    print(f"  Trainable parameters: {info['trainable_params']:,}")
-    print(f"  Embedding parameters: {info['embedding_params']:,}")
-    print(f"  Attention parameters: {info['attention_params']:,}")
-    print(f"  FFN parameters:       {info['ffn_params']:,}")
-    print(f"  Layers:               {info['num_layers']}")
-    print(f"  Hidden size:          {info['hidden_size']}")
-    print(f"  Heads:                {info['num_heads']}")
-    print(f"  Vocab size:           {info['vocab_size']}")
-    print(f"  Max sequence:         {info['max_seq_length']}")
-    print(f"  RoPE:                 {info['use_rope']}")
-    print(f"  Gradient Checkpoint:  {info['use_gradient_checkpointing']}")
-    print(f"  Tie weights:          {info['tie_weights']}")
-    print(f"  Device:               {device}")
-
-    # 显存估算
-    if device.type == 'cuda':
-        mem_params = sum(p.numel() * p.element_size() for p in model.parameters())
-        mem_grads = mem_params  # 梯度大小约等于参数大小
-        mem_opt = mem_params * 2  # AdamW 约为参数的2倍
-        total_mem = (mem_params + mem_grads + mem_opt) / (1024 ** 3)
-        print(f"\n  Estimated GPU memory: ~{total_mem:.1f} GB (params+grads+optimizer)")
+    print(f"  Total parameters:     {model.get_param_count():,} "
+          f"({model.get_param_count()/1e6:.1f}M)")
+    print(f"  Hidden size:          {model.config.hidden_size}")
+    print(f"  Layers:               {model.config.num_layers}")
+    print(f"  Heads:                {model.config.num_heads}")
+    print(f"  KV Heads:             {model.config.num_kv_heads}")
+    print(f"  Vocab size:           {model.config.vocab_size}")
+    print(f"  Max sequence:         {model.config.max_seq_length}")
+    print(f"  Activation:           {model.config.activation}")
+    print(f"  RoPE:                 {model.config.use_rope}")
+    print(f"  Backend:              {backend.name}")
+    print(f"  Device:               {getattr(backend, 'device', 'cpu')}")
     print(f"{'='*50}\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Mini LLM Training')
+    parser = argparse.ArgumentParser(description='MiniLLM v2 Training')
     parser.add_argument('--mode', type=str, default='standard',
                        choices=['standard', 'auto', 'find-lr'],
-                       help='Training mode: standard, auto (from feedback), or find-lr')
+                       help='Training mode')
     parser.add_argument('--no-amp', action='store_true', help='Disable mixed precision')
     parser.add_argument('--no-rope', action='store_true', help='Disable RoPE')
     parser.add_argument('--no-swiglu', action='store_true', help='Disable SwiGLU')
     parser.add_argument('--use-ema', action='store_true', help='Enable EMA')
-    parser.add_argument('--use-checkpointing', action='store_true', help='Enable gradient checkpointing')
-    parser.add_argument('--label-smoothing', type=float, default=None, help='Label smoothing value')
-    parser.add_argument('--lr', type=float, default=None, help='Override learning rate')
-    parser.add_argument('--epochs', type=int, default=None, help='Override number of epochs')
-    parser.add_argument('--batch-size', type=int, default=None, help='Override batch size')
+    parser.add_argument('--label-smoothing', type=float, default=None)
+    parser.add_argument('--lr', type=float, default=None)
+    parser.add_argument('--epochs', type=int, default=None)
+    parser.add_argument('--batch-size', type=int, default=None)
+    parser.add_argument('--device', type=str, default=None,
+                       help='Device (cuda/cpu)')
+    parser.add_argument('--convert-old', type=str, default=None,
+                       help='Convert old checkpoint to new format and exit')
+    parser.add_argument('--resume', type=str, default=None,
+                       help='Resume from checkpoint')
     args = parser.parse_args()
 
     config_dict = load_config()
 
-    # 命令行参数覆盖配置
+    # 命令行覆盖
     if args.no_amp:
         config_dict['training']['use_amp'] = False
     if args.no_rope:
         config_dict['model']['use_rope'] = False
     if args.no_swiglu:
-        config_dict['model']['use_swiglu'] = False
+        config_dict['model']['activation'] = 'gelu'
     if args.use_ema:
         config_dict['training']['use_ema'] = True
-    if args.use_checkpointing:
-        config_dict['training']['use_gradient_checkpointing'] = True
     if args.label_smoothing is not None:
         config_dict['training']['label_smoothing'] = args.label_smoothing
     if args.lr is not None:
@@ -156,44 +149,38 @@ def main():
     config = ConfigWrapper(config_dict)
     set_seed(config_dict['system']['seed'])
 
-    device = torch.device(config_dict['system']['device'] if torch.cuda.is_available() else 'cpu')
+    # 设备
+    device_str = args.device or config_dict['system']['device']
+    device = torch.device(device_str if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
     if torch.cuda.is_available():
         print(f"GPU: {torch.cuda.get_device_name(0)}")
-        print(f"CUDA version: {torch.version.cuda}")
 
-    # 构建模型
-    model_config = ModelConfig(
-        vocab_size=config_dict['model']['vocab_size'],
-        hidden_size=config_dict['model']['hidden_size'],
-        num_layers=config_dict['model']['num_layers'],
-        num_heads=config_dict['model']['num_heads'],
-        intermediate_size=config_dict['model']['intermediate_size'],
-        dropout=config_dict['model']['dropout'],
-        max_seq_length=config_dict['model']['max_seq_length'],
-        tie_weights=config_dict['model']['tie_weights']
-    )
+    # 构建 IR 模型
+    mc = ModelConfig.from_yaml(config_dict)
+    model = TransformerModel(mc)
 
-    use_rope = config_dict['model'].get('use_rope', True)
-    use_swiglu = config_dict['model'].get('use_swiglu', True)
-    use_gradient_ckpt = config_dict['training'].get('use_gradient_checkpointing', False)
+    # 创建 PyTorch 后端
+    backend = PyTorchBackend(device=str(device))
 
-    print(f"\nBuilding model (RoPE={use_rope}, SwiGLU={use_swiglu})...")
-    model = MiniLLM(model_config, use_rope=use_rope, use_swiglu=use_swiglu,
-                    use_gradient_checkpointing=use_gradient_ckpt)
+    # 初始化权重
+    init_model_weights(model, backend)
+    print_model_info(model, backend)
 
-    print_model_summary(model, device)
-
-    # 学习率查找器模式
-    if args.mode == 'find-lr':
-        print("\nRunning LR Finder...")
-        tokenizer, train_loader, val_loader = prepare_data(config_dict)
-        suggested_lr, lr_pairs = Trainer.find_learning_rate(
-            model, train_loader, config, device
-        )
-        print(f"\nSuggested learning rate: {suggested_lr:.2e}")
+    # 旧权重转换模式
+    if args.convert_old:
+        from tools.convert_checkpoint import convert_old_to_new
+        convert_old_to_new(args.convert_old, args.convert_old.replace('.pt', '_v2.pt'))
         return
+
+    # 加载已有检查点
+    best_path = os.path.join(config_dict['system']['checkpoint_dir'], 'best_model.pt')
+    resume_path = args.resume or (best_path if os.path.exists(best_path) else None)
+
+    if resume_path and os.path.exists(resume_path):
+        print(f"\nLoading checkpoint: {resume_path}")
+        backend.load_checkpoint(model, resume_path)
 
     # 准备数据
     tokenizer, train_loader, val_loader = prepare_data(config_dict)
@@ -201,80 +188,18 @@ def main():
     os.makedirs(config_dict['system']['checkpoint_dir'], exist_ok=True)
     os.makedirs(config_dict['system']['log_dir'], exist_ok=True)
 
-    # 自动学习模式：合并用户反馈数据
-    if args.mode == 'auto':
-        print("\nAuto-learning mode: loading user feedback data...")
-        try:
-            from src.auto_learner import AutoLearner
-            learner = AutoLearner()
-            feedback_data = learner.prepare_training_data(include_augmented=True)
-            if feedback_data:
-                print(f"Found {len(feedback_data)} samples from user feedback.")
-
-                # 合并到训练集
-                class FeedbackDataset(torch.utils.data.Dataset):
-                    def __init__(self, texts, tokenizer, max_length):
-                        self.data = []
-                        for text in texts:
-                            if len(text) < 10:
-                                continue
-                            tokens = tokenizer.encode(text, max_length=max_length)
-                            if len(tokens) < 5:
-                                continue
-                            self.data.append(tokens)
-                    def __len__(self):
-                        return len(self.data)
-                    def __getitem__(self, idx):
-                        tokens = self.data[idx]
-                        input_ids = tokens[:-1]
-                        labels = tokens[1:]
-                        attention_mask = [1] * len(input_ids)
-                        return {
-                            'input_ids': torch.tensor(input_ids, dtype=torch.long),
-                            'labels': torch.tensor(labels, dtype=torch.long),
-                            'attention_mask': torch.tensor(attention_mask, dtype=torch.long),
-                        }
-
-                feedback_dataset = FeedbackDataset(
-                    feedback_data, tokenizer, config_dict['model']['max_seq_length']
-                )
-                # 合并数据集
-                from torch.utils.data import ConcatDataset
-                combined_dataset = ConcatDataset([train_loader.dataset, feedback_dataset])
-                train_loader = torch.utils.data.DataLoader(
-                    combined_dataset,
-                    batch_size=config_dict['training']['batch_size'],
-                    shuffle=True,
-                    num_workers=0
-                )
-                print(f"Combined dataset size: {len(combined_dataset)}")
-
-                # 自动学习模式使用更小的学习率
-                if args.lr is None:
-                    config_dict['training']['learning_rate'] = 0.00005
-                    print("Auto-learning: using smaller learning rate (5e-5)")
-        except Exception as e:
-            print(f"Warning: Could not load feedback data: {e}")
-            print("Falling back to standard training.")
-
     # 创建训练器
     trainer = Trainer(
         model=model,
         train_loader=train_loader,
         val_loader=val_loader,
+        backend=backend,
         config=config,
-        device=device
+        tokenizer=tokenizer
     )
-
-    # 加载已有检查点
-    checkpoint_path = os.path.join(config_dict['system']['checkpoint_dir'], 'best_model.pt')
-    if os.path.exists(checkpoint_path):
-        print("\nLoading existing checkpoint...")
-        trainer.load_checkpoint('best_model.pt')
 
     print("\n" + "="*50)
     print(f"Starting {args.mode} training!")
-    print(f"  Mode: {args.mode}")
     print(f"  AMP: {config_dict['training']['use_amp']}")
     print(f"  Label Smoothing: {config_dict['training'].get('label_smoothing', 0)}")
     print(f"  EMA: {config_dict['training'].get('use_ema', False)}")
@@ -285,9 +210,9 @@ def main():
     trainer.train()
 
     print("\nTraining finished! Running final evaluation...")
-    final_val_loss = trainer.evaluate()
-    print(f"Final validation loss: {final_val_loss['val_loss']:.4f}")
-    print(f"Final perplexity: {final_val_loss['perplexity']:.2f}")
+    val_metrics = trainer.evaluate()
+    print(f"Final validation loss: {val_metrics['val_loss']:.4f}")
+    print(f"Final perplexity: {val_metrics['perplexity']:.2f}")
 
 
 if __name__ == '__main__':

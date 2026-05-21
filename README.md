@@ -1,6 +1,12 @@
-# Mini LLM - 微型代码语言模型
+# MiniLLM v2 — 框架无关的微型代码语言模型
 
-从零构建的微型语言模型（Transformer Decoder），约 3500 万参数，专注于代码编程领域，支持中英文双语。集成 RoPE 旋转位置编码、SwiGLU 门控前馈网络、KV-Cache 推理加速、混合精度训练等深度学习增强技术，以及基于用户反馈的自动学习系统。
+> **架构升级：v2 采用框架无关的 IR（中间表示）架构**
+>
+> 模型定义层（`ir/`）不依赖任何计算框架（PyTorch/NumPy），计算由可插拔的 `backends/` 后端提供。
+> 同一份模型代码可以：用 PyTorch 训练，用 NumPy 纯 CPU 推理，导出为 GGUF/ONNX 格式。
+
+约 3800 万参数，Transformer Decoder 架构，专注于代码编程领域，支持中英文双语。
+集成 RoPE 旋转位置编码、SwiGLU 门控前馈网络、GQA 分组查询注意力、KV-Cache 推理加速等现代技术。
 
 ---
 
@@ -263,7 +269,14 @@ python train.py --find-lr
 ### 交互式生成
 
 ```bash
+# PyTorch 后端（默认）
 python generate.py
+
+# NumPy 后端（纯 CPU，无需 PyTorch）
+python generate.py --backend numpy
+
+# 指定 GPU 设备
+python generate.py --device cuda
 ```
 
 进入交互模式后：
@@ -460,6 +473,34 @@ auto_learning:
 
 ## 常见问题
 
+### Q: 如何切换推理后端？
+
+```bash
+# PyTorch 后端（GPU 推理）
+python generate.py --backend pytorch --device cuda
+
+# NumPy 后端（CPU 推理，无需安装 PyTorch）
+python generate.py --backend numpy
+```
+
+### Q: 如何导出模型？
+
+```python
+# GGUF 导出（用于 llama.cpp）
+from export.gguf import export_gguf
+export_gguf(model, "minillm.gguf")
+
+# ONNX 导出
+from export.onnx import export_onnx
+export_onnx(model, "minillm.onnx")
+```
+
+### Q: 如何转换旧版权重？
+
+```bash
+python tools/convert_checkpoint.py --old checkpoints/best_model.pt --new checkpoints/best_model_v2.pt
+```
+
 ### Q: 训练时 Val Loss 显示 `inf` 怎么办？
 
 前几个 epoch 出现 `inf` 通常是因为 warmup 阶段学习率极小，模型输出数值不稳定。训练几个 epoch 后学习率上升，Val Loss 会自动恢复正常。如果持续为 `inf`，尝试：
@@ -512,65 +553,99 @@ model:
 
 ```
 mini-llm/
+├── ir/                      # 模型结构定义（零框架依赖）
+│   ├── config.py            # ModelConfig 数据类
+│   ├── layers.py            # 抽象层定义（Linear/Attention/FFN等）
+│   ├── transformer.py       # 完整 Transformer 模型结构
+│   └── graph.py             # 计算图（预留）
+├── ops/                     # 算子抽象（数学接口）
+│   ├── attention.py         # 注意力算子
+│   ├── activation.py        # 激活函数（SiLU/GELU/Softmax）
+│   └── norm.py              # 归一化（LayerNorm/RMSNorm）
+├── backends/                # 计算后端实现
+│   ├── base.py              # Backend 抽象接口
+│   ├── pytorch.py           # PyTorch 后端（训练用）
+│   └── numpy.py             # NumPy 后端（纯CPU推理）
+├── training/                # 训练模块
+│   ├── trainer.py           # 后端无关训练器
+│   └── optimizer.py         # 优化器工具
+├── inference/               # 推理接口
+│   └── engine.py            # 推理引擎（自动选后端）
+├── export/                  # 跨平台导出
+│   ├── gguf.py              # GGUF 格式导出（llama.cpp兼容）
+│   └── onnx.py              # ONNX 格式导出
+├── tools/                   # 工具脚本
+│   └── convert_checkpoint.py  # 旧权重转换工具
 ├── config/
-│   └── config.yaml          # 模型和训练配置（核心配置文件）
+│   └── config.yaml          # 模型和训练配置
 ├── data/
-│   ├── auto_learning.db     # 自动学习数据库（运行时自动生成）
-│   └── raw/                 # 训练数据目录
-│       ├── train.txt        # 训练集
-│       ├── val.txt          # 验证集
-│       └── test.txt         # 测试集
-├── src/
-│   ├── model.py             # Transformer 模型定义（RoPE / KV-Cache / SwiGLU）
-│   ├── tokenizer.py         # 自定义 BPE 分词器 + 数据集类
-│   ├── trainer.py           # 训练器（AMP / EMA / 标签平滑 / 早停）
-│   ├── auto_learner.py      # 自动学习系统（反馈收集 / 数据增强 / 增量训练）
-│   ├── moderator.py         # 内容审核模块
-│   └── compliance.py        # 合规基础设施（安全头 / 限流 / 审计日志）
-├── templates/
-│   ├── index.html           # Web 对话界面
-│   ├── agreement.html       # 用户协议
-│   └── privacy.html         # 隐私政策
-├── checkpoints/             # 模型权重（.gitignore，不提交）
-├── logs/                    # 训练日志（.gitignore，不提交）
+│   └── raw/                 # 训练数据
+├── src/                     # 保留组件
+│   ├── tokenizer.py         # 分词器 + 数据集（框架无关）
+│   ├── moderator.py         # 内容审核
+│   └── compliance.py        # 安全合规
+├── templates/               # Web 前端
 ├── train.py                 # 训练入口
 ├── generate.py              # 交互式生成
 ├── evaluate.py              # 模型评估
 ├── web_app.py               # Flask Web 服务
-├── start_web.bat            # Windows 一键启动脚本
 ├── requirements.txt         # Python 依赖
-├── LICENSE                  # MIT License
-└── README.md                # 本文件
+├── LICENSE                  # MIT
+└── README.md
 ```
 
 ---
 
-## 模型架构
+## 架构设计
 
 ```
-Transformer Decoder (类 GPT)
+               ┌──────────────────────┐
+               │    ir/ (模型定义层)    │
+               │  零框架依赖，纯结构描述  │
+               └──────────┬───────────┘
+                          │ delegate
+          ┌───────────────┼───────────────┐
+          ↓               ↓               ↓
+   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+   │ PyTorch后端  │ │  NumPy后端   │ │  (MLX后端)   │
+   │ 训练+GPU推理  │ │ CPU纯推理    │ │  Apple芯片   │
+   └─────────────┘ └─────────────┘ └─────────────┘
+          ↓               ↓
+   ┌─────────────┐ ┌─────────────┐
+   │ GGUF导出     │ │ ONNX导出     │
+   │ llama.cpp   │ │ ONNX Runtime │
+   └─────────────┘ └─────────────┘
+```
+
+**核心思想**：模型定义与计算框架完全解耦。`ir/` 中的代码不 `import torch`，不 `import numpy`，只描述"模型有哪些层、长什么样"。具体怎么算由 `backends/` 决定。
+
+### 模型架构细节
+
+```
+Transformer Decoder (LLaMA 风格)
 
 ┌──────────────────────────────────┐
 │         Token Embedding           │
 │         Dropout                   │
 ├──────────────────────────────────┤
-│   TransformerBlock x 8            │
-│   ├── LayerNorm (Pre-Norm)        │
-│   ├── Multi-Head Self-Attention   │
-│   │   ├── RoPE Position Encoding  │
-│   │   ├── KV-Cache Support        │
-│   │   └── Causal Masking          │
-│   ├── Residual Connection         │
-│   ├── LayerNorm (Pre-Norm)        │
-│   ├── SwiGLU Feed-Forward Network │
-│   └── Residual Connection         │
+│   TransformerBlock × 8           │
+│   ├── RMSNorm (Pre-Norm)         │
+│   ├── Self-Attention (GQA)       │
+│   │   ├── RoPE Position Encoding │
+│   │   ├── Rotating KV-Cache      │
+│   │   └── Causal Masking         │
+│   ├── Residual                   │
+│   ├── RMSNorm (Pre-Norm)         │
+│   ├── SwiGLU FeedForward         │
+│   └── Residual                   │
 ├──────────────────────────────────┤
-│   Final LayerNorm                 │
-│   LM Head (Weight Tied)           │
+│   Final RMSNorm                  │
+│   LM Head (Tied Weights)         │
 └──────────────────────────────────┘
 
-Parameters: ~35M | Hidden: 512 | Heads: 8 | Layers: 8
-Vocab: 4268 | Context: 512 tokens
+Parameters: ~37.9M | Hidden: 512 | Heads: 8 | Layers: 8
+Vocab: 4268 | Context: 512 tokens | Activation: SwiGLU
+Position: RoPE | Norm: RMSNorm | Attention: GQA
 ```
 
 ---
