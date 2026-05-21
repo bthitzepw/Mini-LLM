@@ -32,6 +32,7 @@ from ir.transformer import TransformerModel
 from inference.engine import InferenceEngine
 from src.tokenizer import SimpleTokenizer
 from src.compliance import SecurityHeaders, RateLimiter, AuditLogger
+from backends.pytorch import PyTorchBackend, init_model_weights
 
 # --- 初始化 ---
 
@@ -59,9 +60,17 @@ model_config = ModelConfig.from_yaml(config_dict)
 # 加载模型
 tokenizer = SimpleTokenizer(vocab_size=model_config.vocab_size)
 model = TransformerModel(model_config)
+
+# 创建后端并初始化权重（即使没有预训练模型）
+backend = PyTorchBackend(device='cpu')
+init_model_weights(model, backend)
+print("Model weights initialized (random initialization)")
+
+# 创建推理引擎
 engine = InferenceEngine(
     model,
-    checkpoint_path='checkpoints/best_model.pt',
+    backend=backend,
+    checkpoint_path=None,  # 不加载预训练
     tokenizer=tokenizer,
     device='cpu'
 )
@@ -69,9 +78,10 @@ engine.temperature = 0.8
 engine.top_k = 50
 engine.top_p = 0.9
 
-print(f"CodeSprite v2 Web App ready")
+print(f"\nCodeSprite v2 Web App ready")
 print(f"  Backend: {engine.backend.name}")
 print(f"  Parameters: {model.get_param_count():,}")
+print(f"  Note: Using randomly initialized weights (not pre-trained)\n")
 
 # --- 安全装饰器 ---
 

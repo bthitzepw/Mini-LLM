@@ -55,3 +55,15 @@ desktop.ini
 
 # Windows 特殊文件
 nul
+
+# NVIDIA 驱动安装产物（可能意外出现在工作目录）
+NVIDIA Corporation/
+
+# GPU 环境目录（本地配置，不提交）
+gpu_env/
+
+# 开发调试脚本（本地使用，不提交）
+auto_train.py
+debug_start.py
+quick_train.py
+test_training.py
