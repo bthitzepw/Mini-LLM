@@ -49,7 +49,8 @@ data:
   num_workers: 0
 
 system:
-  device: "cuda"
+  device: "auto"                   # 设备策略: auto(自动最优) / cuda / cpu
+                                   # 环境变量 CODESPRITE_ALLOW_CPU_FALLBACK=false 禁用静默回退
   seed: 42
   precision: "fp32"
   log_level: "INFO"

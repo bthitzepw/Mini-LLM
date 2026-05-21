@@ -3,11 +3,19 @@
 
 自动检测可用后端（PyTorch → NumPy 降级）。
 支持 KV-Cache 加速、top-k/top-p 采样、温度控制。
+
+设备选择策略:
+  - "auto"  → 自动最优（CUDA > CPU），推荐
+  - "cuda"  → 显式 GPU
+  - "cpu"   → 纯 CPU 推理（自动限制线程数）
 """
 
 import math
 import os
+import logging
 from typing import List, Optional, Tuple
+
+logger = logging.getLogger("CodeSprite")
 
 
 class InferenceEngine:
@@ -15,27 +23,34 @@ class InferenceEngine:
     CodeSprite 推理引擎
 
     用法:
-        # 自动选择后端
+        # 自动选择后端 + 设备
         engine = InferenceEngine(model, checkpoint_path="best_model.pt")
 
         # 指定后端
         from backends.pytorch import PyTorchBackend
-        engine = InferenceEngine(model, backend=PyTorchBackend("cpu"))
+        engine = InferenceEngine(model, backend=PyTorchBackend("cuda"))
+
+        # 纯 CPU 推理
+        engine = InferenceEngine(model, device="cpu")
 
         # 文本生成
         output = engine.generate("def hello(", max_new_tokens=50)
     """
 
     def __init__(self, model, backend=None, checkpoint_path: str = None,
-                 tokenizer=None, device: str = "cpu"):
+                 tokenizer=None, device: str = "auto"):
         self.model = model
         self.tokenizer = tokenizer
 
         # 自动选择后端
         if backend is not None:
             self.backend = backend
+            self._device = getattr(backend, '_resolved_device', device)
         else:
-            self.backend = self._auto_select_backend(device)
+            self.backend, self._device = self._auto_select_backend(device)
+
+        # 打印推理设备信息
+        print(f"[Inference] Device: {self._device}, Backend: {self.backend.name}")
 
         # 加载权重
         if checkpoint_path and os.path.exists(checkpoint_path):
@@ -50,15 +65,20 @@ class InferenceEngine:
         self.top_k = None
         self.top_p = None
 
-    def _auto_select_backend(self, device: str = "cpu"):
-        """自动选择可用后端"""
+    def _auto_select_backend(self, device: str = "auto"):
+        """自动选择可用后端，返回 (backend, resolved_device_str)"""
+        from src.device import resolve_device
+
+        resolved_device = resolve_device(device)
+
         try:
             from backends.pytorch import PyTorchBackend, init_model_weights as _
-            return PyTorchBackend(device=device)
+            backend = PyTorchBackend(device=resolved_device)
+            return backend, resolved_device
         except ImportError:
             from backends.numpy import NumPyBackend
-            print("PyTorch 不可用，使用 NumPy 后端（纯 CPU 推理）")
-            return NumPyBackend()
+            logger.warning("PyTorch 不可用，使用 NumPy 后端（纯 CPU 推理）")
+            return NumPyBackend(), "cpu"
 
     def _has_weights(self) -> bool:
         """检查模型是否已有权重"""

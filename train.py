@@ -2,12 +2,17 @@
 CodeSprite v2 训练入口 — 框架无关 IR 架构
 
 用法:
-  python train.py                  # 标准训练（PyTorch 后端）
+  python train.py                  # 标准训练（自动选择设备）
   python train.py --mode auto      # 自动学习模式
   python train.py --find-lr        # 学习率查找器
   python train.py --no-amp         # 禁用混合精度
-  python train.py --device cpu     # 使用 CPU 训练
+  python train.py --device cpu     # 强制 CPU 训练
+  python train.py --no-cpu-fallback  # GPU 不可用时直接报错（不静默回退）
   python train.py --convert-old checkpoints/best_model.pt  # 转换旧权重
+
+设备策略:
+  训练：优先 GPU，自动回退 CPU（可通过 --no-cpu-fallback / 环境变量禁用回退）
+  推理：默认 CPU，可按需切换 GPU
 """
 
 import torch
@@ -27,6 +32,7 @@ from ir.layers import Layer
 from backends.pytorch import PyTorchBackend, init_model_weights, collect_parameters
 from training.trainer import Trainer
 from src.tokenizer import SimpleTokenizer, TextDataset, create_dataloader
+from src.device import resolve_device, print_device_info, warn_cpu_training
 
 
 def load_config(config_path='config/config.yaml'):
@@ -87,6 +93,7 @@ def prepare_data(config_dict):
 
 def print_model_info(model, backend):
     """打印模型信息"""
+    device_display = getattr(backend, '_resolved_device', 'unknown')
     print(f"\n{'='*50}")
     print(f"CodeSprite v2 — Framework-Agnostic IR Architecture")
     print(f"{'='*50}")
@@ -100,8 +107,7 @@ def print_model_info(model, backend):
     print(f"  Max sequence:         {model.config.max_seq_length}")
     print(f"  Activation:           {model.config.activation}")
     print(f"  RoPE:                 {model.config.use_rope}")
-    print(f"  Backend:              {backend.name}")
-    print(f"  Device:               {getattr(backend, 'device', 'cpu')}")
+    print(f"  Backend:              {backend.name} ({device_display})")
     print(f"{'='*50}\n")
 
 
@@ -119,7 +125,9 @@ def main():
     parser.add_argument('--epochs', type=int, default=None)
     parser.add_argument('--batch-size', type=int, default=None)
     parser.add_argument('--device', type=str, default=None,
-                       help='Device (cuda/cpu)')
+                       help='Device: auto (default), cuda, cpu')
+    parser.add_argument('--no-cpu-fallback', action='store_true',
+                       help='Abort if GPU unavailable (sets CODESPRITE_ALLOW_CPU_FALLBACK=false)')
     parser.add_argument('--convert-old', type=str, default=None,
                        help='Convert old checkpoint to new format and exit')
     parser.add_argument('--resume', type=str, default=None,
@@ -149,20 +157,29 @@ def main():
     config = ConfigWrapper(config_dict)
     set_seed(config_dict['system']['seed'])
 
-    # 设备
-    device_str = args.device or config_dict['system']['device']
-    device = torch.device(device_str if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
+    # 设备选择 — 统一设备管理模块
+    if args.no_cpu_fallback:
+        os.environ["CODESPRITE_ALLOW_CPU_FALLBACK"] = "false"
 
-    if torch.cuda.is_available():
-        print(f"GPU: {torch.cuda.get_device_name(0)}")
+    device_str = args.device or config_dict['system']['device']
+    resolved = resolve_device(device_str)
+    device = torch.device(resolved)
+
+    # 可观测性日志
+    print_device_info(resolved)
+
+    # CPU 训练风险警告
+    if resolved == "cpu":
+        warn_cpu_training()
+    elif resolved == "cuda":
+        print(f"  GPU: {torch._C._cuda_getDeviceProperties(0).name if hasattr(torch._C, '_cuda_getDeviceProperties') else 'available'}\n")
 
     # 构建 IR 模型
     mc = ModelConfig.from_yaml(config_dict)
     model = TransformerModel(mc)
 
-    # 创建 PyTorch 后端
-    backend = PyTorchBackend(device=str(device))
+    # 创建 PyTorch 后端（设备已在 resolve_device 中确定）
+    backend = PyTorchBackend(device=resolved)
 
     # 初始化权重
     init_model_weights(model, backend)

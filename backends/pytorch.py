@@ -4,6 +4,11 @@ PyTorch 后端实现
 将 Backend 接口映射到 PyTorch 操作。
 
 用于训练（GPU + 混合精度 + 梯度计算）。
+
+设备选择策略（通过 src.device 统一管理）：
+  - "cuda"  → 显式请求 GPU，不可用时按 CODESPRITE_ALLOW_CPU_FALLBACK 决定回退/报错
+  - "cpu"   → 强制 CPU，自动限制线程数
+  - "auto"  → 自动最优（CUDA > CPU）
 """
 
 import math
@@ -11,6 +16,7 @@ import torch
 import torch.nn.functional as F
 from typing import Any, Tuple, Optional, Dict
 from backends.base import Backend
+from src.device import resolve_device
 
 
 class PyTorchBackend(Backend):
@@ -18,8 +24,11 @@ class PyTorchBackend(Backend):
 
     name = "pytorch"
 
-    def __init__(self, device: str = "cuda", dtype=None):
-        self.device = torch.device(device if torch.cuda.is_available() else "cpu")
+    def __init__(self, device: str = "auto", dtype=None):
+        # 通过统一设备管理模块解析设备，承担回退策略和日志
+        resolved = resolve_device(device)
+        self.device = torch.device(resolved)
+        self._resolved_device = resolved  # 保留字符串，供 print_device_info 等使用
         self.dtype = dtype or torch.float32
 
     # ============================================================

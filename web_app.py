@@ -33,6 +33,7 @@ from inference.engine import InferenceEngine
 from src.tokenizer import SimpleTokenizer
 from src.compliance import SecurityHeaders, RateLimiter, AuditLogger
 from backends.pytorch import PyTorchBackend, init_model_weights
+from src.device import resolve_device, print_device_info
 
 # --- 初始化 ---
 
@@ -61,8 +62,14 @@ model_config = ModelConfig.from_yaml(config_dict)
 tokenizer = SimpleTokenizer(vocab_size=model_config.vocab_size)
 model = TransformerModel(model_config)
 
+# 设备选择：Web 服务默认 CPU（轻量级推理，不占用 GPU 显存）
+# 如需 GPU 推理：设置环境变量 CODESPRITE_WEB_DEVICE=cuda
+web_device = os.environ.get("CODESPRITE_WEB_DEVICE", "cpu")
+resolved_device = resolve_device(web_device)
+print_device_info(resolved_device)
+
 # 创建后端并初始化权重（即使没有预训练模型）
-backend = PyTorchBackend(device='cpu')
+backend = PyTorchBackend(device=resolved_device)
 init_model_weights(model, backend)
 print("Model weights initialized (random initialization)")
 
@@ -72,14 +79,14 @@ engine = InferenceEngine(
     backend=backend,
     checkpoint_path=None,  # 不加载预训练
     tokenizer=tokenizer,
-    device='cpu'
+    device=resolved_device
 )
 engine.temperature = 0.8
 engine.top_k = 50
 engine.top_p = 0.9
 
 print(f"\nCodeSprite v2 Web App ready")
-print(f"  Backend: {engine.backend.name}")
+print(f"  Backend: {engine.backend.name} ({resolved_device})")
 print(f"  Parameters: {model.get_param_count():,}")
 print(f"  Note: Using randomly initialized weights (not pre-trained)\n")
 
