@@ -688,6 +688,12 @@ Position: RoPE | Norm: RMSNorm | Attention: GQA
 
 ---
 
+## 路线图
+
+详见 [ROADMAP.md](./ROADMAP.md) — 涵盖 IR 架构增强、代码生成优化、工程化与生态建设。
+
+---
+
 ## License
 
 MIT License
