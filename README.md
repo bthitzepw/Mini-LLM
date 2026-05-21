@@ -1,6 +1,6 @@
-# MiniLLM v2 — 框架无关 IR 架构的微型代码语言模型
+# CodeSprite — 框架无关 IR 架构的微型代码语言模型
 
-> **架构升级：v2 采用框架无关的 IR（中间表示）架构**
+> **架构升级：CodeSprite 采用框架无关的 IR（中间表示）架构**
 >
 > 模型定义层（`ir/`）不依赖任何计算框架（PyTorch/NumPy），计算由可插拔的 `backends/` 后端提供。
 > 同一份模型代码可以：用 PyTorch 训练，用 NumPy 纯 CPU 推理，导出为 GGUF/ONNX 格式。
@@ -54,8 +54,8 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 ### 安装项目依赖
 
 ```bash
-git clone https://github.com/你的用户名/mini-llm.git
-cd mini-llm
+git clone https://github.com/bthitzepw/codesprite.git
+cd codesprite
 pip install -r requirements.txt
 ```
 
@@ -488,11 +488,11 @@ python generate.py --backend numpy
 ```python
 # GGUF 导出（用于 llama.cpp）
 from export.gguf import export_gguf
-export_gguf(model, "minillm.gguf")
+export_gguf(model, "codesprite.gguf")
 
 # ONNX 导出
 from export.onnx import export_onnx
-export_onnx(model, "minillm.onnx")
+export_onnx(model, "codesprite.onnx")
 ```
 
 ### Q: 如何转换旧版权重？
@@ -552,7 +552,7 @@ model:
 ## 项目结构
 
 ```
-mini-llm/
+codesprite/
 ├── ir/                      # 模型结构定义（零框架依赖）
 │   ├── config.py            # ModelConfig 数据类
 │   ├── layers.py            # 抽象层定义（Linear/Attention/FFN等）

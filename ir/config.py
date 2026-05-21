@@ -11,7 +11,7 @@ from typing import Optional
 
 @dataclass
 class ModelConfig:
-    """MiniLLM 模型配置 — 框架无关"""
+    """CodeSprite 模型配置 — 框架无关"""
 
     # === 词汇表 ===
     vocab_size: int = 4268

@@ -1,7 +1,7 @@
 """
 GGUF 导出器
 -----------
-将 MiniLLM 模型导出为 GGUF 格式（llama.cpp 兼容）。
+将 CodeSprite 模型导出为 GGUF 格式（llama.cpp 兼容）。
 
 GGUF 格式规范: https://github.com/ggerganov/ggml/blob/master/docs/gguf.md
 """
@@ -67,22 +67,22 @@ def export_gguf(model, output_path: str, metadata: Dict = None):
 
     # 构建元数据
     meta: List[tuple] = [
-        ("general.architecture", "minillm", GGUF_TYPE_STRING),
-        ("general.name", "MiniLLM", GGUF_TYPE_STRING),
+        ("general.architecture", "codesprite", GGUF_TYPE_STRING),
+        ("general.name", "CodeSprite", GGUF_TYPE_STRING),
         ("general.file_type", 1, GGUF_TYPE_UINT32),  # F32 = 1
     ]
 
     # 模型参数
     model_params = [
-        ("minillm.context_length", config.max_seq_length, GGUF_TYPE_UINT32),
-        ("minillm.embedding_length", config.hidden_size, GGUF_TYPE_UINT32),
-        ("minillm.block_count", config.num_layers, GGUF_TYPE_UINT32),
-        ("minillm.head_count", config.num_heads, GGUF_TYPE_UINT32),
-        ("minillm.head_count_kv", config.num_kv_heads, GGUF_TYPE_UINT32),
-        ("minillm.feed_forward_length", config.intermediate_size, GGUF_TYPE_UINT32),
-        ("minillm.rope.dimension_count", config.head_dim, GGUF_TYPE_UINT32),
-        ("minillm.rope.freq_base", config.rope_theta, GGUF_TYPE_FLOAT32),
-        ("minillm.attention.layer_norm_epsilon", config.rms_norm_eps, GGUF_TYPE_FLOAT32),
+        ("codesprite.context_length", config.max_seq_length, GGUF_TYPE_UINT32),
+        ("codesprite.embedding_length", config.hidden_size, GGUF_TYPE_UINT32),
+        ("codesprite.block_count", config.num_layers, GGUF_TYPE_UINT32),
+        ("codesprite.head_count", config.num_heads, GGUF_TYPE_UINT32),
+        ("codesprite.head_count_kv", config.num_kv_heads, GGUF_TYPE_UINT32),
+        ("codesprite.feed_forward_length", config.intermediate_size, GGUF_TYPE_UINT32),
+        ("codesprite.rope.dimension_count", config.head_dim, GGUF_TYPE_UINT32),
+        ("codesprite.rope.freq_base", config.rope_theta, GGUF_TYPE_FLOAT32),
+        ("codesprite.attention.layer_norm_epsilon", config.rms_norm_eps, GGUF_TYPE_FLOAT32),
     ]
     meta.extend(model_params)
 

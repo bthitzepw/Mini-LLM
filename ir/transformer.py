@@ -1,7 +1,7 @@
 """
 IR 层 — 完整 Transformer 模型结构定义
 
-MiniLLM 模型 = Embedding + N×TransformerBlock + FinalNorm + LM Head
+CodeSprite 模型 = Embedding + N×TransformerBlock + FinalNorm + LM Head
 
 所有前向传播通过 backend 参数委托给具体后端实现。
 零框架导入（不 import torch / numpy）。
@@ -17,7 +17,7 @@ from ir.layers import (
 
 class TransformerModel(Layer):
     """
-    MiniLLM — 框架无关的 Decoder-only Transformer
+    CodeSprite — 框架无关的 Decoder-only Transformer
 
     架构:
       Token Embedding
@@ -27,7 +27,7 @@ class TransformerModel(Layer):
       → LM Head (Linear)
     """
 
-    def __init__(self, config: ModelConfig, name: str = "mini_llm"):
+    def __init__(self, config: ModelConfig, name: str = "codesprite"):
         super().__init__(name)
         self.config = config
 

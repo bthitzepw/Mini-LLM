@@ -1,7 +1,7 @@
 """
 ONNX 导出器
 -----------
-将 MiniLLM 模型导出为 ONNX 格式。
+将 CodeSprite 模型导出为 ONNX 格式。
 
 ONNX Runtime 可用于跨平台高效推理。
 """

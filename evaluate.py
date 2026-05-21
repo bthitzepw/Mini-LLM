@@ -1,5 +1,5 @@
 """
-MiniLLM v2 模型评估
+CodeSprite v2 模型评估
 
 用法:
   python evaluate.py                              # 评估最佳模型
@@ -68,7 +68,7 @@ def evaluate_model(model, dataloader, backend):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='MiniLLM v2 Evaluation')
+    parser = argparse.ArgumentParser(description='CodeSprite v2 Evaluation')
     parser.add_argument('--checkpoint', type=str, default='checkpoints/best_model.pt')
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--batch-size', type=int, default=16)

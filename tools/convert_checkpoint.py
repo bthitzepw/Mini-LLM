@@ -1,7 +1,7 @@
 """
 检查点转换工具
 --------------
-将旧版 MiniLLM 的 .pt 权重转换为新版 IR 架构的格式。
+将旧版 MiniLLM 的 .pt 权重转换为新版 CodeSprite IR 架构的格式。
 
 用法:
     python tools/convert_checkpoint.py --old checkpoints/best_model.pt --new checkpoints/best_model_v2.pt
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def convert_old_to_new(old_path: str, new_path: str, config_dict: dict = None):
     """
-    将旧版 MiniLLM 检查点转换为新版 IR 格式
+    将旧版 MiniLLM 检查点转换为新版 CodeSprite IR 格式
 
     旧版权重命名格式:
         token_embeddings.weight
@@ -125,7 +125,7 @@ def convert_old_to_new(old_path: str, new_path: str, config_dict: dict = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert old MiniLLM checkpoint to new IR format')
+    parser = argparse.ArgumentParser(description='Convert old MiniLLM checkpoint to new CodeSprite IR format')
     parser.add_argument('--old', type=str, required=True, help='Path to old checkpoint')
     parser.add_argument('--new', type=str, required=True, help='Path to save new checkpoint')
     args = parser.parse_args()

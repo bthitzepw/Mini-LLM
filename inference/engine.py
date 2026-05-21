@@ -12,7 +12,7 @@ from typing import List, Optional, Tuple
 
 class InferenceEngine:
     """
-    MiniLLM 推理引擎
+    CodeSprite 推理引擎
 
     用法:
         # 自动选择后端

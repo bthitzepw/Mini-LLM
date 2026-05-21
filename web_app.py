@@ -1,5 +1,5 @@
 """
-MiniLLM v2 Web 应用 — 框架无关架构版
+CodeSprite v2 Web 应用 — 框架无关 IR 架构版
 
 安全加固:
   - 安全响应头（CSP/HSTS/X-Frame-Options等）
@@ -40,7 +40,7 @@ app = Flask(__name__)
 # 安全配置: Flask secret_key（用于 session 签名等）
 # 生产环境部署前请替换为随机生成的强密钥:
 #   python -c "import secrets; print(secrets.token_hex(32))"
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'minillm-dev-key-change-in-production')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'codesprite-dev-key-change-in-production')
 
 # 合规组件
 security_headers = SecurityHeaders()
@@ -69,7 +69,7 @@ engine.temperature = 0.8
 engine.top_k = 50
 engine.top_p = 0.9
 
-print(f"MiniLLM v2 Web App ready")
+print(f"CodeSprite v2 Web App ready")
 print(f"  Backend: {engine.backend.name}")
 print(f"  Parameters: {model.get_param_count():,}")
 
@@ -209,7 +209,7 @@ def server_error(e):
 
 if __name__ == '__main__':
     print("\n" + "="*50)
-    print("  MiniLLM v2 Web Server")
+    print("  CodeSprite v2 Web Server")
     print("  Architecture: Framework-Agnostic IR")
     print(f"  Backend: {engine.backend.name}")
     print("  http://localhost:5000")

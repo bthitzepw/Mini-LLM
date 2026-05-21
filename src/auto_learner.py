@@ -1,5 +1,5 @@
 """
-Mini LLM 自动学习模块 (Auto-Learning Module)
+CodeSprite 自动学习模块 (Auto-Learning Module)
 
 核心功能:
   1. 用户反馈收集 - 对话质量评分（点赞/点踩）
@@ -661,7 +661,7 @@ class AutoLearner:
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
             # 加载模型
-            from src.model import MiniLLM, Config as ModelConfig
+            from src.model import CodeSprite, Config as ModelConfig
             from src.tokenizer import CodeTokenizer
 
             model_config = ModelConfig(
@@ -674,7 +674,7 @@ class AutoLearner:
                 max_seq_length=config_dict['model']['max_seq_length'],
                 tie_weights=config_dict['model']['tie_weights']
             )
-            model = MiniLLM(model_config).to(device)
+            model = CodeSprite(model_config).to(device)
             tokenizer = CodeTokenizer()
 
             # 加载已有检查点

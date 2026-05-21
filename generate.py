@@ -1,5 +1,5 @@
 """
-MiniLLM v2 交互式文本生成
+CodeSprite v2 交互式文本生成
 
 用法:
   python generate.py                        # 交互模式
@@ -26,7 +26,7 @@ def load_config(config_path='config/config.yaml'):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='MiniLLM v2 Text Generation')
+    parser = argparse.ArgumentParser(description='CodeSprite v2 Text Generation')
     parser.add_argument('--prompt', type=str, default=None,
                        help='Input prompt (single-shot mode)')
     parser.add_argument('--checkpoint', type=str, default='checkpoints/best_model.pt',
@@ -80,7 +80,7 @@ def main():
     engine.top_k = args.top_k
     engine.top_p = args.top_p
 
-    print(f"\nMiniLLM v2 — Inference Engine")
+    print(f"\nCodeSprite v2 — Inference Engine")
     print(f"  Backend: {engine.backend.name}")
     print(f"  Parameters: {model.get_param_count():,}")
     print(f"  Temperature: {engine.temperature}")

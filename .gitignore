@@ -52,3 +52,6 @@ desktop.ini
 
 # WorkBuddy
 .workbuddy/
+
+# Windows 特殊文件
+nul

@@ -1,5 +1,5 @@
 """
-Mini LLM 模型架构 - 深度学习增强版
+CodeSprite 模型架构 - 框架无关 IR 架构
 
 核心架构: Transformer Decoder (类 GPT)
 深度学习增强:
@@ -319,12 +319,12 @@ class TransformerBlock(nn.Module):
 
 
 # ============================================================
-# MiniLLM 主模型
+# CodeSprite 主模型
 # ============================================================
 
-class MiniLLM(nn.Module):
+class CodeSprite(nn.Module):
     """
-    Mini LLM - 微型语言模型（深度学习增强版）
+    CodeSprite - 框架无关 IR 架构的微型代码语言模型
 
     架构特性:
     - Transformer Decoder (类 GPT)
@@ -544,7 +544,7 @@ class MiniLLM(nn.Module):
 # 向后兼容: 保持原有接口可用
 # ============================================================
 
-# 原始 SimpleAttention 和 SimpleMiniLLM 用于兼容
+# 原始 SimpleAttention 和 SimpleCodeSprite 用于兼容
 class SimpleAttention(Attention):
     """兼容旧接口"""
     def __init__(self, config):

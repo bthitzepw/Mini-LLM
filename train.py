@@ -1,5 +1,5 @@
 """
-MiniLLM v2 训练入口 — 框架无关架构
+CodeSprite v2 训练入口 — 框架无关 IR 架构
 
 用法:
   python train.py                  # 标准训练（PyTorch 后端）
@@ -88,7 +88,7 @@ def prepare_data(config_dict):
 def print_model_info(model, backend):
     """打印模型信息"""
     print(f"\n{'='*50}")
-    print(f"MiniLLM v2 — Framework-Agnostic Architecture")
+    print(f"CodeSprite v2 — Framework-Agnostic IR Architecture")
     print(f"{'='*50}")
     print(f"  Total parameters:     {model.get_param_count():,} "
           f"({model.get_param_count()/1e6:.1f}M)")
@@ -106,7 +106,7 @@ def print_model_info(model, backend):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='MiniLLM v2 Training')
+    parser = argparse.ArgumentParser(description='CodeSprite v2 Training')
     parser.add_argument('--mode', type=str, default='standard',
                        choices=['standard', 'auto', 'find-lr'],
                        help='Training mode')

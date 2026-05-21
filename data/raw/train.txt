@@ -1008,14 +1008,14 @@ def 斐波那契(n: int) -> int:
 国际化配置 = {
     "zh_CN": {
         "app_name": "迷你语言模型",
-        "welcome": "欢迎使用Mini LLM",
+        "welcome": "欢迎使用CodeSprite",
         "send": "发送",
         "placeholder": "请输入你的问题...",
         "error": "抱歉，服务出现了错误",
     },
     "en_US": {
-        "app_name": "Mini Language Model",
-        "welcome": "Welcome to Mini LLM",
+        "app_name": "CodeSprite",
+        "welcome": "Welcome to CodeSprite",
         "send": "Send",
         "placeholder": "Enter your question...",
         "error": "Sorry, an error occurred",
