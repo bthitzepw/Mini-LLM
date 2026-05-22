@@ -16,3 +16,13 @@ from ir.layers import (
     TransformerBlock, Attention, FeedForward, RoPELayer
 )
 from ir.transformer import TransformerModel
+from ir.semantic import (
+    PrimitiveType, TypeCategory, TypeInfo,
+    Symbol, Scope, CallEdge, CallGraph,
+    SemanticBlock, SemanticExtractor,
+)
+from ir.analysis import (
+    BlockKind, BasicBlock, CFGEdge, ControlFlowGraph,
+    DefUseChain, DataFlowGraph,
+    ModuleImport, ModuleGraph,
+)

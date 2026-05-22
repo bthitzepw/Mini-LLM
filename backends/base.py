@@ -250,21 +250,33 @@ class Backend(ABC):
         ...
 
     # ============================================================
-    # 工具
+    # 张量拼接（用于 KV-Cache）
     # ============================================================
 
+    @abstractmethod
+    def concat(self, a, b, dim: int = 0) -> Any:
+        """沿指定维度拼接两个张量"""
+        ...
+
+    # ============================================================
+    # 数学工具（采样相关）
+    # ============================================================
+
+    @abstractmethod
     def log(self, x) -> Any:
-        """自然对数"""
-        raise NotImplementedError
+        """逐元素自然对数"""
+        ...
 
+    @abstractmethod
     def exp(self, x) -> Any:
-        """指数函数"""
-        raise NotImplementedError
+        """逐元素指数函数"""
+        ...
 
+    @abstractmethod
     def argmax(self, x, dim: int = -1) -> Any:
-        """返回最大值的索引"""
-        raise NotImplementedError
+        """返回指定维度上最大值的索引"""
+        ...
 
     def multinomial(self, probs, num_samples: int = 1) -> Any:
-        """从概率分布中采样"""
-        return probs  # 默认实现，子类覆写
+        """从概率分布中采样（默认实现，子类可覆写）"""
+        return probs

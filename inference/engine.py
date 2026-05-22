@@ -2,24 +2,23 @@
 推理引擎 — 后端无关的文本生成
 
 自动检测可用后端（PyTorch → NumPy 降级）。
-支持 KV-Cache 加速、top-k/top-p 采样、温度控制。
+支持 KV-Cache 加速（IR + 旧模型双路径）、流式生成、top-k/top-p 采样。
 
 设备选择策略:
   - "auto"  → 自动最优（CUDA > CPU），推荐
   - "cuda"  → 显式 GPU
   - "cpu"   → 纯 CPU 推理（自动限制线程数）
 
-已知问题 / TODO:
-  - KV-Cache 目前只对 src/model.py 里的 CodeSprite（nn.Module 版本）生效
-    IR 版 TransformerModel 的 KV-Cache 还没接进来，先用全量计算
-  - beam search 没做，只有 top-k / top-p
-  - 流式输出（streaming）还没加，web_app 那边想要这个功能但先留着
+v2 更新:
+  - IR 版 TransformerModel KV-Cache 全链路打通
+  - 新增 generate_stream() 流式生成
+  - 采样逻辑提取为独立方法
 """
 
 import math
 import os
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Generator
 
 logger = logging.getLogger("CodeSprite")
 
@@ -32,15 +31,12 @@ class InferenceEngine:
         # 自动选择后端 + 设备
         engine = InferenceEngine(model, checkpoint_path="best_model.pt")
 
-        # 指定后端
-        from backends.pytorch import PyTorchBackend
-        engine = InferenceEngine(model, backend=PyTorchBackend("cuda"))
+        # 文本生成（KV-Cache 加速）
+        output = engine.generate_with_kv_cache("def hello(", max_new_tokens=50)
 
-        # 纯 CPU 推理
-        engine = InferenceEngine(model, device="cpu")
-
-        # 文本生成
-        output = engine.generate("def hello(", max_new_tokens=50)
+        # 流式生成
+        for token_text in engine.generate_stream("def fib(", max_new_tokens=100):
+            print(token_text, end="", flush=True)
     """
 
     def __init__(self, model, backend=None, checkpoint_path: str = None,
@@ -89,17 +85,27 @@ class InferenceEngine:
     def _has_weights(self) -> bool:
         """检查模型是否已有权重"""
         try:
-            # 简化检查：只要有任意一个参数就可以
             if hasattr(self.model, 'embedding') and hasattr(self.model.embedding, 'params'):
                 return len(self.model.embedding.params) > 0
-            # 检查模型根参数
             if hasattr(self.model, 'blocks') and len(self.model.blocks) > 0:
                 first_block = self.model.blocks[0]
                 if hasattr(first_block, 'params'):
                     return len(first_block.params) > 0
-            return True  # 默认认为可以用
+            return True
         except:
             return True
+
+    def _is_ir_model(self) -> bool:
+        """检测是否为 IR TransformerModel"""
+        try:
+            from ir.transformer import TransformerModel
+            return isinstance(self.model, TransformerModel)
+        except ImportError:
+            return False
+
+    def _is_native_model(self) -> bool:
+        """检测是否为旧 src/model.py CodeSprite (nn.Module)"""
+        return hasattr(self.model, 'generate') and hasattr(self.model, 'layers')
 
     def load(self, path: str):
         """加载模型权重"""
@@ -109,11 +115,70 @@ class InferenceEngine:
         print(f"  Parameters: {self.model.get_param_count():,}")
         return self
 
+    # ============================================================
+    # 采样方法
+    # ============================================================
+
+    def _sample_token(self, logits, temperature: float = 1.0,
+                      top_k: int = None, top_p: float = None) -> int:
+        """
+        从 logits 中采样下一个 token
+
+        支持 temperature 缩放、top-k 过滤、top-p (nucleus) 过滤。
+        返回采样的 token ID。
+        """
+        import numpy as np
+
+        # 转为 numpy 进行采样操作
+        if hasattr(logits, 'detach'):
+            logits_np = logits.detach().cpu().numpy()
+        elif hasattr(self.backend, 'to_numpy'):
+            logits_np = self.backend.to_numpy(logits)
+        else:
+            logits_np = np.array(logits)
+
+        # 确保是一维数组
+        logits_np = logits_np.flatten()
+
+        # Temperature 缩放
+        temp = max(temperature, 1e-10)
+        logits_np = logits_np / temp
+
+        # Top-K 过滤
+        if top_k is not None and top_k > 0 and top_k < len(logits_np):
+            indices = (-logits_np).argsort()
+            mask = np.ones_like(logits_np, dtype=bool)
+            mask[indices[top_k:]] = False
+            logits_np[~mask] = float('-inf')
+
+        # Top-P (nucleus) 过滤
+        if top_p is not None and top_p < 1.0:
+            sorted_indices = (-logits_np).argsort()
+            sorted_logits = logits_np[sorted_indices]
+            sorted_logits = sorted_logits - sorted_logits.max()
+            sorted_probs = np.exp(sorted_logits) / np.exp(sorted_logits).sum()
+            cumsum = np.cumsum(sorted_probs)
+            cutoff_idx = int((cumsum > top_p).argmax()) + 1
+            if cutoff_idx < len(sorted_indices):
+                logits_np[sorted_indices[cutoff_idx:]] = float('-inf')
+
+        # Softmax
+        logits_np = logits_np - logits_np.max()
+        probs = np.exp(logits_np) / np.exp(logits_np).sum()
+
+        # 采样
+        next_token = int(np.random.choice(len(probs), p=probs))
+        return next_token
+
+    # ============================================================
+    # 文本生成
+    # ============================================================
+
     def generate(self, prompt: str, max_new_tokens: int = 50,
                  temperature: float = None, top_k: int = None,
                  top_p: float = None) -> str:
         """
-        文本生成
+        文本生成（全量推理，每次重新计算整个序列）
 
         Args:
             prompt: 输入文本
@@ -132,68 +197,23 @@ class InferenceEngine:
         tk = top_k if top_k is not None else self.top_k
         tp = top_p if top_p is not None else self.top_p
 
-        # 编码输入
         input_ids = self.tokenizer.encode(prompt)
         generated_ids = list(input_ids)
-
         eos_id = self.model.config.eos_token_id
 
         for _ in range(max_new_tokens):
-            # 准备输入（截取最后 max_seq_length 个 token）
             max_len = self.model.config.max_seq_length
             context = generated_ids[-max_len:]
 
-            # 构建 batch 维度
             import numpy as np
             x = np.array([context], dtype=np.int64)
-
-            # 前向传播
             logits = self.model.forward(x, self.backend)
 
-            # 取最后一个位置的 logits
-            next_logits = logits[0, -1, :] / max(temp, 1e-10)
+            next_logits = logits[0, -1, :]
+            next_token = self._sample_token(next_logits, temp, tk, tp)
 
-            # Top-K 过滤
-            if tk is not None and tk > 0:
-                threshold = self.backend.argmax(
-                    -self.backend.to_numpy(next_logits) if hasattr(self.backend, 'to_numpy')
-                    else next_logits
-                )
-                # 简化版 top-k：用 numpy 实现
-                logits_np = self.backend.to_numpy(next_logits)
-                indices = (-logits_np).argsort()
-                mask = np.ones_like(logits_np, dtype=bool)
-                mask[indices[tk:]] = False
-                logits_np[~mask] = float('-inf')
-                next_logits = logits_np
-
-            # Top-P 过滤
-            if tp is not None and tp < 1.0:
-                logits_np = self.backend.to_numpy(next_logits) if not isinstance(next_logits, np.ndarray) else next_logits
-                sorted_indices = (-logits_np).argsort()
-                sorted_logits = logits_np[sorted_indices]
-                # softmax
-                sorted_logits = sorted_logits - sorted_logits.max()
-                sorted_probs = np.exp(sorted_logits) / np.exp(sorted_logits).sum()
-                cumsum = np.cumsum(sorted_probs)
-                cutoff_idx = (cumsum > tp).argmax() + 1
-                if cutoff_idx < len(sorted_indices):
-                    logits_np[sorted_indices[cutoff_idx:]] = float('-inf')
-                next_logits = logits_np
-
-            # Softmax + 采样
-            logits_np = self.backend.to_numpy(next_logits) if not isinstance(next_logits, np.ndarray) else next_logits
-            logits_np = logits_np - logits_np.max()
-            probs = np.exp(logits_np) / np.exp(logits_np).sum()
-
-            # 从分布中采样
-            next_token = np.random.choice(len(probs), p=probs)
-            next_token = int(next_token)
-
-            # 停止条件
             if next_token == eos_id:
                 break
-
             generated_ids.append(next_token)
 
         return self.tokenizer.decode(generated_ids)
@@ -203,16 +223,6 @@ class InferenceEngine:
                      top_p: float = None) -> List[int]:
         """
         从 token IDs 生成（不经过 tokenizer）
-
-        Args:
-            input_ids: 输入 token ID 序列
-            max_new_tokens: 最大生成 token 数
-            temperature: 采样温度
-            top_k: Top-K
-            top_p: Top-P
-
-        Returns:
-            完整的 token ID 序列
         """
         import numpy as np
 
@@ -225,14 +235,8 @@ class InferenceEngine:
             x = np.array([context], dtype=np.int64)
 
             logits = self.model.forward(x, self.backend)
-            next_logits = logits[0, -1, :] / max(temperature, 1e-10)
-
-            # 简化采样
-            logits_np = self.backend.to_numpy(next_logits)
-            logits_np = logits_np - logits_np.max()
-            probs = np.exp(logits_np) / np.exp(logits_np).sum()
-
-            next_token = int(np.random.choice(len(probs), p=probs))
+            next_logits = logits[0, -1, :]
+            next_token = self._sample_token(next_logits, temperature, top_k, top_p)
 
             if next_token == eos_id:
                 break
@@ -240,16 +244,20 @@ class InferenceEngine:
 
         return generated
 
+    # ============================================================
+    # KV-Cache 加速生成
+    # ============================================================
+
     def generate_with_kv_cache(self, prompt: str, max_new_tokens: int = 100,
                                 temperature: float = 0.8, top_k: int = 50,
                                 top_p: float = 0.9) -> str:
         """
-        使用 KV-Cache 加速的文本生成（仅支持 src/model.py 中的 CodeSprite 模型）
+        使用 KV-Cache 加速的文本生成
 
-        KV-Cache 原理：在自回归生成时，每次只输入最后一个新 token，
-        历史 token 的 K/V 向量复用缓存，避免重复计算，速度约提升 seq_len 倍。
-
-        注意：IR 版 TransformerModel 暂不支持，会自动降级到全量推理。
+        支持两条路径:
+          1. IR TransformerModel → 走 IR KV-Cache 路径（优先）
+          2. src/model.py CodeSprite → 走原生 nn.Module 路径
+          3. 降级 → 全量推理
 
         Args:
             prompt: 输入文本
@@ -264,43 +272,180 @@ class InferenceEngine:
         if self.tokenizer is None:
             raise RuntimeError("需要设置 tokenizer 才能使用此方法")
 
-        import numpy as np
-
-        # 检查是否是支持 KV-Cache 的原生 nn.Module 模型
-        # src/model.py 的 CodeSprite 有 generate() 方法
-        has_native_kv_cache = hasattr(self.model, 'generate') and hasattr(self.model, 'layers')
-
         input_ids = self.tokenizer.encode(prompt)
 
-        if has_native_kv_cache:
-            # 走原生 KV-Cache 路径（src/model.py CodeSprite）
+        # Path 1: IR TransformerModel KV-Cache
+        if self._is_ir_model():
+            try:
+                output_ids = self._generate_ir_kv_cache(
+                    input_ids, max_new_tokens, temperature, top_k, top_p
+                )
+                return self.tokenizer.decode(output_ids)
+            except Exception as e:
+                logger.warning(f"IR KV-Cache 推理失败，降级到全量: {e}")
+                return self.generate(prompt, max_new_tokens, temperature, top_k, top_p)
+
+        # Path 2: 旧 nn.Module 模型
+        elif self._is_native_model():
             try:
                 import torch
                 device = getattr(self.backend, 'device', 'cpu')
                 ids_tensor = torch.tensor([input_ids], dtype=torch.long, device=device)
-
                 output_ids = self.model.generate(
-                    ids_tensor,
-                    max_new_tokens=max_new_tokens,
-                    temperature=temperature,
-                    top_k=top_k,
-                    top_p=top_p,
+                    ids_tensor, max_new_tokens=max_new_tokens,
+                    temperature=temperature, top_k=top_k, top_p=top_p,
                     use_kv_cache=True
                 )
-                result_ids = output_ids[0].tolist()
-                return self.tokenizer.decode(result_ids)
+                return self.tokenizer.decode(output_ids[0].tolist())
             except Exception as e:
-                # KV-Cache 路径失败，降级到全量推理
-                logger.warning(f"KV-Cache 推理失败，降级到全量推理: {e}")
+                logger.warning(f"原生 KV-Cache 推理失败，降级到全量: {e}")
+                return self.generate(prompt, max_new_tokens, temperature, top_k, top_p)
 
-        # 降级路径：全量推理（IR 模型 or KV-Cache 出错时）
-        return self.generate(
-            prompt,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p
-        )
+        # Path 3: 降级全量推理
+        return self.generate(prompt, max_new_tokens, temperature, top_k, top_p)
+
+    def _generate_ir_kv_cache(self, input_ids: List[int],
+                               max_new_tokens: int, temperature: float,
+                               top_k: int, top_p: float) -> List[int]:
+        """
+        IR TransformerModel 的 KV-Cache 推理路径
+
+        算法:
+          1. 首次：输入完整 prompt → 得到所有层的 KV-Cache + 最后一个 logits
+          2. 之后：每次只输入新生成的 1 个 token + 传入之前的 KV-Cache
+          3. 每步复用历史 KV，避免重复计算
+
+        TransformerModel.forward() 支持:
+          - past_key_values: [(k0,v0), (k1,v1), ...] 每层的 KV-Cache
+          - use_cache=True → 返回 (logits, new_key_values)
+        """
+        import numpy as np
+
+        generated = list(input_ids)
+        eos_id = self.model.config.eos_token_id
+        past_key_values = None
+
+        for step in range(max_new_tokens):
+            if step == 0:
+                # 首次：输入完整 prompt，建立 KV-Cache
+                x = np.array([generated], dtype=np.int64)
+                result = self.model.forward(
+                    x, self.backend, past_key_values=None, use_cache=True
+                )
+            else:
+                # 之后：只输入最后 1 个 token + 使用 KV-Cache
+                x = np.array([[generated[-1]]], dtype=np.int64)
+                result = self.model.forward(
+                    x, self.backend, past_key_values=past_key_values, use_cache=True
+                )
+
+            # result = (logits, new_key_values)
+            logits, past_key_values = result
+
+            # 取最后一个位置的 logits
+            next_logits = logits[0, -1, :]
+            next_token = self._sample_token(next_logits, temperature, top_k, top_p)
+
+            if next_token == eos_id:
+                break
+            generated.append(next_token)
+
+        return generated
+
+    # ============================================================
+    # 流式生成
+    # ============================================================
+
+    def generate_stream(self, prompt: str, max_new_tokens: int = 100,
+                        temperature: float = 0.8, top_k: int = 50,
+                        top_p: float = 0.9) -> Generator[str, None, None]:
+        """
+        流式文本生成（逐 token yield）
+
+        每次 yield 的是当前生成的 token 文本。
+        如果设置了 tokenizer，yield 解码后的文本；
+        否则 yield token ID 字符串。
+
+        用法:
+            for token in engine.generate_stream("def fib(", max_new_tokens=100):
+                print(token, end="", flush=True)
+                # 或发送到 WebSocket / SSE
+        """
+        if self.tokenizer is None:
+            raise RuntimeError("需要设置 tokenizer 才能流式生成")
+
+        input_ids = self.tokenizer.encode(prompt)
+
+        # 优先使用 KV-Cache 加速流式输出
+        if self._is_ir_model():
+            for token in self._stream_ir_kv_cache(
+                input_ids, max_new_tokens, temperature, top_k, top_p
+            ):
+                yield token
+        else:
+            for token in self._stream_full(input_ids, max_new_tokens,
+                                           temperature, top_k, top_p):
+                yield token
+
+    def _stream_ir_kv_cache(self, input_ids: List[int],
+                             max_new_tokens: int, temperature: float,
+                             top_k: int, top_p: float) -> Generator[str, None, None]:
+        """IR TransformerModel 的流式 KV-Cache 推理"""
+        import numpy as np
+
+        generated = list(input_ids)
+        eos_id = self.model.config.eos_token_id
+        past_key_values = None
+
+        for step in range(max_new_tokens):
+            if step == 0:
+                x = np.array([generated], dtype=np.int64)
+                result = self.model.forward(
+                    x, self.backend, past_key_values=None, use_cache=True
+                )
+            else:
+                x = np.array([[generated[-1]]], dtype=np.int64)
+                result = self.model.forward(
+                    x, self.backend, past_key_values=past_key_values, use_cache=True
+                )
+
+            logits, past_key_values = result
+            next_logits = logits[0, -1, :]
+            next_token = self._sample_token(next_logits, temperature, top_k, top_p)
+
+            if next_token == eos_id:
+                break
+            generated.append(next_token)
+
+            # yield 当前 token 的解码文本
+            yield self.tokenizer.decode([next_token])
+
+    def _stream_full(self, input_ids: List[int],
+                     max_new_tokens: int, temperature: float,
+                     top_k: int, top_p: float) -> Generator[str, None, None]:
+        """全量推理的流式生成（降级路径）"""
+        import numpy as np
+
+        generated = list(input_ids)
+        eos_id = self.model.config.eos_token_id
+
+        for _ in range(max_new_tokens):
+            max_len = self.model.config.max_seq_length
+            context = generated[-max_len:]
+            x = np.array([context], dtype=np.int64)
+
+            logits = self.model.forward(x, self.backend)
+            next_logits = logits[0, -1, :]
+            next_token = self._sample_token(next_logits, temperature, top_k, top_p)
+
+            if next_token == eos_id:
+                break
+            generated.append(next_token)
+            yield self.tokenizer.decode([next_token])
+
+    # ============================================================
+    # 引擎信息
+    # ============================================================
 
     def info(self) -> dict:
         """返回引擎信息"""
@@ -310,4 +455,6 @@ class InferenceEngine:
             "temperature": self.temperature,
             "top_k": self.top_k,
             "top_p": self.top_p,
+            "supports_kv_cache": self._is_ir_model() or self._is_native_model(),
+            "supports_streaming": True,
         }

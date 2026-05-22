@@ -302,3 +302,39 @@ def warn_cpu_training():
     )
     print(msg)
     logger.warning("Training on CPU — expect slow performance")
+
+
+def set_seed(seed: int):
+    """
+    固定所有随机种子，确保训练可复现
+
+    覆盖:
+      - Python random
+      - NumPy
+      - PyTorch (CPU + CUDA)
+      - cuDNN 确定性模式
+      - 环境变量 PYTHONHASHSEED
+
+    用法:
+        from src.device import set_seed
+        set_seed(42)
+    """
+    import random
+    import numpy as np
+    import os
+
+    random.seed(seed)
+    np.random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    try:
+        import torch
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+    except ImportError:
+        pass
+
+    logger.info(f"Random seed set to {seed} (deterministic mode)")
