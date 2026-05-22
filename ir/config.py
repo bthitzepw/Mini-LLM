@@ -3,6 +3,9 @@ IR 层 — 模型配置
 
 纯数据类，指定模型的所有结构参数。
 零框架依赖（不 import torch / numpy / 任何计算库）。
+
+# 注：这个文件以前叫 model_config.py，后来重构 IR 的时候挪过来了
+# 原来用 dict 传配置，改成 dataclass 之后方便多了
 """
 
 from dataclasses import dataclass, field
@@ -11,7 +14,11 @@ from typing import Optional
 
 @dataclass
 class ModelConfig:
-    """CodeSprite 模型配置 — 框架无关"""
+    """CodeSprite 模型配置 — 框架无关
+
+    # 默认参数是 38M 参数量的小模型，跑起来不需要太大显存
+    # 以前测过 hidden_size=256 num_layers=4 的更小版本，loss 降得很慢，放弃了
+    """
 
     # === 词汇表 ===
     vocab_size: int = 4268
@@ -89,3 +96,10 @@ class ModelConfig:
             tie_weights=m.get("tie_weights", True),
             use_bias=m.get("use_bias", False),
         )
+
+    # 原来有个 to_dict() 方法，但 dataclasses.asdict() 已经够用了，删掉了
+    # def to_dict(self):
+    #     return {
+    #         "vocab_size": self.vocab_size,
+    #         ... 太多了不写了
+    #     }

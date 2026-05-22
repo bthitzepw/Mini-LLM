@@ -5,6 +5,14 @@
   - 不 import torch（通过 backend 间接使用）
   - 不关心模型结构（只调用 model.forward(x, backend)）
   - 支持 AMP、EMA、标签平滑、早停、梯度累积
+
+已知问题:
+  - EMA 实现是简化版，还没真正接入推理路径，先占位
+  - LR scheduler 目前只支持 cosine，别的模式暂时没空做
+  - 多卡训练完全没测过，感觉 backend 层要改很多东西
+
+# TODO: 加 TensorBoard / wandb 日志集成
+# TODO: 断点续训的接口稳定后，把 load_checkpoint 暴露到 train() 里
 """
 
 import os
@@ -88,10 +96,16 @@ class Trainer:
         self.start_time = None
 
         # EMA (简化版)
+        # 注意：EMA 权重目前只在训练时累积，还没接入推理
+        # TODO: 推理时要 swap 一下 EMA 权重进去，现在这块逻辑还没做
         self.ema_shadow = {} if self.use_ema else None
 
     def _create_scheduler(self):
-        """Cosine Annealing with Warmup"""
+        """Cosine Annealing with Warmup
+
+        参考了几个实现，这个 lambda 函数写法是从 transformers 库里扒来的
+        原来想用 OneCycleLR 但是跟梯度累积配合有点奇怪，先用这个
+        """
         import torch
 
         def lr_lambda(step):
@@ -244,11 +258,15 @@ class Trainer:
         return collect_parameters(self.model)
 
     def evaluate(self):
-        """评估模型"""
+        """评估模型
+
+        注意: loss 是 per-token 的平均，而不是 per-batch。
+        之前踩过坑：shift/loss/tokens 统计放在循环外导致只算最后一个 batch。
+        """
         import torch
 
         self.model.eval()
-        total_loss = 0
+        total_loss = 0.0
         total_tokens = 0
 
         with torch.no_grad():
@@ -262,21 +280,22 @@ class Trainer:
                 else:
                     logits = self.model.forward(input_ids, self.backend)
 
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
+                # shift: 预测位置 t，目标位置 t+1
+                shift_logits = logits[..., :-1, :].contiguous()
+                shift_labels = labels[..., 1:].contiguous()
 
-            min_len = min(shift_logits.size(1), shift_labels.size(1))
-            shift_logits = shift_logits[:, :min_len, :]
-            shift_labels = shift_labels[:, :min_len]
+                min_len = min(shift_logits.size(1), shift_labels.size(1))
+                shift_logits = shift_logits[:, :min_len, :]
+                shift_labels = shift_labels[:, :min_len]
 
-            loss = torch.nn.functional.cross_entropy(
-                shift_logits.view(-1, shift_logits.size(-1)),
-                shift_labels.view(-1),
-                ignore_index=-100,
-                reduction='sum'
-            )
-            total_loss += loss.item()
-            total_tokens += (shift_labels != -100).sum().item()
+                loss = torch.nn.functional.cross_entropy(
+                    shift_logits.view(-1, shift_logits.size(-1)),
+                    shift_labels.view(-1),
+                    ignore_index=-100,
+                    reduction='sum'
+                )
+                total_loss += loss.item()
+                total_tokens += (shift_labels != -100).sum().item()
 
         avg_loss = total_loss / max(total_tokens, 1)
         perplexity = math.exp(min(avg_loss, 20))

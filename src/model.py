@@ -9,6 +9,10 @@ CodeSprite 模型架构 - 框架无关 IR 架构
   4. Flash Attention 兼容接口 - 为后续替换 FlashAttention 留接口
   5. SwiGLU 激活函数 - 更好的前馈网络非线性变换
   6. Pre-Norm 架构 - 更稳定的深度网络训练
+
+# TODO: LayerNorm 换成 RMSNorm（LLaMA 那种），现在 TransformerBlock 里还是用的 LayerNorm
+# 主要原因是懒，而且改完以后要重新验证一遍
+# TODO: 支持 GQA（这个文件里的 Attention 还是 MHA，ir/layers.py 那边已经实现了 GQA 但没接过来）
 """
 
 import torch
@@ -516,6 +520,8 @@ class CodeSprite(nn.Module):
             input_ids = torch.cat([input_ids, next_token], dim=1)
 
             # EOS 停止
+            # 硬编码了 token id = 2，应该改成从 config 读
+            # 但先这样，反正 eos_token_id 一般就是 2 或 3
             if next_token.item() == 2:
                 break
 

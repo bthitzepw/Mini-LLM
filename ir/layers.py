@@ -8,6 +8,9 @@ IR 层 — 抽象层定义
   1. 每个层只存"形状信息"和"元数据"，不存具体数值张量
   2. 层本身不执行计算 — forward() 接受 backend 参数，委托给后端
   3. 零框架导入 — 不 import torch / numpy
+
+# TODO: 以后应该加一个 __repr__ 方法把形状也打出来，调试时比较方便
+# TODO: Sequential 目前比较简陋，考虑支持 named layers（像 nn.ModuleDict 那样）
 """
 
 from typing import List, Optional, Tuple, Dict, Any
@@ -187,6 +190,9 @@ class Attention(Layer):
       - K 投影: hidden_size -> kv_size   (num_kv_heads * head_dim)
       - V 投影: hidden_size -> kv_size
       - O 投影: hidden_size -> hidden_size
+
+    # NOTE: 一开始 kv_size 我写错了，以为是 hidden_size，结果 GQA 跑不起来
+    # 后来对着 LLaMA 源码检查了一遍才发现问题
     """
 
     def __init__(self, hidden_size: int, num_heads: int,
@@ -219,6 +225,9 @@ class Attention(Layer):
     def forward(self, x, backend, mask=None, **kwargs):
         """
         x: (batch, seq_len, hidden_size)
+
+        # TODO: 这里还没支持 KV-Cache，推理时每次都全量计算
+        # 等 engine 那边的 cache 机制稳了再加
         """
         batch_size, seq_len, _ = backend.shape(x)
 

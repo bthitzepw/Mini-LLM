@@ -92,6 +92,8 @@ class PyTorchBackend(Backend):
 
     def rms_norm(self, x, weight, eps: float):
         # RMSNorm: x * weight / sqrt(mean(x^2) + eps)
+        # 注意：这里要先转 float32 再算，不然 fp16 下 mean 可能溢出
+        # 踩过坑：直接在 fp16 上算 x**2 然后 mean 会出 nan，改成 float() 就好了
         dtype = x.dtype
         x = x.float()
         rms = torch.sqrt(torch.mean(x ** 2, dim=-1, keepdim=True) + eps)
@@ -137,6 +139,10 @@ class PyTorchBackend(Backend):
         Q: (batch, num_heads, seq_q, head_dim)
         K: (batch, num_kv_heads, seq_k, head_dim)
         V: (batch, num_kv_heads, seq_k, head_dim)
+
+        # NOTE: 原来想直接用 F.scaled_dot_product_attention，但那个接口
+        # 在 PyTorch < 2.0 上没有，考虑兼容性还是自己实现了
+        # TODO: 版本检测 + 条件使用 flash attention
         """
         if scale is None:
             scale = q.size(-1) ** 0.5
@@ -230,6 +236,8 @@ class PyTorchBackend(Backend):
     def init_weight(self, shape: Tuple[int, ...], method: str = "xavier") -> Any:
         if method == "xavier":
             # Xavier/Glorot uniform
+            # 原来直接用 nn.init.xavier_uniform_，但那个需要 nn.Parameter
+            # 这里手动实现一下，逻辑是一样的
             fan_in = shape[0] if len(shape) >= 2 else shape[0]
             fan_out = shape[1] if len(shape) >= 2 else 1
             limit = math.sqrt(6.0 / (fan_in + fan_out)) if fan_in > 0 else 0.01

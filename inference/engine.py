@@ -8,6 +8,12 @@
   - "auto"  → 自动最优（CUDA > CPU），推荐
   - "cuda"  → 显式 GPU
   - "cpu"   → 纯 CPU 推理（自动限制线程数）
+
+已知问题 / TODO:
+  - KV-Cache 目前只对 src/model.py 里的 CodeSprite（nn.Module 版本）生效
+    IR 版 TransformerModel 的 KV-Cache 还没接进来，先用全量计算
+  - beam search 没做，只有 top-k / top-p
+  - 流式输出（streaming）还没加，web_app 那边想要这个功能但先留着
 """
 
 import math
@@ -233,6 +239,68 @@ class InferenceEngine:
             generated.append(next_token)
 
         return generated
+
+    def generate_with_kv_cache(self, prompt: str, max_new_tokens: int = 100,
+                                temperature: float = 0.8, top_k: int = 50,
+                                top_p: float = 0.9) -> str:
+        """
+        使用 KV-Cache 加速的文本生成（仅支持 src/model.py 中的 CodeSprite 模型）
+
+        KV-Cache 原理：在自回归生成时，每次只输入最后一个新 token，
+        历史 token 的 K/V 向量复用缓存，避免重复计算，速度约提升 seq_len 倍。
+
+        注意：IR 版 TransformerModel 暂不支持，会自动降级到全量推理。
+
+        Args:
+            prompt: 输入文本
+            max_new_tokens: 最大生成 token 数
+            temperature: 采样温度
+            top_k: Top-K 采样参数
+            top_p: Top-P (nucleus) 采样参数
+
+        Returns:
+            生成的完整文本（含输入 prompt）
+        """
+        if self.tokenizer is None:
+            raise RuntimeError("需要设置 tokenizer 才能使用此方法")
+
+        import numpy as np
+
+        # 检查是否是支持 KV-Cache 的原生 nn.Module 模型
+        # src/model.py 的 CodeSprite 有 generate() 方法
+        has_native_kv_cache = hasattr(self.model, 'generate') and hasattr(self.model, 'layers')
+
+        input_ids = self.tokenizer.encode(prompt)
+
+        if has_native_kv_cache:
+            # 走原生 KV-Cache 路径（src/model.py CodeSprite）
+            try:
+                import torch
+                device = getattr(self.backend, 'device', 'cpu')
+                ids_tensor = torch.tensor([input_ids], dtype=torch.long, device=device)
+
+                output_ids = self.model.generate(
+                    ids_tensor,
+                    max_new_tokens=max_new_tokens,
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    use_kv_cache=True
+                )
+                result_ids = output_ids[0].tolist()
+                return self.tokenizer.decode(result_ids)
+            except Exception as e:
+                # KV-Cache 路径失败，降级到全量推理
+                logger.warning(f"KV-Cache 推理失败，降级到全量推理: {e}")
+
+        # 降级路径：全量推理（IR 模型 or KV-Cache 出错时）
+        return self.generate(
+            prompt,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p
+        )
 
     def info(self) -> dict:
         """返回引擎信息"""
