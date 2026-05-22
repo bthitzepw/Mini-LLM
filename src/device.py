@@ -7,6 +7,8 @@
   - 显式检测 GPU 可用性，不靠异常捕获默默回退
   - 启动时打印设备断言/日志，杜绝"以为 GPU 训，实际 CPU"
   - 支持环境变量 CODESPRITE_ALLOW_CPU_FALLBACK 控制回退策略
+  - 支持环境变量 CODESPRITE_DEVICE 覆盖设备选择
+  - 检测 GPU 显存，不足时发出可操作的警告
   - CPU 推理时自动限制线程数，避免吃满全部核心
 
 用法:
@@ -21,6 +23,8 @@
 import os
 import sys
 import logging
+
+from utils.errors import DeviceError
 
 logger = logging.getLogger("CodeSprite")
 
@@ -48,15 +52,62 @@ def _get_cuda_info() -> dict:
     try:
         import torch
         if torch.cuda.is_available():
+            props = torch.cuda.get_device_properties(0)
+            total_mem = props.total_mem / (1024**3)
+            # 尝试获取可用显存（PyTorch >= 1.4）
+            try:
+                free_mem = torch.cuda.mem_get_info()[0] / (1024**3)
+            except Exception:
+                free_mem = None
             return {
                 "count": torch.cuda.device_count(),
-                "name": torch.cuda.get_device_name(0),
-                "memory_gb": torch.cuda.get_device_properties(0).total_mem / (1024**3),
+                "name": props.name,
+                "memory_gb": total_mem,
+                "free_memory_gb": free_mem,
                 "cuda_version": torch.version.cuda,
             }
     except Exception:
         pass
     return {}
+
+
+def _check_vram(info: dict, min_gb: float = 2.0):
+    """
+    检测 GPU 显存是否充足。
+
+    参数:
+        info: _get_cuda_info() 返回的字典
+        min_gb: 最低推荐显存（GB），默认 2GB
+
+    返回:
+        True=充足, False=可能不足
+    """
+    free = info.get("free_memory_gb")
+    total = info.get("memory_gb")
+
+    if free is not None and free < min_gb:
+        warnings = []
+        if free < 0.5:
+            warnings.append(
+                f"GPU 可用显存仅 {free:.1f} GB — 可能无法加载模型。"
+                f"建议：减小 batch_size 或关闭 AMP（--no-amp）。"
+            )
+        else:
+            warnings.append(
+                f"GPU 可用显存 {free:.1f} GB < 推荐 {min_gb} GB。"
+                f"建议减小 batch_size 以避免 OOM。"
+            )
+        for w in warnings:
+            logger.warning(w)
+        return False
+
+    if total is not None and total < min_gb:
+        logger.warning(
+            f"GPU 总显存仅 {total:.1f} GB — 小显存 GPU，训练可能受限。"
+        )
+        return False
+
+    return True
 
 
 def _limit_cpu_threads(cpu_threads: int = None):
@@ -109,8 +160,18 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None,
         str: "cuda" / "cpu" / "mps"
 
     异常:
-        RuntimeError: 请求 GPU 但不可用且不允许回退时抛出
+        DeviceError: 请求 GPU 但不可用且不允许回退时抛出
+
+    环境变量:
+        CODESPRITE_DEVICE: 覆盖 target 参数（如 CODESPRITE_DEVICE=cpu）
+        CODESPRITE_ALLOW_CPU_FALLBACK: 控制 GPU 不可用时是否回退 CPU（默认 true）
     """
+    # 环境变量覆盖（CODESPRITE_DEVICE 优先级最高）
+    env_device = os.environ.get("CODESPRITE_DEVICE", "").strip().lower()
+    if env_device:
+        logger.info(f"设备由环境变量 CODESPRITE_DEVICE={env_device} 覆盖")
+        target = env_device
+
     if allow_fallback is None:
         allow_fallback = _allow_cpu_fallback()
 
@@ -132,7 +193,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None,
             )
             _limit_cpu_threads(cpu_threads)
             return "cpu"
-        raise RuntimeError(
+        raise DeviceError(
             "Apple MPS requested but not available. "
             "Install PyTorch with MPS support or use --device cpu. "
             "Or set CODESPRITE_ALLOW_CPU_FALLBACK=true to allow CPU fallback."
@@ -158,7 +219,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None,
                 )
                 _limit_cpu_threads(cpu_threads)
                 return "cpu"
-            raise RuntimeError(
+            raise DeviceError(
                 reason + "Set --device cpu to train on CPU, "
                 "or set CODESPRITE_ALLOW_CPU_FALLBACK=true to allow CPU fallback."
             )
@@ -185,6 +246,8 @@ def print_device_info(device_str: str):
             separator,
             "  DEVICE: GPU (CUDA)",
             f"  GPU:    {info.get('name', 'unknown')}",
+            f"  Memory: {info.get('memory_gb', 0):.1f} GB total, "
+            f"{info.get('free_memory_gb', '?')} GB free" if info.get('free_memory_gb') else
             f"  Memory: {info.get('memory_gb', 0):.1f} GB",
             f"  CUDA:   {info.get('cuda_version', 'unknown')}",
             f"  Count:  {info.get('count', 1)} device(s)",
@@ -194,6 +257,7 @@ def print_device_info(device_str: str):
         ]
         print("\n".join(lines))
         logger.info(f"Training device: cuda (GPU: {info.get('name', 'unknown')})")
+        _check_vram(info)
 
     elif device_str == "mps":
         lines = [

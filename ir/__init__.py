@@ -8,7 +8,9 @@ IR (Intermediate Representation) Layer
 计算由 backends/ 目录中的后端完成。
 """
 
-from ir.config import ModelConfig
+from ir.config import (
+    ModelConfig, TrainingConfig, DataConfig, SystemConfig, Config,
+)
 from ir.layers import (
     Layer, Linear, Embedding, LayerNormLayer, RMSNorm, DropoutLayer, Sequential,
     TransformerBlock, Attention, FeedForward, RoPELayer

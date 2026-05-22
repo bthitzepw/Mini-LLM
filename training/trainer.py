@@ -5,10 +5,14 @@
   - 不 import torch（通过 backend 间接使用）
   - 不关心模型结构（只调用 model.forward(x, backend)）
   - 支持 AMP、EMA、标签平滑、早停、梯度累积
+  - 多 LR 调度器类型（cosine / linear / step / plateau）
+
+EMA 工作流程:
+  - 每一步更新 shadow 权重: shadow = decay*shadow + (1-decay)*param
+  - 保存 best_model 时: swap EMA → save → swap back
+  - 推理时: 手动调用 apply_shadow() 应用 EMA 权重
 
 已知问题:
-  - EMA 实现是简化版，还没真正接入推理路径，先占位
-  - LR scheduler 目前只支持 cosine，别的模式暂时没空做
   - 多卡训练完全没测过，感觉 backend 层要改很多东西
 
 # TODO: 加 TensorBoard / wandb 日志集成
@@ -56,8 +60,14 @@ class Trainer:
         self.weight_decay = config.training.weight_decay
         self.label_smoothing = getattr(config.training, 'label_smoothing', 0.0)
         self.use_amp = getattr(config.training, 'use_amp', False)
+        # EMA — 指数移动平均权重
         self.use_ema = getattr(config.training, 'use_ema', False)
         self.ema_decay = getattr(config.training, 'ema_decay', 0.999)
+        self.ema_shadow = None
+        self.ema_backup = None
+        if self.use_ema:
+            self._init_ema()
+
         self.early_stopping_patience = getattr(config.training, 'early_stopping_patience', 5)
 
         # 检查点目录
@@ -96,26 +106,96 @@ class Trainer:
         self.start_time = None
 
         # EMA (简化版)
-        # 注意：EMA 权重目前只在训练时累积，还没接入推理
-        # TODO: 推理时要 swap 一下 EMA 权重进去，现在这块逻辑还没做
         self.ema_shadow = {} if self.use_ema else None
 
-    def _create_scheduler(self):
-        """Cosine Annealing with Warmup
+    # ============================================================
+    # EMA 权重管理
+    # ============================================================
 
-        参考了几个实现，这个 lambda 函数写法是从 transformers 库里扒来的
-        原来想用 OneCycleLR 但是跟梯度累积配合有点奇怪，先用这个
+    def _init_ema(self):
+        """初始化 EMA shadow 权重（clone initial params）"""
+        self.ema_shadow = {}
+        from backends.pytorch import collect_parameters
+        for name, param in collect_parameters(self.model):
+            if param.requires_grad:
+                self.ema_shadow[name] = param.data.clone()
+
+    def _update_ema(self):
+        """每步训练后更新 EMA 权重: shadow = decay*shadow + (1-decay)*param"""
+        if not self.use_ema or self.ema_shadow is None:
+            return
+        from backends.pytorch import collect_parameters
+        for name, param in collect_parameters(self.model):
+            if param.requires_grad and name in self.ema_shadow:
+                self.ema_shadow[name].mul_(self.ema_decay).add_(
+                    param.data, alpha=1 - self.ema_decay)
+
+    def apply_shadow(self):
+        """将 EMA 权重复制到模型参数（用于推理/保存前）"""
+        if not self.use_ema or self.ema_shadow is None:
+            return
+        from backends.pytorch import collect_parameters
+        self.ema_backup = {}
+        for name, param in collect_parameters(self.model):
+            if param.requires_grad and name in self.ema_shadow:
+                self.ema_backup[name] = param.data.clone()
+                param.data.copy_(self.ema_shadow[name])
+
+    def restore(self):
+        """恢复原始权重（与 apply_shadow 配对使用）"""
+        if self.ema_backup is None:
+            return
+        from backends.pytorch import collect_parameters
+        for name, param in collect_parameters(self.model):
+            if param.requires_grad and name in self.ema_backup:
+                param.data.copy_(self.ema_backup[name])
+        self.ema_backup = None
+
+    # ============================================================
+    # 学习率调度器
+    # ============================================================
+
+    def _create_scheduler(self):
+        """创建学习率调度器（支持 multiple types）
+
+        支持类型:
+          - cosine: Cosine Annealing + Warmup (默认)
+          - linear: Linear Decay + Warmup
+          - step:   每 N 步衰减到 gamma 倍
+          - plateau: 验证 loss 不下降时自动衰减
         """
         import torch
 
-        def lr_lambda(step):
-            if step < self.warmup_steps:
-                return float(step) / float(max(1, self.warmup_steps))
-            progress = float(step - self.warmup_steps) / float(
-                max(1, self.max_steps - self.warmup_steps))
-            return max(0.0, 0.5 * (1.0 + math.cos(math.pi * progress)))
+        scheduler_type = getattr(self.config.training, 'lr_scheduler_type', 'cosine')
+        step_size = getattr(self.config.training, 'lr_step_size', 1000)
+        lr_gamma = getattr(self.config.training, 'lr_gamma', 0.5)
 
-        return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
+        if scheduler_type == 'step':
+            return torch.optim.lr_scheduler.StepLR(
+                self.optimizer, step_size=step_size, gamma=lr_gamma
+            )
+        elif scheduler_type == 'plateau':
+            return torch.optim.lr_scheduler.ReduceLROnPlateau(
+                self.optimizer, mode='min', factor=lr_gamma,
+                patience=max(1, self.early_stopping_patience // 2), verbose=True
+            )
+        elif scheduler_type == 'linear':
+            def lr_lambda(step):
+                if step < self.warmup_steps:
+                    return float(step) / float(max(1, self.warmup_steps))
+                progress = float(step - self.warmup_steps) / float(
+                    max(1, self.max_steps - self.warmup_steps))
+                return max(0.0, 1.0 - progress)
+            return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
+        else:
+            # cosine (默认)
+            def lr_lambda(step):
+                if step < self.warmup_steps:
+                    return float(step) / float(max(1, self.warmup_steps))
+                progress = float(step - self.warmup_steps) / float(
+                    max(1, self.max_steps - self.warmup_steps))
+                return max(0.0, 0.5 * (1.0 + math.cos(math.pi * progress)))
+            return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
 
     def train(self):
         """主训练循环"""
@@ -126,7 +206,9 @@ class Trainer:
         print(f"  Device: {getattr(self.backend, 'device', 'cpu')}")
         print(f"  Parameters: {self.model.get_param_count():,}")
         print(f"  AMP: {self.use_amp}")
+        print(f"  EMA: {self.use_ema}" + (f" (decay={self.ema_decay})" if self.use_ema else ""))
         print(f"  Label Smoothing: {self.label_smoothing}")
+        print(f"  LR Scheduler: {getattr(self.config.training, 'lr_scheduler_type', 'cosine')}")
         print(f"  Gradient Accumulation: {self.grad_accum_steps} steps")
         print(f"{'='*50}\n")
 
@@ -162,7 +244,13 @@ class Trainer:
                 self.best_val_loss = val_metrics['val_loss']
                 self.best_perplexity = val_metrics['perplexity']
                 self.patience_counter = 0
+
+                # 使用 EMA 权重保存最佳模型
+                if self.use_ema:
+                    self.apply_shadow()
                 self.save_checkpoint('best_model.pt')
+                if self.use_ema:
+                    self.restore()
                 print(f"  >> New best model! Val Loss: {self.best_val_loss:.4f}")
             else:
                 self.patience_counter += 1
@@ -172,6 +260,10 @@ class Trainer:
             if self.patience_counter >= self.early_stopping_patience:
                 print(f"\nEarly stopping! No improvement for {self.early_stopping_patience} epochs.")
                 break
+
+            # Plateau scheduler 需要 val_loss
+            if isinstance(self.scheduler, __import__('torch').optim.lr_scheduler.ReduceLROnPlateau):
+                self.scheduler.step(val_metrics['val_loss'])
 
             if self.global_step >= self.max_steps:
                 print(f"\nReached max steps ({self.max_steps}). Stopping.")
@@ -222,6 +314,9 @@ class Trainer:
                     self.optimizer.step()
                 self.scheduler.step()
                 self.optimizer.zero_grad()
+
+                # EMA 更新
+                self._update_ema()
 
             self.global_step += 1
 

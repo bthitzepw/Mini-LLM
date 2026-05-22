@@ -175,6 +175,10 @@ class PyTorchBackend(Backend):
         mask = torch.ones(seq_len, seq_len, device=self.device, dtype=torch.bool)
         return torch.tril(mask)
 
+    def concat(self, a, b, dim: int = 0):
+        """沿指定维度拼接两个张量（用于 KV-Cache 等场景）"""
+        return torch.cat([a, b], dim=dim)
+
     # ============================================================
     # 位置编码
     # ============================================================

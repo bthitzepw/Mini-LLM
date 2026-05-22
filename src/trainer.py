@@ -1,5 +1,16 @@
 """
-CodeSprite 训练器 - 框架无关 IR 架构
+CodeSprite 训练器 — PyTorch 原生实现
+
+⚠️  **已废弃 (DEPRECATED)** — 仅被 auto_learner.py 用于增量训练。
+   主线训练请使用 training/trainer.py（框架无关 IR 架构）。
+
+   迁移指引:
+     - train.py → 已迁移至 training/trainer.py + ir/transformer.py
+     - generate.py / evaluate.py → 均已使用 IR 架构
+     - auto_learner.py → 仍依赖此文件，待迁移
+   ------------------------------------------------------------------
+   本文件保留供 auto_learner 使用，不再作为主线 Trainer。
+   新特性请优先添加到 training/trainer.py。
 
 训练增强:
   1. 混合精度训练 (AMP) - FP16/FP32混合计算，加速训练+节省显存

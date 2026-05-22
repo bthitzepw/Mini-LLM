@@ -1,5 +1,18 @@
 """
-CodeSprite 模型架构 - 框架无关 IR 架构
+CodeSprite 模型架构 — PyTorch 原生 nn.Module 实现
+
+⚠️  **已废弃 (DEPRECATED)** — 仅被 auto_learner.py 和 inference/engine.py 引用。
+   主线模型请使用 ir/transformer.py + ir/layers.py（框架无关 IR 架构）。
+
+   迁移指引:
+     - train.py → 已迁移至 ir/transformer.py (TransformerModel)
+     - generate.py / evaluate.py → 均已使用 IR 架构
+     - auto_learner.py → 仍依赖此文件，待迁移
+     - inference/engine.py → 仅 KV-Cache 路径依赖，
+       待 ir/layers.py Attention 支持 KV-Cache 后可移除
+   ------------------------------------------------------------------
+   本文件保留供向下兼容和 KV-Cache 推理路径使用。
+   所有新特性请优先添加到 ir/layers.py 和 ir/transformer.py。
 
 核心架构: Transformer Decoder (类 GPT)
 深度学习增强:
@@ -10,9 +23,10 @@ CodeSprite 模型架构 - 框架无关 IR 架构
   5. SwiGLU 激活函数 - 更好的前馈网络非线性变换
   6. Pre-Norm 架构 - 更稳定的深度网络训练
 
-# TODO: LayerNorm 换成 RMSNorm（LLaMA 那种），现在 TransformerBlock 里还是用的 LayerNorm
-# 主要原因是懒，而且改完以后要重新验证一遍
-# TODO: 支持 GQA（这个文件里的 Attention 还是 MHA，ir/layers.py 那边已经实现了 GQA 但没接过来）
+# NOTE: RMSNorm 已在 ir/layers.py 实现（作为 IR 层），此处保留 LayerNorm
+# 用于 auto_learner 兼容。如要升级，请迁移 auto_learner 到 IR 管线。
+# NOTE: GQA 已在 ir/layers.py Attention 实现（num_kv_heads 参数），
+# 此处的 MHA Attention 保留供 auto_learner 兼容。
 """
 
 import torch
@@ -25,7 +39,8 @@ from typing import Optional, Tuple
 class Config:
     """模型配置"""
     def __init__(self, vocab_size, hidden_size, num_layers, num_heads,
-                 intermediate_size, dropout, max_seq_length, tie_weights):
+                 intermediate_size, dropout, max_seq_length, tie_weights,
+                 eos_token_id=2):
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -34,6 +49,7 @@ class Config:
         self.dropout = dropout
         self.max_seq_length = max_seq_length
         self.tie_weights = tie_weights
+        self.eos_token_id = eos_token_id
 
 
 # ============================================================
@@ -520,9 +536,7 @@ class CodeSprite(nn.Module):
             input_ids = torch.cat([input_ids, next_token], dim=1)
 
             # EOS 停止
-            # 硬编码了 token id = 2，应该改成从 config 读
-            # 但先这样，反正 eos_token_id 一般就是 2 或 3
-            if next_token.item() == 2:
+            if next_token.item() == self.config.eos_token_id:
                 break
 
         return input_ids

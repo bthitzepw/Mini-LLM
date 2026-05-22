@@ -46,7 +46,7 @@ data:
   train_file: "data/raw/train.txt"
   val_file: "data/raw/val.txt"
   test_file: "data/raw/test.txt"
-  num_workers: 0
+  num_workers: 2
 
 system:
   device: "auto"                   # 设备策略: auto(自动最优) / cuda / cpu

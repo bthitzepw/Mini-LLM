@@ -1,12 +1,12 @@
-# CodeSprite — 框架无关 IR 架构的微型代码语言模型
+# CodeSprite — 框架无关的代码分析与结构转换工具
 
-> **架构升级：CodeSprite 采用框架无关的 IR（中间表示）架构**
+> CodeSprite 是一个**代码结构分析与转换工具**，基于框架无关的 IR（中间表示）架构。
 >
-> 模型定义层（`ir/`）不依赖任何计算框架（PyTorch/NumPy），计算由可插拔的 `backends/` 后端提供。
-> 同一份模型代码可以：用 PyTorch 训练，用 NumPy 纯 CPU 推理，导出为 GGUF/ONNX 格式。
+> 核心分析层（`ir/`）不依赖任何计算框架（PyTorch/NumPy），计算由可插拔的 `backends/` 后端提供。
+> 同一套分析逻辑可以：用 PyTorch 训练，用 NumPy 纯 CPU 推理，导出为 GGUF/ONNX 格式。
 
-约 3800 万参数，Transformer Decoder 架构，专注于代码编程领域，支持中英文双语。
-集成 RoPE 旋转位置编码、SwiGLU 门控前馈网络、GQA 分组查询注意力、KV-Cache 推理加速等现代技术。
+约 3800 万参数的计算核心，Transformer Decoder 架构，支持 Python 及主流编程语言的代码结构分析，支持中英文双语处理。
+集成 RoPE 旋转位置编码、SwiGLU 门控前馈网络、GQA 分组查询注意力等现代技术。支持 KV-Cache 推理加速，CPU 即可流畅运行。
 
 ---
 
@@ -15,8 +15,8 @@
 - [环境要求](#环境要求)
 - [快速开始](#快速开始)
 - [准备训练数据](#准备训练数据)
-- [训练模型](#训练模型)
-- [使用模型](#使用模型)
+- [训练计算核心](#训练计算核心)
+- [运行分析引擎](#运行分析引擎)
 - [Web 服务](#web-服务)
 - [训练配置说明](#训练配置说明)
 - [API 接口文档](#api-接口文档)
@@ -168,7 +168,7 @@ function binarySearch(arr, target) {
 
 ---
 
-## 训练模型
+## 训练计算核心
 
 ### 基础训练
 
@@ -235,7 +235,7 @@ Epoch 6/10 Summary:
 
 - **Train Loss**：训练集上的平均损失，越低越好
 - **Val Loss**：验证集上的损失，用于判断是否过拟合
-- **Perplexity**：困惑度（PPL = e^loss），越低表示模型越确信
+- **Perplexity**：困惑度（PPL = e^loss），数值越低表示预测越准确
   - < 10：优秀
   - < 30：良好
   - < 100：一般
@@ -244,17 +244,17 @@ Epoch 6/10 Summary:
 
 ### 检查点保存
 
-训练完成后，模型权重保存在 `checkpoints/` 目录：
+训练完成后，权重文件保存在 `checkpoints/` 目录：
 
 ```
 checkpoints/
-├── best_model.pt              # 验证损失最低的模型（推荐使用这个）
+├── best_model.pt              # 验证损失最低的权重（推荐使用这个）
 ├── checkpoint_epoch_8.pt      # 第 8 轮检查点
 ├── checkpoint_epoch_9.pt      # 第 9 轮检查点
 └── checkpoint_epoch_10.pt     # 第 10 轮检查点
 ```
 
-> **注意**：`checkpoints/` 目录和 `.pt` 文件已在 `.gitignore` 中排除，不会上传到 GitHub。如需分享模型权重，建议使用 [Hugging Face Hub](https://huggingface.co/)、Google Drive 等平台。
+> **注意**：`checkpoints/` 目录和 `.pt` 文件已在 `.gitignore` 中排除，不会上传到 GitHub。如需分享权重文件，建议使用 [Hugging Face Hub](https://huggingface.co/)、Google Drive 等平台。
 
 ### 从已有检查点继续训练
 
@@ -272,9 +272,9 @@ python train.py --find-lr
 
 ---
 
-## 使用模型
+## 运行分析引擎
 
-### 交互式生成
+### 交互模式
 
 ```bash
 # PyTorch 后端（默认）
@@ -342,9 +342,9 @@ python web_app.py
 
 ### 功能
 
-- 网页对话界面（带反馈按钮）
-- 内容审核与安全过滤
-- AI 生成内容标识
+- 代码分析控制台（带反馈按钮）
+- 输出内容安全过滤
+- 自动化输出标识
 - 用户协议与隐私政策页面
 - 学习状态控制面板
 
@@ -408,9 +408,9 @@ system:
 
 ## API 接口文档
 
-Web 服务启动后（`python web_app.py`），可通过 API 调用模型。
+Web 服务启动后（`python web_app.py`），可通过 API 调用分析服务。
 
-### 文本生成
+### 代码分析
 
 ```bash
 curl -X POST http://localhost:5000/api/generate \
@@ -428,7 +428,7 @@ curl -X POST http://localhost:5000/api/generate \
 }
 ```
 
-### 模型信息
+### 引擎信息
 
 ```bash
 curl http://localhost:5000/api/info
@@ -454,8 +454,8 @@ curl -X POST http://localhost:5000/api/feedback \
 
 | 端点 | 方法 | 说明 |
 |------|------|------|
-| `/api/generate` | POST | 文本生成 |
-| `/api/info` | GET | 模型信息 |
+| `/api/generate` | POST | 代码分析 |
+| `/api/info` | GET | 引擎信息 |
 | `/api/health` | GET | 健康检查 |
 | `/api/feedback` | POST | 提交反馈（赞/踩） |
 | `/api/learning-status` | GET | 自动学习状态 |
@@ -484,8 +484,8 @@ auto_learning:
 
 ### 工作流程
 
-1. 用户通过 Web 界面与模型对话
-2. 对生成结果点赞/点踩，系统自动记录反馈
+1. 用户通过 Web 界面提交代码分析请求
+2. 对分析结果点赞/点踩，系统自动记录反馈
 3. 当正面反馈样本达到阈值时，自动触发增量训练
 4. 也可以通过 API 手动触发：`POST /api/learning/start`
 
@@ -503,7 +503,7 @@ python generate.py --backend pytorch --device cuda
 python generate.py --backend numpy
 ```
 
-### Q: 如何导出模型？
+### Q: 如何导出权重文件？
 
 ```python
 # GGUF 导出（用于 llama.cpp）
@@ -541,37 +541,37 @@ python tools/convert_checkpoint.py --old checkpoints/best_model.pt --new checkpo
 
 将数据按行写入 `data/raw/train.txt`、`data/raw/val.txt`、`data/raw/test.txt`，每行一条样本，然后直接运行 `python train.py`。
 
-### Q: 模型权重文件太大，无法上传 GitHub？
+### Q: 权重文件太大，无法上传 GitHub？
 
 `checkpoints/` 目录已在 `.gitignore` 中排除。如需分享权重，推荐：
 - [Hugging Face Hub](https://huggingface.co/)（推荐，免费）
 - Google Drive
 - 百度网盘
 
-### Q: 如何调整模型大小？
+### Q: 如何调整引擎规模？
 
 修改 `config/config.yaml`：
 
 ```yaml
 model:
-  hidden_size: 256           # 减小隐藏层（参数更少）
+  hidden_size: 256           # 减小隐藏层（更轻量）
   num_layers: 4              # 减少层数
   num_heads: 4               # 减少注意力头
-  # 或增大以获得更强模型
+  # 或增大以获得更强能力
   hidden_size: 768
   num_layers: 12
   num_heads: 12
 ```
 
-> 注意：修改模型架构后，旧的检查点将不兼容，需要重新训练。
+> 注意：修改架构参数后，旧的检查点将不兼容，需要重新训练。
 
-### Q: 支持仓颉（.cj）语言吗？为什么生成的代码语法全错？
+### Q: 支持仓颉（.cj）语言吗？为什么分析输出的代码语法全错？
 
-**不支持，也不建议用于仓颉代码生成。**
+**不支持，也不建议用于仓颉代码分析。**
 
-仓颉语言的开源训练语料几乎为零，3800 万参数的小模型对此类低资源语言产生严重幻觉 — 模型会把它见过的 C/C++/Rust 语法"缝合"成看似合理但实际上完全错误的仓颉代码。
+仓颉语言的开源训练语料几乎为零，3800 万参数的小型引擎对此类低资源语言产生严重幻觉 — 引擎会把它见过的 C/C++/Rust 语法"缝合"成看似合理但实际上完全错误的仓颉代码。
 
-如果你正在学习仓颉，建议将本模型定位为**"语法翻译参考"**（例如把 Python 代码的大致逻辑转成仓颉代码骨架，然后自行修正），而非"代码生成器"。同理也适用于其他小众编程语言（Haskell、COBOL 等）。
+如果你正在学习仓颉，建议将本工具定位为**"语法翻译参考"**（例如把 Python 代码的大致逻辑转成仓颉代码骨架，然后自行修正），而非"代码输出工具"。同理也适用于其他小众编程语言（Haskell、COBOL 等）。
 
 更多语言支持的风险评估见 [RISKS.md](./RISKS.md)。
 
@@ -602,10 +602,10 @@ python3 -c "import torch; print(torch.cuda.get_device_name(0))"
 
 ```
 codesprite/
-├── ir/                      # 模型结构定义（零框架依赖）
+├── ir/                      # 核心分析层定义（零框架依赖）
 │   ├── config.py            # ModelConfig 数据类
 │   ├── layers.py            # 抽象层定义（Linear/Attention/FFN等）
-│   ├── transformer.py       # 完整 Transformer 模型结构
+│   ├── transformer.py       # 完整 Transformer 结构
 │   └── graph.py             # 计算图（预留）
 ├── backends/                # 计算后端实现
 │   ├── base.py              # Backend 抽象接口
@@ -623,21 +623,21 @@ codesprite/
 │   ├── convert_checkpoint.py  # 旧权重转换工具
 │   └── build_nuitka.py        # Nuitka 打包脚本（Windows 64-bit）
 ├── config/
-│   └── config.yaml          # 模型和训练配置
+│   └── config.yaml          # 引擎和训练配置
 ├── data/
 │   └── raw/                 # 训练数据
 ├── src/                     # 核心组件
 │   ├── tokenizer.py         # 分词器 + 数据集（框架无关）
 │   ├── device.py            # 统一设备管理（检测/回退/资源隔离）
-│   ├── model.py             # CodeSprite 模型类
+│   ├── model.py             # CodeSprite 核心计算类
 │   ├── moderator.py         # 内容审核
 │   ├── compliance.py        # 安全合规
 │   ├── auto_learner.py      # 自动增量学习
 │   └── trainer.py           # 训练器
 ├── templates/               # Web 前端
 ├── train.py                 # 训练入口
-├── generate.py              # 交互式生成
-├── evaluate.py              # 模型评估
+├── generate.py              # 交互式分析
+├── evaluate.py              # 引擎评估
 ├── web_app.py               # Flask Web 服务
 ├── start_web.sh              # 启动脚本 (Linux/macOS)
 ├── start_web.bat             # 启动脚本 (Windows)
@@ -646,6 +646,7 @@ codesprite/
 ├── LICENSE                  # MIT
 ├── RISKS.md                 # 风险与隐患登记册
 ├── ROADMAP.md               # 路线图
+├── INVISIBILITY.md          # 隐形架构设计规范
 └── README.md
 ```
 
@@ -655,7 +656,7 @@ codesprite/
 
 ```
                ┌──────────────────────┐
-               │    ir/ (模型定义层)    │
+               │    ir/ (核心分析层)    │
                │  零框架依赖，纯结构描述  │
                └──────────┬───────────┘
                           │ delegate
@@ -672,9 +673,9 @@ codesprite/
    └─────────────┘ └─────────────┘
 ```
 
-**核心思想**：模型定义与计算框架完全解耦。`ir/` 中的代码不 `import torch`，不 `import numpy`，只描述"模型有哪些层、长什么样"。具体怎么算由 `backends/` 决定。
+**核心思想**：核心分析逻辑与计算框架完全解耦。`ir/` 中的代码不 `import torch`，不 `import numpy`，只描述"有哪些层、长什么样"。具体怎么算由 `backends/` 决定。
 
-### 模型架构细节
+### 核心架构细节
 
 ```
 Transformer Decoder (LLaMA 风格)
@@ -707,7 +708,7 @@ Position: RoPE | Norm: RMSNorm | Attention: GQA
 
 ## 路线图
 
-详见 [ROADMAP.md](./ROADMAP.md) — 涵盖 IR 架构增强、代码生成优化、工程化与生态建设。
+详见 [ROADMAP.md](./ROADMAP.md) — 涵盖 IR 架构增强、输出能力优化、工程化与生态建设。
 
 ---
 

@@ -162,6 +162,10 @@ class NumPyBackend(Backend):
     def causal_mask(self, seq_len: int) -> Any:
         return np.tril(np.ones((seq_len, seq_len), dtype=np.float32))
 
+    def concat(self, a, b, dim: int = 0):
+        """沿指定维度拼接两个数组（用于 KV-Cache 等场景）"""
+        return np.concatenate([a, b], axis=dim)
+
     # ============================================================
     # 位置编码
     # ============================================================

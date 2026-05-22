@@ -222,12 +222,16 @@ class Attention(Layer):
                 shapes[f"{proj.name}.{k}"] = v
         return shapes
 
-    def forward(self, x, backend, mask=None, **kwargs):
+    def forward(self, x, backend, mask=None, kv_cache=None, use_cache=False, **kwargs):
         """
         x: (batch, seq_len, hidden_size)
 
-        # TODO: 这里还没支持 KV-Cache，推理时每次都全量计算
-        # 等 engine 那边的 cache 机制稳了再加
+        KV-Cache 支持:
+          - kv_cache: 上一次的 (k_cache, v_cache) 元组，shape 均为
+            (batch, num_kv_heads, total_seq_len, head_dim)
+          - use_cache: 是否返回更新后的 KV-Cache
+          - 返回: 若 use_cache=False → output
+                  若 use_cache=True  → (output, new_kv_cache)
         """
         batch_size, seq_len, _ = backend.shape(x)
 
@@ -241,6 +245,14 @@ class Attention(Layer):
         k = backend.reshape_for_heads(k, batch_size, seq_len, self.num_kv_heads, self.head_dim)
         v = backend.reshape_for_heads(v, batch_size, seq_len, self.num_kv_heads, self.head_dim)
 
+        # KV-Cache: 拼接历史 K/V（沿序列维度 dim=2）
+        if kv_cache is not None:
+            past_k, past_v = kv_cache
+            k = backend.concat(past_k, k, dim=2)
+            v = backend.concat(past_v, v, dim=2)
+
+        new_kv_cache = (k, v) if use_cache else None
+
         # 缩放点积注意力
         attn_output = backend.scaled_dot_product_attention(
             q, k, v, mask=mask,
@@ -252,7 +264,11 @@ class Attention(Layer):
 
         # 合并多头 → O 投影
         attn_output = backend.reshape_from_heads(attn_output, batch_size, seq_len, self.hidden_size)
-        return self.o_proj.forward(attn_output, backend)
+        output = self.o_proj.forward(attn_output, backend)
+
+        if use_cache:
+            return output, new_kv_cache
+        return output
 
 
 # ============================================================
@@ -357,11 +373,17 @@ class TransformerBlock(Layer):
                 shapes[f"{sub.name}.{k}"] = v
         return shapes
 
-    def forward(self, x, backend, mask=None, **kwargs):
+    def forward(self, x, backend, mask=None, kv_cache=None, use_cache=False, **kwargs):
         # Pre-Norm + Attention + Residual
         residual = x
         x_norm = self.attn_norm.forward(x, backend)
-        x = self.attention.forward(x_norm, backend, mask=mask)
+        x = self.attention.forward(x_norm, backend, mask=mask,
+                                   kv_cache=kv_cache, use_cache=use_cache)
+
+        new_kv_cache = None
+        if use_cache and isinstance(x, tuple):
+            x, new_kv_cache = x
+
         x = self.dropout.forward(x, backend)
         x = backend.add(residual, x)
 
@@ -372,6 +394,8 @@ class TransformerBlock(Layer):
         x = self.dropout.forward(x, backend)
         x = backend.add(residual, x)
 
+        if use_cache:
+            return x, new_kv_cache
         return x
 
 

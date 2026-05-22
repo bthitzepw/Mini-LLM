@@ -672,7 +672,8 @@ class AutoLearner:
                 intermediate_size=config_dict['model']['intermediate_size'],
                 dropout=config_dict['model']['dropout'],
                 max_seq_length=config_dict['model']['max_seq_length'],
-                tie_weights=config_dict['model']['tie_weights']
+                tie_weights=config_dict['model']['tie_weights'],
+                eos_token_id=3,   # 与 IR 层保持一致
             )
             model = CodeSprite(model_config).to(device)
             tokenizer = CodeTokenizer()

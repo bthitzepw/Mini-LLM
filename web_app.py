@@ -1,5 +1,5 @@
 """
-CodeSprite v2 Web 应用 — 框架无关 IR 架构版
+CodeSprite v2 Web 服务 — 框架无关 IR 架构版
 
 安全加固:
   - 安全响应头（CSP/HSTS/X-Frame-Options等）
@@ -8,8 +8,8 @@ CodeSprite v2 Web 应用 — 框架无关 IR 架构版
   - 审计日志记录
 
 API端点:
-  - POST /api/generate        - 文本生成
-  - GET  /api/info            - 模型信息
+  - POST /api/generate        - 代码分析
+  - GET  /api/info            - 引擎信息
   - GET  /api/health          - 健康检查
   - POST /api/feedback        - 用户反馈
   - GET  /api/learning-status - 学习状态
@@ -119,7 +119,7 @@ def index():
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
-    """文本生成 API"""
+    """代码分析 API"""
     data = request.get_json(silent=True) or {}
     prompt = data.get('prompt', '').strip()
     max_tokens = min(data.get('max_tokens', 100), 500)
@@ -168,7 +168,7 @@ def generate():
 
 @app.route('/api/info', methods=['GET'])
 def model_info():
-    """模型信息"""
+    """引擎信息"""
     return jsonify(engine.info())
 
 

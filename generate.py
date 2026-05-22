@@ -1,9 +1,9 @@
 """
-CodeSprite v2 交互式文本生成
+CodeSprite v2 交互式代码分析
 
 用法:
   python generate.py                        # 交互模式
-  python generate.py --prompt "def hello("  # 单次生成
+  python generate.py --prompt "def hello("  # 单次分析
   python generate.py --backend numpy        # 使用 NumPy 后端
 """
 
@@ -26,7 +26,7 @@ def load_config(config_path='config/config.yaml'):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='CodeSprite v2 Text Generation')
+    parser = argparse.ArgumentParser(description='CodeSprite v2 Code Analysis')
     parser.add_argument('--prompt', type=str, default=None,
                        help='Input prompt (single-shot mode)')
     parser.add_argument('--checkpoint', type=str, default='checkpoints/best_model.pt',
@@ -80,7 +80,7 @@ def main():
     engine.top_k = args.top_k
     engine.top_p = args.top_p
 
-    print(f"\nCodeSprite v2 — Inference Engine")
+    print(f"\nCodeSprite v2 — Code Analysis Engine")
     print(f"  Backend: {engine.backend.name}")
     print(f"  Parameters: {model.get_param_count():,}")
     print(f"  Temperature: {engine.temperature}")
@@ -88,14 +88,14 @@ def main():
     print(f"  Top-P: {engine.top_p}")
     print()
 
-    # 单次生成模式
+    # 单次分析模式
     if args.prompt:
         output = engine.generate(args.prompt, max_new_tokens=args.max_tokens)
         print(output)
         return
 
     # 交互模式
-    print("Interactive generation mode (type ':quit' to exit)")
+    print("Interactive analysis mode (type ':quit' to exit)")
     print("Commands: :temp <val> | :topk <val> | :topp <val> | :len <val>")
     print("="*50)
 
@@ -151,7 +151,7 @@ def main():
                 print(f"  {k}: {v}")
             continue
 
-        # 生成
+        # 分析
         output = engine.generate(prompt, max_new_tokens=args.max_tokens)
         print(f"\n{output}")
 

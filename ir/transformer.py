@@ -74,7 +74,8 @@ class TransformerModel(Layer):
             shapes[f"lm_head.{k}"] = v
         return shapes
 
-    def forward(self, input_ids, backend, mask=None, **kwargs):
+    def forward(self, input_ids, backend, mask=None, past_key_values=None,
+                use_cache=False, **kwargs):
         """
         完整前向传播
 
@@ -82,9 +83,12 @@ class TransformerModel(Layer):
             input_ids: (batch, seq_len) token IDs
             backend: Backend 实例（PyTorch / NumPy / ...）
             mask: 注意力掩码（可选，自动生成因果掩码）
+            past_key_values: 可选列表 [(k0,v0), (k1,v1), ...] 每层的 KV-Cache
+            use_cache: 是否返回新的 KV-Cache
 
         Returns:
             logits: (batch, seq_len, vocab_size)
+            若 use_cache=True → (logits, new_key_values)
         """
         batch_size, seq_len = backend.shape(input_ids)
 
@@ -94,16 +98,31 @@ class TransformerModel(Layer):
 
         # 自动生成因果注意力掩码
         if mask is None:
-            mask = backend.causal_mask(seq_len)
+            if past_key_values is not None and len(past_key_values) > 0:
+                # KV-Cache 模式：新 token 不需要因果掩码
+                mask = None
+            else:
+                mask = backend.causal_mask(seq_len)
 
         # N 层 Transformer Block
-        for block in self.blocks:
-            x = block.forward(x, backend, mask=mask)
+        new_key_values = [] if use_cache else None
+        for i, block in enumerate(self.blocks):
+            layer_kv = past_key_values[i] if past_key_values is not None and i < len(past_key_values) else None
+
+            if use_cache:
+                x, layer_cache = block.forward(x, backend, mask=mask,
+                                               kv_cache=layer_kv, use_cache=True)
+                new_key_values.append(layer_cache)
+            else:
+                x = block.forward(x, backend, mask=mask,
+                                 kv_cache=layer_kv, use_cache=False)
 
         # 最终归一化 + LM Head
         x = self.final_norm.forward(x, backend)
         logits = self.lm_head.forward(x, backend)
 
+        if use_cache:
+            return logits, new_key_values
         return logits
 
     def forward_block(self, x, block_idx: int, backend, mask=None, **kwargs):
