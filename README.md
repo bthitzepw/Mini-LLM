@@ -37,7 +37,7 @@
 | 操作系统 | Windows / Linux / macOS | - |
 | CUDA | - | 11.8+（GPU 加速） |
 
-> **设备策略**：训练优先 GPU，自动回退 CPU（可通过 `--no-cpu-fallback` 禁用回退）；推理默认 CPU，可按需切换 GPU。详见[设备策略加固](#设备策略)。
+> **设备策略**：训练优先 GPU，自动回退 CPU（可通过 `--no-cpu-fallback` 禁用回退）；推理默认 CPU，可按需切换 GPU。CPU 线程数可通过 `config.yaml` 的 `system.cpu_threads` 控制（老电脑建议设为 2）。
 
 ### 安装 PyTorch
 
@@ -645,6 +645,7 @@ codesprite/
 ├── .gitattributes           # Git 换行符统一规则
 ├── LICENSE                  # MIT
 ├── RISKS.md                 # 风险与隐患登记册
+├── ROADMAP.md               # 路线图
 └── README.md
 ```
 
