@@ -65,7 +65,8 @@ model = TransformerModel(model_config)
 # 设备选择：Web 服务默认 CPU（轻量级推理，不占用 GPU 显存）
 # 如需 GPU 推理：设置环境变量 CODESPRITE_WEB_DEVICE=cuda
 web_device = os.environ.get("CODESPRITE_WEB_DEVICE", "cpu")
-resolved_device = resolve_device(web_device)
+cpu_threads = config_dict['system'].get('cpu_threads', None)
+resolved_device = resolve_device(web_device, cpu_threads=cpu_threads)
 print_device_info(resolved_device)
 
 # 创建后端并初始化权重（即使没有预训练模型）

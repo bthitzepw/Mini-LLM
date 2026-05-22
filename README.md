@@ -565,6 +565,16 @@ model:
 
 > 注意：修改模型架构后，旧的检查点将不兼容，需要重新训练。
 
+### Q: 支持仓颉（.cj）语言吗？为什么生成的代码语法全错？
+
+**不支持，也不建议用于仓颉代码生成。**
+
+仓颉语言的开源训练语料几乎为零，3800 万参数的小模型对此类低资源语言产生严重幻觉 — 模型会把它见过的 C/C++/Rust 语法"缝合"成看似合理但实际上完全错误的仓颉代码。
+
+如果你正在学习仓颉，建议将本模型定位为**"语法翻译参考"**（例如把 Python 代码的大致逻辑转成仓颉代码骨架，然后自行修正），而非"代码生成器"。同理也适用于其他小众编程语言（Haskell、COBOL 等）。
+
+更多语言支持的风险评估见 [RISKS.md](./RISKS.md)。
+
 ### Q: Windows 下 PowerShell 报错 npm 相关问题？
 
 本项目不依赖 npm/Node.js，纯 Python 项目，不受影响。
@@ -610,7 +620,8 @@ codesprite/
 │   ├── gguf.py              # GGUF 格式导出（llama.cpp兼容）
 │   └── onnx.py              # ONNX 格式导出
 ├── tools/                   # 工具脚本
-│   └── convert_checkpoint.py  # 旧权重转换工具
+│   ├── convert_checkpoint.py  # 旧权重转换工具
+│   └── build_nuitka.py        # Nuitka 打包脚本（Windows 64-bit）
 ├── config/
 │   └── config.yaml          # 模型和训练配置
 ├── data/
@@ -633,6 +644,7 @@ codesprite/
 ├── requirements.txt         # Python 依赖
 ├── .gitattributes           # Git 换行符统一规则
 ├── LICENSE                  # MIT
+├── RISKS.md                 # 风险与隐患登记册
 └── README.md
 ```
 

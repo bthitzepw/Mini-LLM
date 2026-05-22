@@ -51,6 +51,8 @@ data:
 system:
   device: "auto"                   # 设备策略: auto(自动最优) / cuda / cpu
                                    # 环境变量 CODESPRITE_ALLOW_CPU_FALLBACK=false 禁用静默回退
+  cpu_threads: 2                   # CPU 推理线程数（建议: 老电脑=2, 新电脑=4, 不做其他事=auto）
+                                   # 值越小越流畅但越慢，牺牲速度换不卡顿
   seed: 42
   precision: "fp32"
   log_level: "INFO"

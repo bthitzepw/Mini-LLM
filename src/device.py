@@ -59,16 +59,29 @@ def _get_cuda_info() -> dict:
     return {}
 
 
-def _limit_cpu_threads():
-    """CPU 资源隔离：限制线程数，避免推理吃掉全部核心"""
-    if os.environ.get("OMP_NUM_THREADS") is None:
-        # 留一半核心给其他任务，至少留 2 个
+def _limit_cpu_threads(cpu_threads: int = None):
+    """
+    CPU 资源隔离：限制线程数，避免推理吃掉全部核心。
+
+    参数:
+        cpu_threads: 显式指定线程数。None=留一半核心（至少2个）。
+                     老电脑建议设为 2，牺牲速度换不卡顿。
+
+    环境变量 OMP_NUM_THREADS 优先级高于此参数。
+    """
+    if os.environ.get("OMP_NUM_THREADS") is not None:
+        # 用户已通过环境变量显式设置，尊重用户选择
+        threads = int(os.environ["OMP_NUM_THREADS"])
+    elif cpu_threads is not None:
+        threads = cpu_threads
+    else:
         cpu_count = os.cpu_count() or 4
         threads = max(2, cpu_count // 2)
-        os.environ["OMP_NUM_THREADS"] = str(threads)
+
+    os.environ["OMP_NUM_THREADS"] = str(threads)
     try:
         import torch
-        torch.set_num_threads(int(os.environ["OMP_NUM_THREADS"]))
+        torch.set_num_threads(threads)
     except Exception:
         pass
 
@@ -81,7 +94,8 @@ def _allow_cpu_fallback() -> bool:
     return val in ("true", "1", "yes", "on")
 
 
-def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
+def resolve_device(target: str = "auto", *, allow_fallback: bool = None,
+                   cpu_threads: int = None) -> str:
     """
     解析目标设备，返回 "cuda" / "cpu" / "mps" 字符串。
 
@@ -89,6 +103,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
         target: "auto" (自动最优) / "cuda" / "cpu" / "mps"
         allow_fallback: 是否允许在 GPU 不可用时回退到 CPU。
                         None 时读取环境变量 CODESPRITE_ALLOW_CPU_FALLBACK。
+        cpu_threads: CPU 模式下的线程数。None=留一半核心。老电脑建议设为 2。
 
     返回值:
         str: "cuda" / "cpu" / "mps"
@@ -103,7 +118,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
 
     # --- CPU 模式：直接返回 ---
     if target == "cpu":
-        _limit_cpu_threads()
+        _limit_cpu_threads(cpu_threads)
         return "cpu"
 
     # --- MPS 模式（Apple Silicon）---
@@ -115,7 +130,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
                 "Apple MPS not available — falling back to CPU. "
                 "Set CODESPRITE_ALLOW_CPU_FALLBACK=false to prevent this."
             )
-            _limit_cpu_threads()
+            _limit_cpu_threads(cpu_threads)
             return "cpu"
         raise RuntimeError(
             "Apple MPS requested but not available. "
@@ -141,7 +156,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
                     reason + "Falling back to CPU. "
                     "Set CODESPRITE_ALLOW_CPU_FALLBACK=false to make this a hard error."
                 )
-                _limit_cpu_threads()
+                _limit_cpu_threads(cpu_threads)
                 return "cpu"
             raise RuntimeError(
                 reason + "Set --device cpu to train on CPU, "
@@ -150,7 +165,7 @@ def resolve_device(target: str = "auto", *, allow_fallback: bool = None) -> str:
 
         # "auto" 模式：GPU 不可用就默默走 CPU（这是合理的默认行为）
         logger.info("No GPU detected — using CPU.")
-        _limit_cpu_threads()
+        _limit_cpu_threads(cpu_threads)
         return "cpu"
 
     # 未知 target

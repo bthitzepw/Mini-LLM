@@ -162,7 +162,8 @@ def main():
         os.environ["CODESPRITE_ALLOW_CPU_FALLBACK"] = "false"
 
     device_str = args.device or config_dict['system']['device']
-    resolved = resolve_device(device_str)
+    cpu_threads = config_dict['system'].get('cpu_threads', None)
+    resolved = resolve_device(device_str, cpu_threads=cpu_threads)
     device = torch.device(resolved)
 
     # 可观测性日志
